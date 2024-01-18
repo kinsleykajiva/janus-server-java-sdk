@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group = 'africa.jopen'
+version = '0.1-beta'
+
+repositories {
+    mavenCentral()
+}
+var classifier = ''
+// check if we are on windows
+if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {classifier = 'windows-x86_64'
+} else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {classifier = 'linux-x86_64'
+} else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {classifier = 'macosx-x86_64'
+}
+dependencies {
+    implementation 'org.json:json:20231013'
+    implementation "dev.onvoid.webrtc:webrtc-java:0.8.0"
+    implementation group: "dev.onvoid.webrtc", name: "webrtc-java", version: "0.8.0", classifier: classifier
+    implementation 'org.jetbrains:annotations:24.1.0'
+
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
