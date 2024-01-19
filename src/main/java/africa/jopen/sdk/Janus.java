@@ -120,14 +120,13 @@ public class Janus implements JanusEventHandler {
 							sessionTransactionId = "";
 							keepAlive();
 							
-							SdkUtils.runAfter(8,()->{
-								attachePlugin();
-							});
+							SdkUtils.runAfter(8, this::attachePlugin);
 						}else{
 							// must be a plugin attachment act
 							var handleId = data.getLong("id");
 							PluginHandles.add(handleId);
 							log.info("Plugin handleId attached: " + handleId);
+							sessionTransactionId = "";
 						}
 						
 					}
