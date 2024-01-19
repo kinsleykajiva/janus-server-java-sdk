@@ -7,11 +7,20 @@ import org.json.JSONObject;
 import java.time.LocalTime;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class SdkUtils {
 	
-	static Logger log = Logger.getLogger(SdkUtils.class.getName());
+	static         Logger                   log       = Logger.getLogger(SdkUtils.class.getName());
+	private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	
+	public static void runAfter(long delay, Runnable runnable) {
+		
+		scheduler.schedule(runnable, delay, TimeUnit.SECONDS);
+	}
 	
 	private static final String ALPHABET      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private static final int    ALPHABET_SIZE = ALPHABET.length();

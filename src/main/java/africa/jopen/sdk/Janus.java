@@ -1,9 +1,11 @@
 package africa.jopen.sdk;
 
+import africa.jopen.sdk.models.JanusSession;
 import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -14,17 +16,27 @@ public class Janus implements JanusEventHandler {
 	ScheduledExecutorService executorService          = new ScheduledThreadPoolExecutor(1);
 	ScheduledExecutorService keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
 	
+	private String sessionTransactionId;
+	
 	JanusWebSocketClient webSocketClient;
+	private JanusSession janusSession;
+	
+	
 	
 	public Janus( @NotNull String url ) {
-		log.info("Connecting to " + url);
 		url = SdkUtils.convertToWebSocketUrl(url);
-		log.info("Connecting to " + url);
 		@NotNull String finalUrl = url;
-		executorService.execute(() -> {
+		try {
 			webSocketClient = new JanusWebSocketClient(finalUrl, this);
-			
+		} catch (Exception e) {
+			log.severe("Failed to initialize JanusWebSocketClient: " + e.getMessage());
+		}
+		System.out.println("webSocketClient = " + webSocketClient);
+		SdkUtils.runAfter(5,()->{
+			webSocketClient.initializeWebSocket();
 		});
+		
+		
 	}
 	
 	
@@ -34,19 +46,23 @@ public class Janus implements JanusEventHandler {
 		keppAliveExecutorService.scheduleAtFixedRate(() -> {
 			JSONObject message = new JSONObject();
 			message.put("janus", "keepalive");
+			message.put("session_id", janusSession.id());
 			sendMessage(message);
 		}, 0, 25, TimeUnit.SECONDS);
 	}
 	
 	@NonBlocking
-	public void createSession() {
+	private void createSession() {
 		JSONObject message = new JSONObject();
+		sessionTransactionId = SdkUtils.uniqueIDGenerator("transaction", 18);
 		message.put("janus", "create");
-		sendMessage(message);
+		message.put("transaction", sessionTransactionId);
+		webSocketClient.send(message.toString());
 	}
 	
-	private void sendMessage( final JSONObject message ) {
+	public void sendMessage( final JSONObject message ) {
 		message.put("transaction", SdkUtils.uniqueIDGenerator("transaction", 18));
+		log.info("Sending message: " + message);
 		webSocketClient.send(message.toString());
 	}
 	
@@ -82,6 +98,16 @@ public class Janus implements JanusEventHandler {
 		if (event.has("janus")) {
 			String janus = event.getString("janus");
 			switch (janus) {
+				case "success" -> {
+					var transaction = event.getString("transaction");
+					if(transaction.equals(sessionTransactionId)){
+						var data = event.getJSONObject("data");
+						var sessionId = data.getLong("id");
+						log.info("Session created: " + sessionId);
+						janusSession = new JanusSession(sessionId);
+						keepAlive();
+					}
+				}
 				case "keepalive" -> {
 				}
 				case "event" -> {
@@ -94,8 +120,7 @@ public class Janus implements JanusEventHandler {
 				}
 				case "webrtcup" -> {
 				}
-				case "success" -> {
-				}
+				
 				case "trickle" -> {
 				}
 				case "media" -> {
@@ -114,6 +139,7 @@ public class Janus implements JanusEventHandler {
 	
 	@Override
 	public void onConnected() {
+		
 		log.info("Connected to Janus");
 		createSession();
 	}
