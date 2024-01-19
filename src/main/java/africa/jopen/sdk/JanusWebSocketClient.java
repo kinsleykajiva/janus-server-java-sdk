@@ -15,6 +15,7 @@ public class JanusWebSocketClient implements WebSocketClient{
 	static Logger    log = Logger.getLogger(JanusWebSocketClient.class.getName());
 	private    WebSocket webSocket;
 	private    String    url;
+	private Thread thread;
 	private final JanusEventHandler eventHandler;
 	
 	public JanusWebSocketClient(String url,JanusEventHandler eventHandler) {
@@ -29,39 +30,38 @@ public class JanusWebSocketClient implements WebSocketClient{
 			webSocketBuilder.subprotocols("janus-protocol");
 			webSocketBuilder.connectTimeout(Duration.of(10, ChronoUnit.SECONDS));
 			webSocket = webSocketBuilder.buildAsync(uri, new WebSocketHandler()).join();
+			
 		} catch (Exception e) {
 			log.severe("Failed to initialize WebSocket: " + e.getMessage());
 			// Handle exception appropriately or rethrow if necessary
 		}
 	}
 	
-	@Override
-	public void connect( URI uri, JanusEventHandler eventHandler ) {
 	
-	}
 	
 	@Override
 	public void send( String message ) {
-	
+		webSocket.sendText(message, true);
 	}
 	
 	@Override
 	public void close() {
 	
 	}
-	
 	private class WebSocketHandler implements WebSocket.Listener {
-		private StringBuffer buffer = new StringBuffer();
+		private final StringBuffer buffer = new StringBuffer();
 		
 		@Override
 		public void onOpen( WebSocket webSocket ) {
 			WebSocket.Listener.super.onOpen(webSocket);
+			eventHandler.onConnected();
 		}
 		
 		@Override
 		public CompletionStage<?> onText( WebSocket webSocket, CharSequence data, boolean last ) {
 			if (last) {
 				buffer.append(data);
+				log.info("Received message: " + buffer);
 				StringReader reader = new StringReader(buffer.toString());
 				eventHandler.handleEvent(new JSONObject(reader.toString()));
 				buffer.setLength(0); // Clear the buffer

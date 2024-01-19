@@ -4,28 +4,50 @@ import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class Janus implements JanusEventHandler {
 	static Logger log = Logger.getLogger(Janus.class.getName());
+	ScheduledExecutorService executorService          = new ScheduledThreadPoolExecutor(1);
+	ScheduledExecutorService keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
 	
-	private String url;
 	JanusWebSocketClient webSocketClient;
 	
 	public Janus( @NotNull String url ) {
-		this.url = SdkUtils.convertToWebSocketUrl(url);
-		log.info("Connecting to " + this.url);
-		webSocketClient = new JanusWebSocketClient(this.url, this);
+		log.info("Connecting to " + url);
+		url = SdkUtils.convertToWebSocketUrl(url);
+		log.info("Connecting to " + url);
+		@NotNull String finalUrl = url;
+		executorService.execute(() -> {
+			webSocketClient = new JanusWebSocketClient(finalUrl, this);
+			
+		});
 	}
+	
 	
 	@NonBlocking
 	private void keepAlive() {
-	
+		
+		keppAliveExecutorService.scheduleAtFixedRate(() -> {
+			JSONObject message = new JSONObject();
+			message.put("janus", "keepalive");
+			sendMessage(message);
+		}, 0, 25, TimeUnit.SECONDS);
 	}
 	
 	@NonBlocking
-	private void createSession() {
+	public void createSession() {
+		JSONObject message = new JSONObject();
+		message.put("janus", "create");
+		sendMessage(message);
+	}
 	
+	private void sendMessage( final JSONObject message ) {
+		message.put("transaction", SdkUtils.uniqueIDGenerator("transaction", 18));
+		webSocketClient.send(message.toString());
 	}
 	
 	@NonBlocking
@@ -57,7 +79,7 @@ public class Janus implements JanusEventHandler {
 	@Override
 	@NonBlocking
 	public void handleEvent( @NotNull JSONObject event ) {
-		if (!event.has("janus")) {
+		if (event.has("janus")) {
 			String janus = event.getString("janus");
 			switch (janus) {
 				case "keepalive" -> {
@@ -88,6 +110,12 @@ public class Janus implements JanusEventHandler {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void onConnected() {
+		log.info("Connected to Janus");
+		createSession();
 	}
 	
 	

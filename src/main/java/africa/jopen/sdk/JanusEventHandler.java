@@ -7,4 +7,6 @@ import org.json.JSONObject;
 public interface JanusEventHandler {
 @NonBlocking
 void handleEvent( @NotNull JSONObject event);
+
+@NonBlocking void onConnected();
 }
