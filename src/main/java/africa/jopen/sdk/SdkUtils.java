@@ -29,21 +29,21 @@ public class SdkUtils {
 		if (url == null || url.isEmpty()) return "";
 		if (url.startsWith("http://")) return url.replace("http://", "ws://");
 		if (url.startsWith("https://")) return url.replace("https://", "wss://");
-		return "";
+		return url;
 	}
 	
 	public static String getWebSocketUrl(String url) {
 		if (url == null || url.isEmpty()) return "";
 		if (url.startsWith("ws://")) return url;
 		if (url.startsWith("wss://")) return url;
-		return "";
+		return url;
 	}
 	
 	public static String getWebSocketProtocol(String url) {
 		if (url == null || url.isEmpty()) return "";
 		if (url.startsWith("ws://")) return "ws";
 		if (url.startsWith("wss://")) return "wss";
-		return "";
+		return url;
 	}
 	
 	
