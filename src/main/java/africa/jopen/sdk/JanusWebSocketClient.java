@@ -11,36 +11,36 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletionStage;
 import java.util.logging.Logger;
 
-public class JanusWebSocketClient implements WebSocketClient{
-	static Logger    log = Logger.getLogger(JanusWebSocketClient.class.getName());
-	private    WebSocket webSocket;
-	private    String    url;
-	private Thread thread;
+public class JanusWebSocketClient implements WebSocketClient {
+	static        Logger            log = Logger.getLogger(JanusWebSocketClient.class.getName());
+	private       WebSocket         webSocket;
+	private       String            url;
+	private       Thread            thread;
 	private final JanusEventHandler eventHandler;
 	
-	public JanusWebSocketClient(String url,JanusEventHandler eventHandler) {
-		
+	
+	public JanusWebSocketClient( String url, JanusEventHandler eventHandler ) {
 		this.eventHandler = eventHandler;
-		initializeWebSocket(URI.create(url));
+		this.url = url;
 	}
-	private void initializeWebSocket(URI uri) {
+	
+	protected void initializeWebSocket() {
 		try {
-			HttpClient httpClient = HttpClient.newBuilder().build();
+			HttpClient        httpClient       = HttpClient.newBuilder().build();
 			WebSocket.Builder webSocketBuilder = httpClient.newWebSocketBuilder();
 			webSocketBuilder.subprotocols("janus-protocol");
 			webSocketBuilder.connectTimeout(Duration.of(10, ChronoUnit.SECONDS));
-			webSocket = webSocketBuilder.buildAsync(uri, new WebSocketHandler()).join();
-			
+			webSocketBuilder.buildAsync(URI.create(url), new WebSocketHandler()).join();
 		} catch (Exception e) {
 			log.severe("Failed to initialize WebSocket: " + e.getMessage());
-			// Handle exception appropriately or rethrow if necessary
 		}
+		
 	}
-	
 	
 	
 	@Override
 	public void send( String message ) {
+		log.info("xxxSending message: " + message);
 		webSocket.sendText(message, true);
 	}
 	
@@ -48,34 +48,39 @@ public class JanusWebSocketClient implements WebSocketClient{
 	public void close() {
 	
 	}
+	
 	private class WebSocketHandler implements WebSocket.Listener {
 		private final StringBuffer buffer = new StringBuffer();
 		
 		@Override
-		public void onOpen( WebSocket webSocket ) {
-			WebSocket.Listener.super.onOpen(webSocket);
+		public void onOpen( WebSocket ws ) {
+			webSocket= ws;
+			WebSocket.Listener.super.onOpen(ws);
 			eventHandler.onConnected();
 		}
 		
 		@Override
-		public CompletionStage<?> onText( WebSocket webSocket, CharSequence data, boolean last ) {
+		public CompletionStage<?> onText( WebSocket ws, CharSequence data, boolean last ) {
+			
 			if (last) {
 				buffer.append(data);
 				log.info("Received message: " + buffer);
-				StringReader reader = new StringReader(buffer.toString());
-				eventHandler.handleEvent(new JSONObject(reader.toString()));
+				eventHandler.handleEvent(new JSONObject(buffer.toString()));
 				buffer.setLength(0); // Clear the buffer
 			}
-			return WebSocket.Listener.super.onText(webSocket, data, last);
+			return WebSocket.Listener.super.onText(ws, data, last);
 		}
 		
 		@Override
 		public CompletionStage<?> onClose( WebSocket webSocket, int statusCode, String reason ) {
+			log.info("WebSocket closed: " + statusCode + ", " + reason);
 			return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
 		}
 		
 		@Override
 		public void onError( WebSocket webSocket, Throwable error ) {
+			error.printStackTrace();
+			log.severe("WebSocket error: " + error.getMessage());
 			WebSocket.Listener.super.onError(webSocket, error);
 		}
 	}
