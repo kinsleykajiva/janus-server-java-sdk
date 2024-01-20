@@ -13,7 +13,7 @@ public class JanusVideoRoomPlugInAPI {
 	static Logger             log = Logger.getLogger(JanusVideoRoomPlugInAPI.class.getName());
 	private    JanusRestApiClient janusRestApiClient;
 	
-	public JanusVideoRoomPlugInAPI( JanusRestApiClient janusRestApiClient ) {
+	public JanusVideoRoomPlugInAPI(@NotNull JanusRestApiClient janusRestApiClient ) {
 		this.janusRestApiClient = janusRestApiClient;
 	}
 	

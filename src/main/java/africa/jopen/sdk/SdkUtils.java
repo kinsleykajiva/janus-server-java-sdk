@@ -26,7 +26,7 @@ public class SdkUtils {
 	private static final int    ALPHABET_SIZE = ALPHABET.length();
 	private static final Random RANDOM        = new Random();
 	
-	protected static String IdGenerator() {
+	public static String IdGenerator() {
 		UUID uuid = UUID.randomUUID();
 		return uuid.toString().replaceAll("-", "") + System.nanoTime();
 	}
