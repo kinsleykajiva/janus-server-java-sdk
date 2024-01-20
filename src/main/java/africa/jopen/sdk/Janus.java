@@ -1,39 +1,58 @@
 package africa.jopen.sdk;
 
+import africa.jopen.sdk.models.JanusConfiguration;
 import africa.jopen.sdk.models.JanusSession;
 import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.util.concurrent.*;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class Janus implements JanusEventHandler {
 	static Logger log = Logger.getLogger(Janus.class.getName());
-	ScheduledExecutorService executorService          = new ScheduledThreadPoolExecutor(1);
-	ScheduledExecutorService keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
-	CopyOnWriteArrayList<Long> PluginHandles = new CopyOnWriteArrayList<>();
+	ScheduledExecutorService   executorService          = new ScheduledThreadPoolExecutor(1);
+	ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
+	CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 	
 	
 	private String sessionTransactionId;
 	
 	JanusWebSocketClient webSocketClient;
-	private JanusSession janusSession;
+	private JanusSession       janusSession;
+	private boolean            isAPIAccessOnly = false;
+	private JanusConfiguration janusConfiguration;
+	public JanusRestApiClient janusRestApiClient;
 	
 	
-	
-	public Janus( @NotNull String url ) {
-		url = SdkUtils.convertToWebSocketUrl(url);
-		@NotNull String finalUrl = url;
-		try {
-			webSocketClient = new JanusWebSocketClient(finalUrl, this);
-		} catch (Exception e) {
-			log.severe("Failed to initialize JanusWebSocketClient: " + e.getMessage());
+	public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
+		if (Objects.isNull(config)) {
+			throw new IllegalArgumentException("config cannot be null");
 		}
-		System.out.println("webSocketClient = " + webSocketClient);
-		SdkUtils.runAfter(5,()->{
-			webSocketClient.initializeWebSocket();
-		});
+		
+		
+		
+		if (isAPIAccessOnly) {
+			this.isAPIAccessOnly = true;
+			janusConfiguration = new JanusConfiguration( SdkUtils.convertFromWebSocketUrl( config.url()),config.apiSecret(), config.adminKey(), config.adminSecret());
+			janusRestApiClient = new JanusRestApiClient(janusConfiguration);
+		} else {
+			String finalUrl = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
+			janusConfiguration = new JanusConfiguration(config.url(),config.apiSecret(), config.adminKey(), config.adminSecret());
+			try {
+				webSocketClient = new JanusWebSocketClient(finalUrl, this);
+			} catch (Exception e) {
+				log.severe("Failed to initialize JanusWebSocketClient: " + e.getMessage());
+			}
+			System.out.println("webSocketClient = " + webSocketClient);
+			SdkUtils.runAfter(5, () -> {
+				webSocketClient.initializeWebSocket();
+			});
+		}
 		
 		
 	}
@@ -60,7 +79,7 @@ public class Janus implements JanusEventHandler {
 	}
 	
 	public void sendMessage( final JSONObject message ) {
-		if(!message.has("transaction")) {
+		if (!message.has("transaction")) {
 			message.put("transaction", SdkUtils.uniqueIDGenerator("transaction", 18));
 		}
 		log.info("Sending message: " + message);
@@ -85,7 +104,9 @@ public class Janus implements JanusEventHandler {
 	@NonBlocking
 	private void destroyHandle() {
 	
-	}@NonBlocking
+	}
+	
+	@NonBlocking
 	private void attachePlugin() {
 		JSONObject plugin = new JSONObject();
 		sessionTransactionId = SdkUtils.uniqueIDGenerator("transaction", 18);
@@ -94,7 +115,7 @@ public class Janus implements JanusEventHandler {
 		plugin.put("session_id", janusSession.id());
 		plugin.put("plugin", "janus.plugin.videoroom");
 		sendMessage(plugin);
-	
+		
 	}
 	
 	@NonBlocking
@@ -111,9 +132,9 @@ public class Janus implements JanusEventHandler {
 			switch (janus) {
 				case "success" -> {
 					var transaction = event.getString("transaction");
-					if(transaction.equals(sessionTransactionId)){
+					if (transaction.equals(sessionTransactionId)) {
 						var data = event.getJSONObject("data");
-						if(janusSession == null) {
+						if (janusSession == null) {
 							var sessionId = data.getLong("id");
 							log.info("Session created: " + sessionId);
 							janusSession = new JanusSession(sessionId);
@@ -121,7 +142,7 @@ public class Janus implements JanusEventHandler {
 							keepAlive();
 							
 							SdkUtils.runAfter(8, this::attachePlugin);
-						}else{
+						} else {
 							// must be a plugin attachment act
 							var handleId = data.getLong("id");
 							PluginHandles.add(handleId);
