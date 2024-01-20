@@ -1,5 +1,7 @@
-package africa.jopen.sdk;
+package africa.jopen.sdk.rest;
 
+import africa.jopen.sdk.JanusPlugins;
+import africa.jopen.sdk.SdkUtils;
 import africa.jopen.sdk.models.JanusConfiguration;
 import org.json.JSONObject;
 
@@ -15,12 +17,16 @@ public class JanusRestApiClient {
 	private HttpClient httpClient = HttpClient.newBuilder().build();
 	
 	private JanusConfiguration janusConfiguration;
+	public JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI;
 	
 	public JanusRestApiClient( JanusConfiguration janusConfiguration ) {
 		this.janusConfiguration = janusConfiguration;
+		log.info("JanusRestApiClient initialized");
+		log.info("JanusRestApiClient initialized url - " + janusConfiguration.url());
+		janusVideoRoomPlugInAPI = new JanusVideoRoomPlugInAPI(this);
 	}
 	
-	private String makePostRequest(  JSONObject json ) throws Exception {
+	protected String makePostRequest( JSONObject json ) throws Exception {
 		json.put("admin_key", janusConfiguration.adminKey());
 		json.put("apisecret", janusConfiguration.apiSecret());
 		json.put("admin_secret", janusConfiguration.adminSecret());
@@ -39,54 +45,9 @@ public class JanusRestApiClient {
 			throw new Exception("Unexpected response status: " + response.statusCode());
 		}
 	}
-	public JSONObject checkIfVideoRoomExists(JanusPlugins plugin,String roomId){
-		final long sessionId=setupJanusSession();
-		final long handleId =attachPlugin(sessionId,plugin);
-		
-		// We have a problem here we don't know if Video room is configured to use string room id or integer value only .
-		// because of this one of the types will cause an exception if the type use is not accepted by the plugin.
-		// so we have to make two attempts one with string and/or the other with integer.
-		JSONObject json = new JSONObject();
-		json.put("janus", "message");
-		json.put("handle_id",handleId);
-		json.put("session_id",sessionId);
-		
-		String response;
-		try{
-			//
-			json.put("body",
-					new JSONObject()
-							.put("request","exists")
-							.put("room",Integer.parseInt(roomId))/* as integer value*/
-			);
-			response = makePostRequest(json);
-			
-		}catch (Exception e){
-			e.printStackTrace();
-			return new JSONObject();
-		}
-		
-		if(response == null || response.isEmpty()){
-			try{
-				//
-				json.put("body",
-						new JSONObject()
-								.put("request","exists")
-								.put("room",roomId)/* as String value*/
-				);
-				response = makePostRequest(json);
-				
-			}catch (Exception e){
-				e.printStackTrace();
-				return new JSONObject();
-			}
-		}
-		
-		return new JSONObject(response);
-		
-	}
 	
-	private long attachPlugin( final long sessionId, JanusPlugins plugin ) {
+	
+	protected long attachPlugin( final long sessionId, JanusPlugins plugin ) {
 		if (sessionId == 0) {
 			log.severe("Failed to attach plugin: session id is 0");
 			return 0;
@@ -102,15 +63,15 @@ public class JanusRestApiClient {
 		return makeRequestAndHandleResponse(json, "Failed to setup Janus handle");
 	}
 	
-	private long setupJanusSession() {
+	protected long setupJanusSession() {
 		JSONObject json = new JSONObject();
 		json.put("janus", "create");
 		return makeRequestAndHandleResponse(json, "Failed to setup Janus session");
 	}
 	
-	private long makeRequestAndHandleResponse( JSONObject json, String errorMessage ) {
+	protected long makeRequestAndHandleResponse( JSONObject json, String errorMessage ) {
 		try {
-			String     response   = makePostRequest( json);
+			String     response   = makePostRequest(json);
 			JSONObject jsonObject = new JSONObject(response);
 			if (jsonObject.has("janus") && jsonObject.getString("janus").equals("success") && jsonObject.has("data")) {
 				return jsonObject.getJSONObject("data").getLong("id");

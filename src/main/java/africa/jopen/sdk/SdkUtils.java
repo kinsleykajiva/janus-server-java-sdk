@@ -60,21 +60,21 @@ public class SdkUtils {
 		if (url == null || url.isEmpty()) return "";
 		if (url.startsWith("ws://")) return url.substring(5);
 		if (url.startsWith("wss://")) return url.substring(6);
-		return "";
+		return url;
 	}
 	
 	public static String getWebSocketPort(String url) {
 		if (url == null || url.isEmpty()) return "";
 		if (url.startsWith("ws://")) return "";
 		if (url.startsWith("wss://")) return "";
-		return "";
+		return url;
 	}
 	
 	public static String convertFromWebSocketUrl(String url) {
 		if (url == null || url.isEmpty()) return "";
 		if (url.startsWith("ws://")) return url.replace("ws://", "http://");
 		if (url.startsWith("wss://")) return url.replace("wss://", "https://");
-		return "";
+		return url;
 		
 	}
 	
@@ -91,7 +91,7 @@ public class SdkUtils {
 		return true;
 	}
 	
-	protected static String uniqueIDGenerator(String seed, int maxSize) {
+	public static String uniqueIDGenerator( String seed, int maxSize ) {
 		LocalTime time       = LocalTime.now();
 		String    timeString = String.format("%02d%02d%02d", time.getHour(), time.getMinute(), time.getSecond());
 		String    dateTimeString = seed + timeString + RANDOM.nextInt(10000);
