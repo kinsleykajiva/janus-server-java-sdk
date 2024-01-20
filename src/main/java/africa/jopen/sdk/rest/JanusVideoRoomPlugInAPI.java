@@ -12,6 +12,77 @@ public class JanusVideoRoomPlugInAPI {
 		this.janusRestApiClient = janusRestApiClient;
 	}
 	
+	/**
+	 * Deletes a video room in the Janus WebRTC server.
+	 *
+	 * @param roomId  The identifier of the room to be deleted (string or integer).
+	 * @param secret  The secret token required to authenticate the deletion request.
+	 * @return A JSONObject containing the response from the Janus server after attempting to delete the room.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.videoroom",
+	 *     "data": {
+	 *       "videoroom": "destroyed"
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If the room deletion is successful, "janus" will be "success" and "videoroom" will be "destroyed".
+	 * If an error occurs, "janus" will be "error" and additional details may be available in the "error" field.
+	 * If the specified room does not exist, null will be returned.
+	 * @see #checkIfVideoRoomExistsBoolCheck(String)
+	 */
+	public JSONObject deleteRoom( String roomId ,String secret) {
+		if (!checkIfVideoRoomExistsBoolCheck(roomId)) {
+			// is the room does not exist
+			return null;
+		}
+		final long sessionId = janusRestApiClient.setupJanusSession();
+		final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+		
+		JSONObject json = new JSONObject();
+		json.put("janus", "message");
+		json.put("handle_id", handleId);
+		json.put("session_id", sessionId);
+		
+		for (String idType : new String[]{"integer", "string"}) {
+			try {
+				json.put("body",
+						new JSONObject()
+								.put("request", "destroy")
+								.put("secret", secret)
+								.put("permanent", true)
+								.put("room", idType.equals("integer") ? Integer.parseInt(roomId) : roomId)
+				);
+				
+				String response = janusRestApiClient.makePostRequest(json);
+				JSONObject responseObject = new JSONObject(response);
+				
+				
+				return responseObject;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return new JSONObject();
+	}
+	
+	/**
+	 * Checks if a video room exists in the Janus WebRTC server and returns a boolean indicating its existence.
+	 *
+	 * @param roomId The identifier of the room to check for existence (string or integer).
+	 * @return {@code true} if the room exists, {@code false} otherwise.
+	 * @see #checkIfVideoRoomExists(String)
+	 */
 	public boolean checkIfVideoRoomExistsBoolCheck( String roomId ) {
 		var responseObject = checkIfVideoRoomExists(roomId);
 		if (responseObject == null) {
@@ -24,6 +95,43 @@ public class JanusVideoRoomPlugInAPI {
 				&& responseObject.getJSONObject("plugindata").getJSONObject("data").getBoolean("exists");
 	}
 	
+	
+	/**
+	 * Creates a new video room in the Janus WebRTC server.
+	 *
+	 * @param roomId      The identifier for the new room (string or integer).
+	 * @param description A description for the new room (nullable).
+	 * @param pin         A PIN (Personal Identification Number) for accessing the room (nullable).
+	 * @param secret      The secret token required to authenticate the creation request (nullable).
+	 * @param publishers  The maximum number of publishers allowed in the room.
+	 *                    If the specified value is less than 1, it will be set to 1.
+	 * @param permanent   Indicates whether the room should be permanent or temporary.
+	 * @param record      Indicates whether the room should record the sessions.
+	 * @param rec_dir     The directory path for storing recorded sessions (nullable).
+	 * @return A JSONObject containing the response from the Janus server after attempting to create the room.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.videoroom",
+	 *     "data": {
+	 *       "videoroom": "created"
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If the room creation is successful, "janus" will be "success" and "videoroom" will be "created".
+	 * If an error occurs, "janus" will be "error" and additional details may be available in the "error" field.
+	 * If the specified room already exists, null will be returned.
+	 * @see #checkIfVideoRoomExistsBoolCheck(String)
+	 */
 	public JSONObject createJanusRoom( @NotNull String roomId, @Nullable String description,
 	                                   @Nullable String pin, @Nullable String secret, int publishers,
 	                                   boolean permanent, boolean record, @Nullable String rec_dir ) {
@@ -78,6 +186,35 @@ public class JanusVideoRoomPlugInAPI {
 		return new JSONObject();
 	}
 	
+	
+	/**
+	 * Checks if a video room exists in the Janus WebRTC server.
+	 *
+	 * @param roomId The identifier of the room to check for existence (string or integer).
+	 * @return A JSONObject containing the response from the Janus server after attempting to check the room's existence.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.videoroom",
+	 *     "data": {
+	 *       "videoroom": "exists" or "error"
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If the room exists, "janus" will be "success" and "videoroom" will be "exists".
+	 * If the room does not exist, "janus" will be "success" and "videoroom" will be "error".
+	 * If an error occurs during the check, "janus" will be "error" and additional details may be available in the "error" field.
+	 * @see #checkIfVideoRoomExistsBoolCheck(String)
+	 */
 	public JSONObject checkIfVideoRoomExists( String roomId ) {
 		final long sessionId = janusRestApiClient.setupJanusSession();
 		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
