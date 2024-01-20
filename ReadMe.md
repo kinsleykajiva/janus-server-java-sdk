@@ -10,7 +10,9 @@ This can always be improved. If you have any suggestions, please create a pull r
 
 # Janus Video Room Plugin API
 
+
 The Janus Video Room Plugin API is a Java class designed to interact with the Janus WebRTC server's video room plugin. It provides methods for creating, deleting, checking the existence, and retrieving a list of video rooms.
+
 
 ## Table of Contents
 
@@ -33,6 +35,7 @@ The Janus Video Room Plugin API is a Java class designed to interact with the Ja
 Clone the repository and include the JanusVideoRoomPlugInAPI class in your Java project.
 
 ## Usage
+Please do note that   `roomId` parameter can be a number or a string.
 
 ### Initialization
 
