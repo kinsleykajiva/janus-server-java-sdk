@@ -24,9 +24,9 @@ public class JanusVideoRoomPlugInAPI {
 				&& responseObject.getJSONObject("plugindata").getJSONObject("data").getBoolean("exists");
 	}
 	
-	public JSONObject createJanusRoom(@NotNull String roomId, @Nullable String description,
-	                                  @Nullable String pin, @Nullable String secret, int publishers,
-	                                  boolean permanent, boolean record, @Nullable String rec_dir) {
+	public JSONObject createJanusRoom( @NotNull String roomId, @Nullable String description,
+	                                   @Nullable String pin, @Nullable String secret, int publishers,
+	                                   boolean permanent, boolean record, @Nullable String rec_dir ) {
 		if (checkIfVideoRoomExistsBoolCheck(roomId)) {
 			return null;
 		}
@@ -36,7 +36,7 @@ public class JanusVideoRoomPlugInAPI {
 		}
 		
 		final long sessionId = janusRestApiClient.setupJanusSession();
-		final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 		
 		JSONObject json = new JSONObject();
 		json.put("janus", "message");
@@ -46,7 +46,7 @@ public class JanusVideoRoomPlugInAPI {
 		try {
 			// We have a problem here we don't know if Video room is configured to use string room id or integer value only .
 			
-			for (String idType : new String[]{"integer", "string"}) {
+			for (String idType : new String[]{ "integer", "string" }) {
 				json.put("body", new JSONObject()
 						.put("request", "create")
 						.put("description", description)
@@ -65,7 +65,7 @@ public class JanusVideoRoomPlugInAPI {
 				
 				if (responseObject.getString("janus").equals("success")) {
 					JSONObject plugindata = responseObject.getJSONObject("plugindata");
-					JSONObject data = plugindata.getJSONObject("data");
+					JSONObject data       = plugindata.getJSONObject("data");
 					if (data.has("videoroom") && data.getString("videoroom").equals("created")) {
 						return responseObject;
 					}
@@ -77,9 +77,10 @@ public class JanusVideoRoomPlugInAPI {
 		
 		return new JSONObject();
 	}
-	public JSONObject checkIfVideoRoomExists(String roomId) {
+	
+	public JSONObject checkIfVideoRoomExists( String roomId ) {
 		final long sessionId = janusRestApiClient.setupJanusSession();
-		final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 		
 		JSONObject json = new JSONObject();
 		json.put("janus", "message");
@@ -90,7 +91,7 @@ public class JanusVideoRoomPlugInAPI {
 		// because of this one of the types will cause an exception if the type use is not accepted by the plugin.
 		// so we have to make two attempts one with string and/or the other with integer.
 		
-		for (String idType : new String[]{"integer", "string"}) {
+		for (String idType : new String[]{ "integer", "string" }) {
 			try {
 				json.put("body",
 						new JSONObject()
@@ -98,14 +99,14 @@ public class JanusVideoRoomPlugInAPI {
 								.put("room", idType.equals("integer") ? Integer.parseInt(roomId) : roomId)
 				);
 				
-				String response = janusRestApiClient.makePostRequest(json);
+				String     response       = janusRestApiClient.makePostRequest(json);
 				JSONObject responseObject = new JSONObject(response);
 				
 				if (responseObject.getString("janus").equals("success")
 						&& responseObject.has("plugindata") && responseObject.getJSONObject("plugindata").getJSONObject("data").has("error_code")) {
 					return new JSONObject();
 				}
-				return  responseObject;
+				return responseObject;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
