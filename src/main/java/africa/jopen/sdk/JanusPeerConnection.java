@@ -50,8 +50,8 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 		return jsep;
 	}
 	
-	private JSONObject customizeSdp(@Nullable JSONObject jsep ) {
-		if(jsep == null) {
+	private JSONObject customizeSdp( @Nullable JSONObject jsep ) {
+		if (jsep == null) {
 			log.warning("The provided JSONObject is null.");
 			return null;
 		}
@@ -69,8 +69,9 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 		return jsep;
 	}
 	
-	private static class CreateSetSessionDescriptionObserver implements SetSessionDescriptionObserver{
-		CompletableFuture<Void> localDescCompletableFuture  = new CompletableFuture<>();
+	private static class CreateSetSessionDescriptionObserver implements SetSessionDescriptionObserver {
+		CompletableFuture<Void> localDescCompletableFuture = new CompletableFuture<>();
+		
 		public CreateSetSessionDescriptionObserver( CompletableFuture<Void> answerCompletableFuture ) {
 			localDescCompletableFuture = answerCompletableFuture;
 		}
@@ -85,6 +86,7 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 			localDescCompletableFuture.completeExceptionally(new RuntimeException(error));
 		}
 	}
+	
 	private static class CreateSDObserver implements CreateSessionDescriptionObserver {
 		private final CompletableFuture<RTCSessionDescription> future;
 		
@@ -108,8 +110,20 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 	
 	}
 	
-	public void createOffer() {
-	
+	@Blocking
+	public JSONObject createOffer() {
+		CompletableFuture<RTCSessionDescription> rtcSessionDescriptionCompletableFuture = new CompletableFuture<>();
+		
+		var opt = new RTCOfferOptions();
+		peerConnection.createOffer(opt, new CreateSDObserver(rtcSessionDescriptionCompletableFuture));
+		RTCSessionDescription offerDescription = rtcSessionDescriptionCompletableFuture.join();
+		JSONObject            jsep             = new JSONObject().put("type", "offer").put("sdp", offerDescription.sdp);
+		jsep = customizeSdp(jsep);
+		// Setting local description
+		CompletableFuture<Void> localDescCompletableFuture = new CompletableFuture<>();
+		peerConnection.setLocalDescription(offerDescription, new CreateSetSessionDescriptionObserver(localDescCompletableFuture));
+		localDescCompletableFuture.join();
+		return jsep;
 	}
 	
 	@Override
