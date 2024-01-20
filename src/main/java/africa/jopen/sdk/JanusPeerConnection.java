@@ -107,24 +107,28 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 	}
 	
 	public void sendSDP() {
-	
-	}
-	
-	@Blocking
-	public JSONObject createOffer() {
-		CompletableFuture<RTCSessionDescription> rtcSessionDescriptionCompletableFuture = new CompletableFuture<>();
 		
-		var opt = new RTCOfferOptions();
-		peerConnection.createOffer(opt, new CreateSDObserver(rtcSessionDescriptionCompletableFuture));
-		RTCSessionDescription offerDescription = rtcSessionDescriptionCompletableFuture.join();
-		JSONObject            jsep             = new JSONObject().put("type", "offer").put("sdp", offerDescription.sdp);
-		jsep = customizeSdp(jsep);
-		// Setting local description
-		CompletableFuture<Void> localDescCompletableFuture = new CompletableFuture<>();
-		peerConnection.setLocalDescription(offerDescription, new CreateSetSessionDescriptionObserver(localDescCompletableFuture));
-		localDescCompletableFuture.join();
-		return jsep;
 	}
+	
+    @Blocking
+    public JSONObject createOffer() {
+        CompletableFuture<RTCSessionDescription> rtcSessionDescriptionCompletableFuture = new CompletableFuture<>();
+
+        var opt = new RTCOfferOptions();
+        peerConnection.createOffer(opt, new CreateSDObserver(rtcSessionDescriptionCompletableFuture));
+        RTCSessionDescription offerDescription = rtcSessionDescriptionCompletableFuture.join();
+        if (offerDescription != null) {
+            JSONObject jsep = new JSONObject().put("type", "offer").put("sdp", offerDescription.sdp);
+            jsep = customizeSdp(jsep);
+            // Setting local description
+            CompletableFuture<Void> localDescCompletableFuture = new CompletableFuture<>();
+            peerConnection.setLocalDescription(offerDescription, new CreateSetSessionDescriptionObserver(localDescCompletableFuture));
+            localDescCompletableFuture.join();
+            return jsep;
+        } else {
+            throw new NullPointerException("offerDescription is null");
+        }
+    }
 	
 	@Override
 	public void onIceGatheringChange( RTCIceGatheringState state ) {
@@ -147,7 +151,7 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 	public void onRenegotiationNeeded() {
 		PeerConnectionObserver.super.onRenegotiationNeeded();
 		if (nonNull(peerConnection.getRemoteDescription())) {
-		
+			
 		}
 	}
 	
