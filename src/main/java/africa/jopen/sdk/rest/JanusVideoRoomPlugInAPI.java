@@ -252,4 +252,86 @@ public class JanusVideoRoomPlugInAPI {
 		return new JSONObject();
 	}
 	
+	/**
+	 * Retrieves the list of existing video rooms from the Janus WebRTC server.
+	 *
+	 * @return A JSONObject containing the response from the Janus server after attempting to retrieve the list of video rooms.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.videoroom",
+	 *     "data": {
+	 *       "videoroom": "list" or "error",
+	 *       "rooms": [
+	 *         {
+	 *           "room": <room_id>,
+	 *           "description": "<room_description>",
+	 *           "audiocodec": "<codec eg opus, pcma, pcmu, isac, g722, g726, g711, speex, silk, isac16k, isac32k, isac48k, isac128k, isac256k, ilbc, siren7, siren14, silk12, silk16, silk24, silk48>",
+	 *           "videocodec": "<codec eg vp8, h264>",
+	 *           "fir_freq": "<fir_freq>",
+	 *           "num_participants": "<fir_freq>",
+	 *           "num_participants": <number_of_participants>,
+	 *           "is_private": true or false,
+	 *           "audiolevel_event": true or false,
+	 *           "require_e2ee": true or false,
+	 *           "playoutdelay_ext": true or false,
+	 *           "videoorient_ext": true or false,
+	 *           "notify_joining": true or false,
+	 *           "require_pvtid": true or false,
+	 *           "bitrate": <bitrate>,
+	 *           "bitrate_audio": <audio_bitrate>,
+	 *           "bitrate_video": <video_bitrate>,
+	 *           "created": <timestamp>,
+	 *           "permanent": true or false,
+	 *           "record": true or false,
+	 *           "rec_dir": "<recording_directory>"
+	 *           ...
+	 *         },
+	 *         ...
+	 *       ]
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If the list retrieval is successful, "janus" will be "success" and "videoroom" will be "list".
+	 * If an error occurs during the retrieval, "janus" will be "error" and additional details may be available in the "error" field.
+	 */
+	public JSONObject getRooms() {
+		// Setting up Janus session and attaching video room plugin.
+		final long sessionId = janusRestApiClient.setupJanusSession();
+		final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+		
+		// Constructing the JSON message for the list retrieval request.
+		JSONObject json = new JSONObject();
+		json.put("janus", "message");
+		json.put("handle_id", handleId);
+		json.put("session_id", sessionId);
+		json.put("body",
+				new JSONObject()
+						.put("request", "list")
+		);
+		
+		try {
+			// Making the POST request to retrieve the list of video rooms.
+			var response = janusRestApiClient.makePostRequest(json);
+			return new JSONObject(response);
+		} catch (Exception e) {
+			// Log or handle the exception if needed.
+			e.printStackTrace();
+		}
+		
+		// Return an empty JSONObject if an error occurs during the list retrieval.
+		return new JSONObject();
+	}
+	
+	
+	
 }
