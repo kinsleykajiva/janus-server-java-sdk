@@ -1,12 +1,17 @@
 package africa.jopen.sdk.rest;
 
 import africa.jopen.sdk.JanusPlugins;
+import africa.jopen.sdk.SdkUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class JanusVideoRoomPlugInAPI {
-	private JanusRestApiClient janusRestApiClient;
+	static Logger             log = Logger.getLogger(JanusVideoRoomPlugInAPI.class.getName());
+	private    JanusRestApiClient janusRestApiClient;
 	
 	public JanusVideoRoomPlugInAPI( JanusRestApiClient janusRestApiClient ) {
 		this.janusRestApiClient = janusRestApiClient;
@@ -70,7 +75,7 @@ public class JanusVideoRoomPlugInAPI {
 				
 				return responseObject;
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		return new JSONObject();
@@ -180,7 +185,7 @@ public class JanusVideoRoomPlugInAPI {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
 		return new JSONObject();
@@ -245,7 +250,7 @@ public class JanusVideoRoomPlugInAPI {
 				}
 				return responseObject;
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		
@@ -324,8 +329,7 @@ public class JanusVideoRoomPlugInAPI {
 			var response = janusRestApiClient.makePostRequest(json);
 			return new JSONObject(response);
 		} catch (Exception e) {
-			// Log or handle the exception if needed.
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
 		// Return an empty JSONObject if an error occurs during the list retrieval.
@@ -393,7 +397,7 @@ public class JanusVideoRoomPlugInAPI {
 				return new JSONObject(response);
 			} catch (Exception e) {
 				// Log or handle the exception if needed.
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		return new JSONObject();
