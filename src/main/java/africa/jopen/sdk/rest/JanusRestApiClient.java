@@ -19,6 +19,11 @@ public class JanusRestApiClient {
 	private final JanusConfiguration      janusConfiguration;
 	public   final JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI;
 	
+	
+	public JanusConfiguration getJanusConfiguration() {
+		return janusConfiguration;
+	}
+	
 	public JanusRestApiClient( JanusConfiguration janusConfiguration ) {
 		this.janusConfiguration = janusConfiguration;
 		log.info("JanusRestApiClient initialized");
