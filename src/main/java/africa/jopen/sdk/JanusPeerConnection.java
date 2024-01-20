@@ -35,6 +35,50 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 		peerConnection = factory.createPeerConnection(getRTCConfig(), this);
 	}
 	
+	
+	/**
+	 * This method is used to create an answer for a WebRTC connection.
+	 * It creates a Session Description Protocol (SDP) answer and customizes it.
+	 * The method is blocking due to the use of CompletableFuture.join() calls.
+	 *
+	 * @return A JSONObject containing the type of the message ("answer") and the SDP of the answer.
+	 * The returned JSONObject will look like this:
+	 * <p>
+	 * <code>
+	 * <strong>
+	 * {
+	 *   "type": "answer",
+	 *   "sdp": "<SDP answer description string>"
+	 * }
+	 * </strong>
+	 * </code>
+	 * </p><br>
+	 *
+	 * <p><strong>Steps:</strong></p>
+	 * 1. A CompletableFuture for RTCSessionDescription is created. <br><br>
+	 * 2. An RTCAnswerOptions object is created and passed to the createAnswer method of the RTCPeerConnection instance.<br><br>
+	 * 3. The RTCSessionDescription for the answer is retrieved by calling the join method on the CompletableFuture.<br><br>
+	 * 4. A JSONObject named jsep is created with the type of the message set to "answer" and the SDP set to the SDP of the answer.<br><br>
+	 * 5. The customizeSdp method is called to customize the SDP in the jsep object.<br><br>
+	 * 6. The setLocalDescription method of the RTCPeerConnection instance is called with the answer.<br><br>
+	 * 7. The join method is called on the CompletableFuture to block until the local description is set.<br><br>
+	 * 8. The jsep object is returned.<br><br>
+	 * @throws NullPointerException if the generated RTC answer description is null.
+	 *
+	 * @apiNote
+	 * The customizeSdp method is called to apply any additional customizations to the SDP answer.
+	 *
+	 * @implNote
+	 * This method uses the PeerConnection's createAnswer method to generate the RTC answer.
+	 * The SDP answer is then customized using the customizeSdp method.
+	 * The local description of the PeerConnection is set to the generated answer.
+	 *
+	 * @see RTCSessionDescription
+	 * @see RTCAnswerOptions
+	 * @see CreateSDObserver
+	 * @see CreateSetSessionDescriptionObserver
+	 * @see #customizeSdp(JSONObject)
+	 */
 	@Blocking
 	public JSONObject createAnswer() {
 		CompletableFuture<RTCSessionDescription> rtcSessionDescriptionCompletableFuture = new CompletableFuture<>();
@@ -50,9 +94,16 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 		localDescCompletableFuture.join();
 		return jsep;
 	}
-	
-	private JSONObject customizeSdp( @Nullable JSONObject jsep ) {
-		if (jsep == null) {
+	/**
+	 * Customizes the SDP in the provided JSONObject to make sure that our offer contains stereo too.<br>
+	 * If the provided JSONObject is null, a warning is logged and null is returned.
+	 * If the provided JSONObject does not contain an 'sdp' key, a warning is logged.
+	 *
+	 * @param jsep The JSONObject to customize.
+	 * @return The customized JSONObject, or null if the provided JSONObject was null.
+	 */
+	private JSONObject customizeSdp( @Nullable JSONObject  jsep ) {
+		if (Objects.isNull(jsep)) {
 			log.warning("The provided JSONObject is null.");
 			return null;
 		}
@@ -111,6 +162,35 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 		
 	}
 	
+	/**
+	 * Creates an RTC offer for establishing a WebRTC session.
+	 * This method generates an offer using the configured PeerConnection and returns
+	 * a JSONObject representing the offer in SDP format.
+	 *
+	 * @return A JSONObject representing the RTC offer in SDP format, with additional customizations if any.
+	 * @throws NullPointerException if the generated RTC offer description is null.
+	 *
+	 * @apiNote
+	 * The returned JSONObject has the following structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *     "type": "offer",
+	 *     "sdp": "<SDP offer description string>"
+	 * }
+	 * </code>
+	 * </p>
+	 * @implNote
+	 * This method uses the PeerConnection's createOffer method to generate the RTC offer.
+	 * The SDP offer is then customized using the customizeSdp method.
+	 * The local description of the PeerConnection is set to the generated offer.
+	 *
+	 * @see RTCSessionDescription
+	 * @see RTCOfferOptions
+	 * @see CreateSDObserver
+	 * @see CreateSetSessionDescriptionObserver
+	 * @see #customizeSdp(JSONObject)
+	 */
     @Blocking
     public JSONObject createOffer() {
         CompletableFuture<RTCSessionDescription> rtcSessionDescriptionCompletableFuture = new CompletableFuture<>();
