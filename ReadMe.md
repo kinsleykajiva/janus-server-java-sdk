@@ -4,7 +4,7 @@
 
 # Janus Webrtc Server SDK for Java (Desktop,Web-Backend)
 
-This is a Java implementation of the Janus WebRTC server APIs using Rest API and WebSockets. It is designed to be used in Java applications that need to interact with the Janus WebRTC server.
+This is a Java implementation of the [Janus WebRTC server](https://github.com/meetecho/janus-gateway) APIs using Rest API and WebSockets. It is designed to be used in Java applications that need to interact with the [Janus WebRTC server](https://github.com/meetecho/janus-gateway).
 
 This can always be improved. If you have any suggestions, please create a pull request.
 
