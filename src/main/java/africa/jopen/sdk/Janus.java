@@ -2,6 +2,7 @@ package africa.jopen.sdk;
 
 import africa.jopen.sdk.models.JanusConfiguration;
 import africa.jopen.sdk.models.JanusSession;
+import africa.jopen.sdk.rest.JanusRestApiClient;
 import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -26,7 +27,7 @@ public class Janus implements JanusEventHandler {
 	private JanusSession       janusSession;
 	private boolean            isAPIAccessOnly = false;
 	private JanusConfiguration janusConfiguration;
-	public JanusRestApiClient janusRestApiClient;
+	public  JanusRestApiClient janusRestApiClient;
 	
 	
 	public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
@@ -38,6 +39,7 @@ public class Janus implements JanusEventHandler {
 		
 		if (isAPIAccessOnly) {
 			this.isAPIAccessOnly = true;
+			log.info("Janus is running in API Access Only mode" );
 			janusConfiguration = new JanusConfiguration( SdkUtils.convertFromWebSocketUrl( config.url()),config.apiSecret(), config.adminKey(), config.adminSecret());
 			janusRestApiClient = new JanusRestApiClient(janusConfiguration);
 		} else {
