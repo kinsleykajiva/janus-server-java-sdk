@@ -16,13 +16,12 @@ public class JanusRestApiClient {
 	static  Logger     log        = Logger.getLogger(JanusRestApiClient.class.getName());
 	private HttpClient httpClient = HttpClient.newBuilder().build();
 	
-	private JanusConfiguration janusConfiguration;
-	public JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI;
+	private final JanusConfiguration      janusConfiguration;
+	public   final JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI;
 	
 	public JanusRestApiClient( JanusConfiguration janusConfiguration ) {
 		this.janusConfiguration = janusConfiguration;
 		log.info("JanusRestApiClient initialized");
-		log.info("JanusRestApiClient initialized url - " + janusConfiguration.url());
 		janusVideoRoomPlugInAPI = new JanusVideoRoomPlugInAPI(this);
 	}
 	

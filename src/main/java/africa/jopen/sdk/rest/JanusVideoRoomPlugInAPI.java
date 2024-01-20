@@ -10,9 +10,20 @@ public class JanusVideoRoomPlugInAPI {
 		this.janusRestApiClient = janusRestApiClient;
 	}
 	
-	public  JSONObject checkIfVideoRoomExists( JanusPlugins plugin, String roomId ) {
+	public  boolean checkIfVideoRoomExistsBoolCheck(String roomId ) {
+		var responseObject = checkIfVideoRoomExists(roomId );
+		if(responseObject == null){
+			return  false;
+		}
+		
+		return responseObject.getString("janus").equals("success")
+				&& responseObject.has("plugindata") && responseObject.getJSONObject("plugindata").getJSONObject("data").has("videoroom")
+				&& responseObject.getJSONObject("plugindata").getJSONObject("data").getString("videoroom").equals("success")
+				&& responseObject.getJSONObject("plugindata").getJSONObject("data").getBoolean("exists");
+	}
+	public  JSONObject checkIfVideoRoomExists(String roomId ) {
 		final long sessionId = janusRestApiClient.setupJanusSession();
-		final long handleId  = janusRestApiClient.attachPlugin(sessionId, plugin);
+		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 		
 		// We have a problem here we don't know if Video room is configured to use string room id or integer value only .
 		// because of this one of the types will cause an exception if the type use is not accepted by the plugin.
