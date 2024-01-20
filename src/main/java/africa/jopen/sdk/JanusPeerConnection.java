@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
@@ -117,7 +118,7 @@ public class JanusPeerConnection implements PeerConnectionObserver {
         var opt = new RTCOfferOptions();
         peerConnection.createOffer(opt, new CreateSDObserver(rtcSessionDescriptionCompletableFuture));
         RTCSessionDescription offerDescription = rtcSessionDescriptionCompletableFuture.join();
-        if (offerDescription != null) {
+        if (Objects.nonNull(offerDescription)) {
             JSONObject jsep = new JSONObject().put("type", "offer").put("sdp", offerDescription.sdp);
             jsep = customizeSdp(jsep);
             // Setting local description
