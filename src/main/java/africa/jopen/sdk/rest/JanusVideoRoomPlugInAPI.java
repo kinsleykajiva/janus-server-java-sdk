@@ -333,5 +333,72 @@ public class JanusVideoRoomPlugInAPI {
 	}
 	
 	
+	/**
+	 * Retrieves the list of participants in a video room from the Janus WebRTC server.
+	 *
+	 * @param roomId The identifier of the room for which to retrieve the list of participants (string or integer).
+	 * @return A JSONObject containing the response from the Janus server after attempting to retrieve the list of room participants.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.videoroom",
+	 *     "data": {
+	 *       "videoroom": "listparticipants" or "error",
+	 *       "participants": [
+	 *         {
+	 *           "id": <participant_id>,
+	 *           "display": "<display_name>",
+	 *           "audio_codec": "<audio_codec>",
+	 *           "video_codec": "<video_codec>",
+	 *           "feed": <feed_id>,
+	 *           ...
+	 *         },
+	 *         ...
+	 *       ]
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If the participant list retrieval is successful, "janus" will be "success" and "videoroom" will be "listparticipants".
+	 * If an error occurs during the retrieval, "janus" will be "error" and additional details may be available in the "error" field.
+	 */
+	public JSONObject listRoomParticipants( @NotNull final   String roomId ) {
+		// Setting up Janus session and attaching video room plugin.
+		final long sessionId = janusRestApiClient.setupJanusSession();
+		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+		
+		// Constructing the JSON message for the list retrieval request.
+		JSONObject json = new JSONObject();
+		json.put("janus", "message");
+		json.put("handle_id", handleId);
+		json.put("session_id", sessionId);
+		
+		for (String idType : new String[]{ "integer", "string" }) {
+			try {
+				json.put("body",
+						new JSONObject()
+								.put("request", "listparticipants")
+								.put("room", idType.equals("integer") ? Integer.parseInt(roomId) : roomId)
+				);
+				// Making the POST request to retrieve the list of video rooms.
+				var response = janusRestApiClient.makePostRequest(json);
+				return new JSONObject(response);
+			} catch (Exception e) {
+				// Log or handle the exception if needed.
+				e.printStackTrace();
+			}
+		}
+		return new JSONObject();
+	}
+	
+	
 	
 }

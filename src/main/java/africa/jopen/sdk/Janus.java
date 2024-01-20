@@ -30,13 +30,20 @@ public class Janus implements JanusEventHandler {
 	public  JanusRestApiClient janusRestApiClient;
 	
 	
+	
+	/**
+	 * Constructs a Janus instance based on the provided configuration.
+	 *
+	 * @param isAPIAccessOnly Flag indicating whether Janus is running in API Access Only mode.
+	 *                        If true, Janus will use REST API for communication. If false, Janus will use WebSocket.
+	 * @param config          The JanusConfiguration object containing the server connection details.
+	 *                        It should include the URL, API secret, admin key, and admin secret.
+	 * @throws IllegalArgumentException If the provided configuration object is null.
+	 */
 	public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
 		if (Objects.isNull(config)) {
 			throw new IllegalArgumentException("config cannot be null");
 		}
-		
-		
-		
 		if (isAPIAccessOnly) {
 			this.isAPIAccessOnly = true;
 			log.info("Janus is running in API Access Only mode" );
@@ -55,8 +62,6 @@ public class Janus implements JanusEventHandler {
 				webSocketClient.initializeWebSocket();
 			});
 		}
-		
-		
 	}
 	
 	
