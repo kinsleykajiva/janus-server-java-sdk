@@ -14,10 +14,11 @@ The SDK is divided into two parts:
 This SDK is continually evolving, and while comprehensive, it may not cover all scenarios. I recognize room for improvement and encourage contributions from the community. 
 If you have suggestions, feel free to create a pull request.
 
+
 ## How to use ?
 There are two way to use this you can :
 - copy all the files from the sdk package and paste into your project folder structure.
-- import the `.jar` from` build/libs` folder the target files is `build/libs/janus-server-sdk-{version}.jar`
+- import the `.jar` from` build/libs` folder,so the target files is `build/libs/janus-server-sdk-{version}.jar`
 
 # Janus Streaming Plugin API
 
