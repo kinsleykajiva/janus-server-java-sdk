@@ -1,12 +1,17 @@
+# Janus WebRTC Server SDK for Java (Desktop & Web-Backend)
 
+Welcome to the Java implementation of the Janus WebRTC server APIs. This SDK is designed to facilitate interaction with the Janus WebRTC server using both REST API and WebSockets. It is suitable for use in Java applications that require communication with the Janus WebRTC server.
 
+The SDK is divided into two parts:
 
+1. **API Part**: This can be integrated into the back-ends of web frameworks. It is ready for use with Spring Boot, Micronaut, Quakus, Helidon, and more.
+2. **Platform Dependent Part**: This is designed for desktop applications like JavaFX, Swing, AWT, etc. Please note that this part is still under development.
 
-# Janus Webrtc Server SDK for Java (Desktop,Web-Backend)
+### Disclaimer
 
-This is a Java implementation of the [Janus WebRTC server](https://github.com/meetecho/janus-gateway) APIs using Rest API and WebSockets. It is designed to be used in Java applications that need to interact with the [Janus WebRTC server](https://github.com/meetecho/janus-gateway).
+This SDK is continually evolving, and while comprehensive, it may not cover all scenarios. We recognize room for improvement and encourage contributions from the community. 
+If you have suggestions, feel free to create a pull request.
 
-This can always be improved. If you have any suggestions, please create a pull request.
 
 # Janus Streaming Plugin API
 
