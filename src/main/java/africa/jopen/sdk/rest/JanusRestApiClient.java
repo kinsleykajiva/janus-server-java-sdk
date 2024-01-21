@@ -18,6 +18,7 @@ public class JanusRestApiClient {
 	
 	private final JanusConfiguration      janusConfiguration;
 	public   final JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI;
+	public   final JanusStreamingPlugInAPI janusStreamingPlugInAPI;
 	
 	
 	public JanusConfiguration getJanusConfiguration() {
@@ -28,6 +29,7 @@ public class JanusRestApiClient {
 		this.janusConfiguration = janusConfiguration;
 		log.info("JanusRestApiClient initialized");
 		janusVideoRoomPlugInAPI = new JanusVideoRoomPlugInAPI(this);
+		janusStreamingPlugInAPI = new JanusStreamingPlugInAPI(this);
 	}
 	
 	protected String makePostRequest( JSONObject json ) throws Exception {
