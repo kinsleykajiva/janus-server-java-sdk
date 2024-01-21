@@ -1,13 +1,35 @@
 plugins {
+    id 'maven-publish'
     id 'java'
 }
 
 group = 'africa.jopen'
-version = '0.1-beta'
+version = '0.2'
 
 repositories {
     mavenCentral()
 }
+
+def env = new Properties()
+file('.env').withInputStream { env.load(it) }
+
+publishing {
+    publications {
+        myLib(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "janus-server-java-sdk"
+            credentials {
+                username = env.getProperty('PUBLISHING_USERNAME')
+                password = env.getProperty('PUBLISHING_PASSWORD')
+            }
+        }
+    }
+}
+
 var classifier = ''
 // check if we are on windows
 if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {classifier = 'windows-x86_64'
