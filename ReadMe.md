@@ -8,22 +8,84 @@ This is a Java implementation of the [Janus WebRTC server](https://github.com/me
 
 This can always be improved. If you have any suggestions, please create a pull request.
 
+# Janus Streaming Plugin API
+
+The Janus Streaming Plugin API is a Java class designed to interact with the Janus WebRTC server's streaming plugin. It provides methods for creating, deleting, checking the existence, and retrieving a list of streaming sessions.
+
+### Initialization
+
+```java
+static final String JANUS_URL = "https://some-address-to-janus-server/janus";
+static String JANUS_ADMIN_SECRET= "some-secret-if-janus-server-has-authentication";
+Janus janus = new Janus(true,new JanusConfiguration(JANUS_URL,"","",JANUS_ADMIN_SECRET));
+```
+
+## Create Mounting Point
+
+```java
+JSONObject result = janus.janusRestApiClient.janusStreamingPlugInAPI.createMountingPoint("rtp", "MountingPoint1", "Description", "metadata", "secret", "1234", true, true, "[{\"type\": \"audio\"}, {\"type\": \"video\"}]");
+
+```
+
+## Edit Mounting Point
+
+
+```java
+JSONObject result = janus.janusRestApiClient.janusStreamingPlugInAPI.editMountingPoint("mountingPointId", true, "New Description", "new_metadata", "new_secret", "5678", true, false);
+
+```
+
+
+## Delete Mounting Point
+
+
+```java
+JSONObject result = janus.janusRestApiClient.janusStreamingPlugInAPI.deleteMountingPoint("mountingPointId", "secret", true);
+
+```
+
+
+## Enable Mounting Point
+
+
+```java
+JSONObject result = janus.janusRestApiClient.janusStreamingPlugInAPI.enableMountingPoint("mountingPointId", "secret");
+
+```
+
+
+## Info Mounting Point
+
+
+```java
+JSONObject result = janus.janusRestApiClient.janusStreamingPlugInAPI.infoMountingPoint("mountingPointId", "secret");
+
+```
+
+
+## Error Handling
+
+In case of an error, the returned JSONObject may contain an "error" field with additional details.
+```java
+if (result.has("error")) {
+    String errorMessage = result.getString("error");
+    // Handle the error
+}
+
+```
+
+
+
+
+
+
+
+
 # Janus Video Room Plugin API
 
 
 The Janus Video Room Plugin API is a Java class designed to interact with the Janus WebRTC server's video room plugin. It provides methods for creating, deleting, checking the existence, and retrieving a list of video rooms.
 
-
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-    - [Initialization](#initialization)
-    - [Creating a Video Room](#creating-a-video-room)
-    - [Deleting a Video Room](#deleting-a-video-room)
-    - [Checking Video Room Existence](#checking-video-room-existence)
-    - [Retrieving List of Video Rooms](#retrieving-list-of-video-rooms)
 
 ## Prerequisites
 
