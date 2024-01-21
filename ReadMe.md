@@ -133,6 +133,12 @@ var response = janus.janusRestApiClient.janusVideoRoomPlugInAPI.getRooms();
 ```
 
 
+## Contributing
 
+We welcome contributions! If you find a bug, have a feature request, or want to improve the documentation, feel free to open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
 
 
