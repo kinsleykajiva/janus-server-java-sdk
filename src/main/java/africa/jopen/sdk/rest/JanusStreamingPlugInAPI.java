@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +21,7 @@ public class JanusStreamingPlugInAPI {
 	/**
 	 * Creates a new mounting point in the Janus WebRTC server for streaming purposes.
 	 *
-	 * @param type               The type of the mounting point (e.g., "rtp" or "rtmp").
+	 * @param type               The type of the mounting point (e.g., "rtp or live or ondemand or rtsp" ).
 	 * @param name               The name of the mounting point (nullable).
 	 * @param description        A description for the mounting point (nullable).
 	 * @param metadata           Additional metadata associated with the mounting point (nullable).
@@ -62,6 +63,11 @@ public class JanusStreamingPlugInAPI {
 	                                       boolean isPrivate, boolean permanent, @NotNull String mediaStringJsonArray ) {
 		final long sessionId = janusRestApiClient.setupJanusSession();
 		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
+		
+		final var supportedTYpe  = new String[]{ "rtp","live","ondemand","rtsp" };
+		if(Arrays.asList(supportedTYpe).contains(type)){
+			return new JSONObject().put("error","type not supported . Supported types are: " + Arrays.toString(supportedTYpe));
+		}
 		
 		JSONObject json = new JSONObject();
 		json.put("janus", "message");
@@ -327,6 +333,192 @@ public class JanusStreamingPlugInAPI {
 		}
 		return new JSONObject();
 		
+	}
+	
+	/**
+	 * Initiates recording for a specific mounting point in the Janus WebRTC server.
+	 *
+	 * @param id                 The unique identifier of the mounting point to start recording.
+	 * @param secret             The secret token required to authenticate the recording request (nullable).
+	 * @param mediaStringJsonArray A JSON array string specifying the media types to be recorded.
+	 *                             Example: '["audio", "video"]'
+	 * @return A JSONObject containing the response from the Janus server after attempting to start recording.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.streaming",
+	 *     "data": {
+	 *       "streaming": "event",
+	 *       "result": "recording_started" or "error",
+	 *       "id": "<mounting_point_id>",
+	 *       "error": "<error_message>"
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If recording is successfully started, "janus" will be "success", "streaming" will be "event", and "result" will be "recording_started".
+	 * The "id" field will contain the unique identifier of the recording mounting point.
+	 * If an error occurs during the recording initiation, "janus" will be "error", "streaming" will be "event", "result" will be "error", and the "error" field may contain additional details.
+	 */
+	public JSONObject recordingMountingPoint( @NotNull String id, @Nullable String secret,@NotNull String  mediaStringJsonArray ) {
+		final long sessionId = janusRestApiClient.setupJanusSession();
+		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
+		
+		JSONObject json = new JSONObject();
+		json.put("janus", "message");
+		json.put("handle_id", handleId);
+		json.put("session_id", sessionId);
+		json.put("body", new JSONObject()
+				.put("request", "recording")
+				.put("action", "start")
+				.put("id", id)
+				.put("secret", secret)
+				.put("media", new JSONArray(mediaStringJsonArray))
+				.put("admin_key", janusRestApiClient.getJanusConfiguration().adminKey())
+		);
+		try {
+			var response = janusRestApiClient.makePostRequest(json);
+			return new JSONObject(response);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Failed to enable mounting point: " + e.getMessage(), e);
+		}
+		return new JSONObject();
+		
+	}
+	
+	
+	/**
+	 * Stops recording for a specific mounting point in the Janus WebRTC server.
+	 *
+	 * @param id                 The unique identifier of the mounting point to stop recording.
+	 * @param secret             The secret token required to authenticate the recording stop request (nullable).
+	 * @param mediaStringJsonArray A JSON array string specifying the media types to stop recording.
+	 *                             Example: '["audio", "video"]'
+	 * @return A JSONObject containing the response from the Janus server after attempting to stop recording.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.streaming",
+	 *     "data": {
+	 *       "streaming": "event",
+	 *       "result": "recording_stopped" or "error",
+	 *       "id": "<mounting_point_id>",
+	 *       "error": "<error_message>"
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If recording is successfully stopped, "janus" will be "success", "streaming" will be "event", and "result" will be "recording_stopped".
+	 * The "id" field will contain the unique identifier of the recording mounting point.
+	 * If an error occurs during the recording stop, "janus" will be "error", "streaming" will be "event", "result" will be "error", and the "error" field may contain additional details.
+	 */
+	public JSONObject stopRecordingMountingPoint( @NotNull String id, @Nullable String secret,@NotNull String  mediaStringJsonArray ) {
+		final long sessionId = janusRestApiClient.setupJanusSession();
+		final long handleId  = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
+		
+		JSONObject json = new JSONObject();
+		json.put("janus", "message");
+		json.put("handle_id", handleId);
+		json.put("session_id", sessionId);
+		json.put("body", new JSONObject()
+				.put("request", "recording")
+				.put("action", "stop")
+				.put("id", id)
+				.put("secret", secret)
+				.put("media", new JSONArray(mediaStringJsonArray))
+				.put("admin_key", janusRestApiClient.getJanusConfiguration().adminKey())
+		);
+		try {
+			var response = janusRestApiClient.makePostRequest(json);
+			return new JSONObject(response);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Failed to enable mounting point: " + e.getMessage(), e);
+		}
+		return new JSONObject();
+		
+	}
+	/**
+	 * Retrieves information about a specific mounting point in the Janus WebRTC server.
+	 *
+	 * @param id     The unique identifier of the mounting point for which to retrieve information.
+	 * @param secret The secret token required to authenticate the information retrieval request (nullable).
+	 * @return A JSONObject containing the response from the Janus server after attempting to retrieve information.
+	 * The response will have the structure:
+	 * <p>
+	 * <code>
+	 * {
+	 *   "janus": "success" or "error",
+	 *   "transaction": "<transaction_id>",
+	 *   "session_id": <session_id>,
+	 *   "handle_id": <handle_id>,
+	 *   "sender": <sender_id>,
+	 *   "plugindata": {
+	 *     "plugin": "janus.plugin.streaming",
+	 *     "data": {
+	 *       "streaming": "info",
+	 *       "result": "ok" or "error",
+	 *       "id": "<mounting_point_id>",
+	 *       "description": "<mounting_point_description>",
+	 *       "metadata": "<mounting_point_metadata>",
+	 *       "is_private": true or false,
+	 *       "permanent": true or false,
+	 *       "recording": true or false,
+	 *       "rec_dir": "<recording_directory>",
+	 *       "pin": "<pin>",
+	 *       "api_key": "<api_key>",
+	 *       "admin_key": "<admin_key>"
+	 *     }
+	 *   }
+	 * }
+	 * </code>
+	 * </p>
+	 * If information retrieval is successful, "janus" will be "success", "streaming" will be "info", and "result" will be "ok".
+	 * The response will contain details about the specified mounting point such as its description, metadata, privacy status, permanence, recording status, recording directory, PIN, API key, and admin key.
+	 * If an error occurs during information retrieval, "janus" will be "error", "streaming" will be "info", "result" will be "error", and the "error" field may contain additional details.
+	 */
+	public JSONObject infoMountingPoint(@NotNull String id, @Nullable String secret) {
+		// Setting up Janus session and attaching streaming plugin.
+		final long sessionId = janusRestApiClient.setupJanusSession();
+		final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
+		
+		// Constructing the JSON message for the information retrieval request.
+		JSONObject json = new JSONObject();
+		json.put("janus", "message");
+		json.put("handle_id", handleId);
+		json.put("session_id", sessionId);
+		json.put("body", new JSONObject()
+				.put("request", "info")
+				.put("id", id)
+				.put("secret", secret)
+				.put("admin_key", janusRestApiClient.getJanusConfiguration().adminKey())
+		);
+		
+		try {
+			// Making the POST request to retrieve information about the mounting point.
+			var response = janusRestApiClient.makePostRequest(json);
+			return new JSONObject(response);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Failed to retrieve information about the mounting point: " + e.getMessage(), e);
+		}
+		
+		// Return an empty JSONObject if an error occurs during the information retrieval.
+		return new JSONObject();
 	}
 	
 	
