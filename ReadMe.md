@@ -9,7 +9,7 @@ The SDK is divided into two parts:
 
 ### Disclaimer
 
-This SDK is continually evolving, and while comprehensive, it may not cover all scenarios. We recognize room for improvement and encourage contributions from the community. 
+This SDK is continually evolving, and while comprehensive, it may not cover all scenarios. I recognize room for improvement and encourage contributions from the community. 
 If you have suggestions, feel free to create a pull request.
 
 
