@@ -77,7 +77,14 @@ public class SdkUtils {
 		return url;
 		
 	}
-	
+	public static boolean isJsonArray( String str ) {
+		try {
+			new JSONArray(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 	public static boolean isJson(String str) {
 		try {
 			new JSONObject(str);
@@ -112,6 +119,7 @@ public class SdkUtils {
 		
 		return uniID.toString().replaceAll("[^a-z0-9]", "");
 	}
+	
 	
 	
 }
