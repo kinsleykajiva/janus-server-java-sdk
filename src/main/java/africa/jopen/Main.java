@@ -2,9 +2,10 @@ package africa.jopen;
 
 
 import africa.jopen.sdk.Janus;
+import africa.jopen.sdk.events.JanusEventsEmissions;
 import africa.jopen.sdk.models.JanusConfiguration;
 
-public class Main {
+public class Main implements JanusEventsEmissions {
 	static final String JANUS_URL = "https://.io/janus";
 	static String JANUS_ADMIN_SECRET= "JYWGX";
 	public static void main( String[] args ) {
@@ -22,9 +23,30 @@ public class Main {
 		System.out.println("Create result =   " + result34);*/
 		/*var result341 = janus.janusRestApiClient.janusVideoRoomPlugInAPI.getRooms();
 		System.out.println("list  result =   " + result341);*/
-		var result3411 = janus.janusRestApiClient.janusVideoRoomPlugInAPI.listRoomParticipants("1234");
-		System.out.println("list  result =   " + result3411);
+		/*var result3411 = janus.janusRestApiClient.janusVideoRoomPlugInAPI.listRoomParticipants("1234");
+		System.out.println("list  result =   " + result3411);*/
 		
+		// consumeEventAsync(janus);
 		
+	}
+	
+	@Override
+	public void onParticipantJoined( long participantId, String participantDisplay, String roomId ) {
+		System.out.println("onParticipantJoined event = " + participantId + " " + participantDisplay + " " + roomId);
+	}
+	
+	@Override
+	public void onParticipantLeft( long participantId, String participantDisplay, String roomId ) {
+		System.out.println("onParticipantLeft event = " + participantId + " " + participantDisplay + " " + roomId);
+	}
+	
+	@Override
+	public void onRoomSessionStarted( String roomId, long firstParticipantId, String firstParticipantDisplay ) {
+		System.out.println("onRoomSessionStarted event = " + roomId + " " + firstParticipantId + " " + firstParticipantDisplay);
+	}
+	
+	@Override
+	public void onRoomSessionEnded( String roomId ) {
+		System.out.println("onRoomSessionEnded event = " + roomId);
 	}
 }
