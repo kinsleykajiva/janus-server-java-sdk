@@ -235,7 +235,7 @@ Here are the methods that will be called when an event is received from Janus se
 
 ## Contributing
 
-We welcome contributions! If you find a bug, have a feature request, or want to improve the documentation, feel free to open an issue or submit a pull request.
+I welcome contributions! If you find a bug, have a feature request, or want to improve the documentation, feel free to open an issue or submit a pull request.
 
 ## License
 
