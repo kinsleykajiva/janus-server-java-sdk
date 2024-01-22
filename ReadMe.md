@@ -27,6 +27,11 @@ There are two way to use this you can :
 
 The Janus Streaming Plugin API is a Java class designed to interact with the Janus WebRTC server's streaming plugin. It provides methods for creating, deleting, checking the existence, and retrieving a list of streaming sessions.
 
+## Prerequisites
+
+- Java Development Kit (JDK) 11+ installed
+- Janus WebRTC server running and accessible
+
 ### Initialization
 
 ```java
@@ -102,10 +107,7 @@ if (result.has("error")) {
 The Janus Video Room Plugin API is a Java class designed to interact with the Janus WebRTC server's video room plugin. It provides methods for creating, deleting, checking the existence, and retrieving a list of video rooms.
 
 
-## Prerequisites
 
-- Java Development Kit (JDK) installed
-- Janus WebRTC server running and accessible
 
 ## Installation
 
@@ -147,6 +149,89 @@ var result = janus.janusRestApiClient.janusVideoRoomPlugInAPI.checkIfVideoRoomEx
 var response = janus.janusRestApiClient.janusVideoRoomPlugInAPI.getRooms();
 ```
 
+## Video Room Events Handling
+
+There is support to consume events from the video room plugin.This is done by implementing the `JanusEventsEmissions` interface.I would recommend to implement this  interface in the end point class that will be 
+receiving the events from Janus server.For Example:
+
+```java
+//Helidon SE Endpoint Class
+public class JanusEventsService implements HttpService, JanusEventsEmissions {
+    //... other code
+	private void janusEventsHandler(ServerRequest req, ServerResponse res) {
+		String bodyText = req.content().as(String.class);
+		//System.out.println("Event bodyText : " + bodyText);
+		consumeEventAsync(bodyText);// this is the function to pass the json string for processing
+		res.status(Status.OK_200).send("");
+	}
+	//... other code
+}
+```
+```java
+//Spring boot  Endpoint Class
+@RestController
+public class JanusEventsService implements JanusEventsEmissions {
+    //... other code
+    @PostMapping("/janus-events-handler")
+    public ResponseEntity<String> janusEventsHandler(@RequestBody String bodyText) {
+        //System.out.println("Event bodyText : " + bodyText);
+        consumeEventAsync(bodyText);// this is the function to pass the json string for processing
+        return ResponseEntity.ok().body("");
+    }
+    //... other code
+}
+```
+```java
+// Micronaut Endpoint Class
+@Controller("/janus-events-handler")
+public class JanusEventsService implements JanusEventsEmissions {
+    //... other code
+    @Post
+    public HttpResponse<String> janusEventsHandler(@Body String bodyText) {
+        //System.out.println("Event bodyText : " + bodyText);
+        consumeEventAsync(bodyText);// this is the function to pass the json string for processing
+        return HttpResponse.ok("");
+    }
+    //... other code
+}
+```
+```java
+// Quarkus Endpoint Class
+@Path("/janus-events-handler")
+public class JanusEventsService implements JanusEventsEmissions {
+    //... other code
+    @POST
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response janusEventsHandler(String bodyText) {
+        //System.out.println("Event bodyText : " + bodyText);
+        consumeEventAsync(bodyText);// this is the function to pass the json string for processing
+        return Response.ok().build();
+    }
+    //... other code
+}
+```
+Here are the methods that will be called when an event is received from Janus server.
+```java
+    @Override
+    public void onParticipantJoined( long participantId, String participantDisplay, String roomId ) {
+        System.out.println("onParticipantJoined event = " + participantId + " " + participantDisplay + " " + roomId);
+    }
+    
+    @Override
+    public void onParticipantLeft( long participantId, String participantDisplay, String roomId ) {
+        System.out.println("onParticipantLeft event = " + participantId + " " + participantDisplay + " " + roomId);
+    }
+    
+    @Override
+    public void onRoomSessionStarted( String roomId, long firstParticipantId, String firstParticipantDisplay ) {
+        System.out.println("onRoomSessionStarted event = " + roomId + " " + firstParticipantId + " " + firstParticipantDisplay);
+    }
+    
+    @Override
+    public void onRoomSessionEnded( String roomId ) {
+        System.out.println("onRoomSessionEnded event = " + roomId);
+    }
+```
 
 ## Contributing
 
