@@ -2,6 +2,7 @@ package africa.jopen.sdk.events;
 
 
 
+import africa.jopen.sdk.SdkUtils;
 import africa.jopen.sdk.models.events.ParticipantPojo;
 import africa.jopen.sdk.models.events.*;
 
@@ -34,18 +35,8 @@ public interface JanusEventsEmissions {
 	 */
 	void onRoomSessionEnded( String roomId );
 	
-	private boolean isJsonArray( String str ) {
-		try {
-			new JSONArray(str);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	
 	default void consumeEventAsync( String event ) {
-		JSONArray jsonArray = isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
+		JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
