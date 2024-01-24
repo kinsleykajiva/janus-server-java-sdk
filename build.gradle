@@ -3,7 +3,7 @@ plugins {
     id 'java'
 }
 
-group = 'africa.jopen'
+group = 'io.github.kinsleykajiva'
 version = '0.3'
 
 repositories {
