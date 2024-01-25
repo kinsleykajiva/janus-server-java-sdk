@@ -1,6 +1,7 @@
 plugins {
     id 'maven-publish'
-    id 'java'
+    id 'java-library'
+    id 'signing'
 }
 
 group = 'io.github.kinsleykajiva'
@@ -9,15 +10,41 @@ version = '0.3'
 repositories {
     mavenCentral()
 }
-
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
 def env = new Properties()
 file('.env').withInputStream { env.load(it) }
 
 publishing {
     publications {
         myLib(MavenPublication) {
+
+            groupId = group
+            artifactId = 'janus-server-java-sdk'
+            version =version
             from components.java
         }
+        /*mavenJava(MavenPublication) {
+            name = 'janus-server-java-sdk'
+            description = 'janus-server-java-sdk'
+            properties = [
+            ]
+            licenses {
+                license {
+                    name = 'The Apache License, Version 2.0'
+                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+            }
+            developers {
+                developer {
+                    id = 'io.github.kinsleykajiva'
+                    name = 'Kinsley Kajiva'
+                    email = 'kajivakinsley@gmail.com'
+                }
+            }
+        }*/
     }
     repositories {
         maven {
@@ -32,21 +59,35 @@ publishing {
 
 var classifier = ''
 // check if we are on windows
-if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {classifier = 'windows-x86_64'
-} else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {classifier = 'linux-x86_64'
-} else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {classifier = 'macosx-x86_64'
+if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+    classifier = 'windows-x86_64'
+} else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+    classifier = 'linux-x86_64'
+} else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    classifier = 'macosx-x86_64'
 }
 dependencies {
     implementation 'org.json:json:20231013'
     implementation "dev.onvoid.webrtc:webrtc-java:0.8.0"
     implementation group: "dev.onvoid.webrtc", name: "webrtc-java", version: "0.8.0", classifier: classifier
     implementation 'org.jetbrains:annotations:24.1.0'
-
-
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
-
+signing {
+    sign publishing.publications.myLib
+    /*keyId 'yourKeyId'
+    password 'yourPassword'
+    secretKeyRingFile file('path/to/your/secring.gpg')*/
+}
 test {
     useJUnitPlatform()
 }
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
