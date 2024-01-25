@@ -4,10 +4,20 @@ public class VideoRoomPluginEventData extends Event {
 	private String                           event;
 	private String                           room;
 	private String                           display;
-	private long                             id=0;
-	private long                             bitrate=0;
-	private long                             private_id=0;
+	private String                           opaque_id;
+	private long                             id         = 0;
+	private long                             bitrate    = 0;
+	private long                             private_id = 0;
 	private VideoRoomPluginEventDataStream[] stream;
+	
+	
+	public String getOpaque_id() {
+		return opaque_id;
+	}
+	
+	public void setOpaque_id( String opaque_id ) {
+		this.opaque_id = opaque_id;
+	}
 	
 	public VideoRoomPluginEventData( String plugin ) {
 		super(plugin);
@@ -68,4 +78,9 @@ public class VideoRoomPluginEventData extends Event {
 	public void setStream( VideoRoomPluginEventDataStream[] stream ) {
 		this.stream = stream;
 	}
+	
+	public String buildSQLInsert() {
+		return null;
+	}
+	
 }
