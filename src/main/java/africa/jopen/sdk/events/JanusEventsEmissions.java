@@ -1,11 +1,10 @@
 package africa.jopen.sdk.events;
 
 
-
 import africa.jopen.sdk.SdkUtils;
 import africa.jopen.sdk.models.events.ParticipantPojo;
-import africa.jopen.sdk.models.events.*;
-
+import africa.jopen.sdk.models.events.VideoRoomPluginEventData;
+import africa.jopen.sdk.models.events.VideoRoomPluginEventDataStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,8 +17,8 @@ import java.util.concurrent.Executors;
 
 public interface JanusEventsEmissions {
 	
-	Map<String, List<ParticipantPojo>> videoRoomMap = new ConcurrentHashMap<>();
-	ExecutorService executorService = Executors.newSingleThreadExecutor();//consider to use virtual threads if your using jdk 21 and plus
+	Map<String, List<ParticipantPojo>> videoRoomMap    = new ConcurrentHashMap<>();
+	ExecutorService                    executorService = Executors.newSingleThreadExecutor();//consider to use virtual threads if your using jdk 21 and plus
 	
 	void onParticipantJoined( long participantId, String participantDisplay, String roomId );
 	
@@ -41,7 +40,11 @@ public interface JanusEventsEmissions {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
 			if (type == 64) {
-				executorService.submit(() -> processVideoRoomEvent(jsonEvent));
+				if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin")
+						&& jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
+					executorService.submit(() -> processVideoRoomEvent(jsonEvent));
+				}
+				
 			}
 		}
 	}
