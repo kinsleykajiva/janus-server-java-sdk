@@ -24,8 +24,25 @@ public class JanusTransportOriginatedEvent {
 	public record Data(String event, boolean admin_api, String ip, int port) {
 	}
 	
-	public String trackInsert( JanusTransportOriginatedEvent.Root root ) {
-		return null;
+	
+	
+	
+	public String trackInsert(JanusTransportOriginatedEvent.Root root) {
+    String emitter = root.emitter();
+    int type = root.type();
+    long timestamp = root.timestamp();
+    JanusTransportOriginatedEvent.Event event = root.event();
+
+    String transport = event.transport();
+    String id = event.id();
+    JanusTransportOriginatedEvent.Data data = event.data();
+
+    String eventName = data.event();
+    boolean adminApi = data.admin_api();
+    String ip = data.ip();
+    int port = data.port();
 		
-	}
+		return "INSERT INTO janus_transports (emitter, type, timestamp, transport, id, event, admin_api, ip, port) " +
+                 "VALUES ('" + emitter + "', " + type + ", " + timestamp + ", '" + transport + "', '" + id + "', '" + eventName + "', " + adminApi + ", '" + ip + "', " + port + ")";
+}
 }

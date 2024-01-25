@@ -41,9 +41,6 @@ public class Janus implements JanusEventHandler {
 	 * @throws IllegalArgumentException If the provided configuration object is null.
 	 */
 	public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
-		if (Objects.isNull(config)) {
-			throw new IllegalArgumentException("config cannot be null");
-		}
 		if (isAPIAccessOnly) {
 			this.isAPIAccessOnly = true;
 			log.info("Janus is running in API Access Only mode" );
@@ -57,7 +54,6 @@ public class Janus implements JanusEventHandler {
 			} catch (Exception e) {
 				log.severe("Failed to initialize JanusWebSocketClient: " + e.getMessage());
 			}
-			System.out.println("webSocketClient = " + webSocketClient);
 			SdkUtils.runAfter(5, () -> {
 				webSocketClient.initializeWebSocket();
 			});
