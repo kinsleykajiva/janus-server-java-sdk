@@ -16,14 +16,14 @@ import java.util.logging.Logger;
 
 public class Janus implements JanusEventHandler {
 	static Logger log = Logger.getLogger(Janus.class.getName());
-	ScheduledExecutorService   executorService          = new ScheduledThreadPoolExecutor(1);
-	ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
-	CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
+	private ScheduledExecutorService   executorService          = new ScheduledThreadPoolExecutor(1);
+	private ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
+	private CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 	
 	
 	private String sessionTransactionId;
 	
-	JanusWebSocketClient webSocketClient;
+	private JanusWebSocketClient webSocketClient;
 	private JanusSession       janusSession;
 	private boolean            isAPIAccessOnly = false;
 	private JanusConfiguration janusConfiguration;
