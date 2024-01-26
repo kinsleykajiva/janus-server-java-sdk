@@ -42,6 +42,52 @@ public interface JanusEventsEmissions {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
+			if (type == 256) {
+				var jsonEventObj = jsonEvent.getJSONObject("event");
+				var jevent = new JanusCoreEvent.Event(
+						jsonEventObj.optString("status", null),
+						new JanusCoreEvent.Info(
+								jsonEventObj.optLong("sessions", 0),
+								jsonEventObj.optLong("handles", 0),
+								jsonEventObj.optLong("peerconnections", 0),
+								jsonEventObj.optLong("stats-period", 0)
+						)
+				);
+				var janusEvent = new JanusCoreEvent.Root(
+						jsonEventObj.optString("emitter", null),
+						jsonEventObj.optInt("type", 0),
+						jsonEventObj.optInt("subtype", 0),
+						jsonEventObj.optLong("timestamp", 0),
+						jevent
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusCoreEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+			}
+			if (type == 128) {
+				var jsonEventObj = jsonEvent.getJSONObject("event");
+				var jevent = new JanusTransportOriginatedEvent.Event(
+						jsonEventObj.optString("transport", null),
+						jsonEventObj.optString("id", null),
+						new JanusTransportOriginatedEvent.Data(
+								jsonEventObj.optString("event", null),
+								jsonEventObj.optBoolean("admin_api", false),
+								jsonEventObj.optString("ip", null),
+								jsonEventObj.optInt("port", 0)
+						)
+				);
+				var janusEvent = new JanusTransportOriginatedEvent.Root(
+						jsonEventObj.optString("emitter", null),
+						jsonEventObj.optInt("type", 0),
+						jsonEventObj.optLong("timestamp", 0),
+						jevent
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusTransportOriginatedEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+			}
 			if (type == 16) {
 				var jsonEventObj = jsonEvent.getJSONObject("event");
 				var jevent = new JanusWebRTCStateEvent.Event(
