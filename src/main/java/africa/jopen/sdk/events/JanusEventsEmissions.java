@@ -42,6 +42,27 @@ public interface JanusEventsEmissions {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
+			if (type == 2) {
+				var jsonEventObj = jsonEvent.getJSONObject("event");
+				var jevent = new JanusHandleEvent.Event(
+						jsonEventObj.optString("name",null),
+						jsonEventObj.optString("plugin", null),
+						jsonEventObj.optString("opaque_id", null)
+				);
+				var janusEvent = new JanusHandleEvent.Root(
+						jsonEventObj.optString("emitter",null),
+						jsonEventObj.optInt("type", 0),
+						jsonEventObj.optLong("timestamp", 0),
+						jsonEventObj.optLong("session_id", 0),
+						jsonEventObj.optLong("handle_id", 0),
+						jsonEventObj.optString("opaque_id", null),
+						jevent
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusHandleEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+			}
 			if (type == 32) {
 				var jsonEventObj = jsonEvent.getJSONObject("event");
 				var jevent = new JanusMediaEvent.Event(
