@@ -1,10 +1,10 @@
 package africa.jopen.sdk.events;
 
 
+import africa.jopen.sdk.Janus;
 import africa.jopen.sdk.SdkUtils;
-import africa.jopen.sdk.models.events.ParticipantPojo;
-import africa.jopen.sdk.models.events.VideoRoomPluginEventData;
-import africa.jopen.sdk.models.events.VideoRoomPluginEventDataStream;
+import africa.jopen.sdk.models.events.*;
+import africa.jopen.sdk.mysql.DBAccess;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,61 +37,63 @@ public interface JanusEventsEmissions {
 	/**
 	 * Event fired when a new event is received from Janus
 	 */
-default void consumeEventAsync(String event) {
-    JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
-    for (int i = 0; i < jsonArray.length(); i++) {
-	    int finalI = i;
-	    executorService.submit(() -> {
-            JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonArray.getJSONObject(finalI) , this);
-            JSONObject jsonEvent = jsonArray.getJSONObject(finalI);
-            int type = jsonEvent.getInt("type");
-            switch (type) {
-                case 256:
-                    janusEventsFactory.processEvent256();
-                    break;
-                case 128:
-                    janusEventsFactory.processEvent128();
-                    break;
-                case 16:
-                    janusEventsFactory.processEvent16();
-                    break;
-                case 2:
-                    janusEventsFactory.processEvent2();
-                    break;
-                case 32:
-                    janusEventsFactory.processEvent32();
-                    break;
-                case 8:
-                    janusEventsFactory.processEvent8();
-                    break;
-                case 1:
-                    janusEventsFactory.processEvent1();
-                    break;
-                case 64:
-                    if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin")
-                        && jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
-                        processVideoRoomEvent(jsonEvent);
-                    }
-                    break;
-                default:
-                    // Handle the case where no other cases match, if necessary
-                    break;
-            }
-        });
-    }
-}
+	default void consumeEventAsync( String event ) {
+		JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
+		for (int i = 0; i < jsonArray.length(); i++) {
+			int finalI = i;
+			executorService.submit(() -> {
+				JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonArray.getJSONObject(finalI), this);
+				JSONObject         jsonEvent          = jsonArray.getJSONObject(finalI);
+				EventType          eventType          = EventType.fromTypeValue(jsonEvent.getInt("type"));
+				switch (eventType) {
+					case CORE -> janusEventsFactory.processEvent256();
+					case TRANSPORT -> janusEventsFactory.processEvent128();
+					case WEBRTC_STATE -> janusEventsFactory.processEvent16();
+					case HANDLE -> janusEventsFactory.processEvent2();
+					case MEDIA -> janusEventsFactory.processEvent32();
+					case JSEP -> janusEventsFactory.processEvent8();
+					case SESSION -> janusEventsFactory.processEvent1();
+					case PLUGIN -> {
+						
+						processVideoRoomEvent(jsonEvent);
+						
+					}
+					default -> {
+						// Handle the case where no other cases match, if necessary
+					}
+				}
+			});
+		}
+	}
 	
 	private void processVideoRoomEvent( JSONObject jsonEvent ) {
-		JSONObject               dataJSON            = jsonEvent.getJSONObject("event").getJSONObject("data");
-		VideoRoomPluginEventData roomPluginEventData = createVideoRoomPluginEventData(dataJSON);
 		
-		String                room                 = String.valueOf(dataJSON.getInt("room"));
-		List<ParticipantPojo> roomParticipantsList = videoRoomMap.get(room);
-		
-		if (dataJSON.getString("event").equals("leaving")) {
-			handleLeavingEvent(dataJSON, roomParticipantsList, room);
-		} else if (dataJSON.getString("event").equals("joined")) {
-			handleJoinedEvent(dataJSON, roomParticipantsList, room);
+		if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin") && jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
+			
+			JSONObject               dataJSON            = jsonEvent.getJSONObject("event").getJSONObject("data");
+			VideoRoomPluginEventData roomPluginEventData = createVideoRoomPluginEventData(dataJSON);
+			
+			String                room                 = String.valueOf(dataJSON.getInt("room"));
+			List<ParticipantPojo> roomParticipantsList = videoRoomMap.get(room);
+			
+			if (dataJSON.getString("event").equals("leaving")) {
+				handleLeavingEvent(dataJSON, roomParticipantsList, room);
+			} else if (dataJSON.getString("event").equals("joined")) {
+				handleJoinedEvent(dataJSON, roomParticipantsList, room);
+			}
+			JanusEvent janusEvent = new JanusEvent();
+			janusEvent.setEmitter(dataJSON.optString("emitter"));
+			janusEvent.setSubtype(dataJSON.optInt("subtype"));
+			janusEvent.setTimestamp(dataJSON.optLong("timestamp"));
+			janusEvent.setType(dataJSON.optInt("type"));
+			janusEvent.setHandle_id(dataJSON.optLong("handle_id"));
+			janusEvent.setSession_id(dataJSON.optLong("session_id"));
+			janusEvent.setOpaque_id(dataJSON.optString("opaque_id"));
+			janusEvent.setEvent(roomPluginEventData);
+			
+			if (Janus.DB_ACCESS != null) {
+				DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(janusEvent.trackInsert());
+			}
 		}
 	}
 	
