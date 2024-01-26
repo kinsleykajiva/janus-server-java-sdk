@@ -2,6 +2,8 @@ package africa.jopen.sdk;
 
 import africa.jopen.sdk.models.JanusConfiguration;
 import africa.jopen.sdk.models.JanusSession;
+import africa.jopen.sdk.models.MySqlConfiguration;
+import africa.jopen.sdk.mysql.DBAccess;
 import africa.jopen.sdk.rest.JanusRestApiClient;
 import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +22,8 @@ public class Janus implements JanusEventHandler {
 	private ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
 	private CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 	
-	
-	private String sessionTransactionId;
+	public static MySqlConfiguration DB_ACCESS = null;
+	private       String   sessionTransactionId;
 	
 	private JanusWebSocketClient webSocketClient;
 	private JanusSession       janusSession;

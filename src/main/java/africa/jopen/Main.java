@@ -2,13 +2,18 @@ package africa.jopen;
 
 
 import africa.jopen.sdk.Janus;
+import africa.jopen.sdk.SdkUtils;
 import africa.jopen.sdk.events.JanusEventsEmissions;
 import africa.jopen.sdk.models.JanusConfiguration;
+import africa.jopen.sdk.models.MySqlConfiguration;
+import africa.jopen.sdk.mysql.DBAccess;
 
 public class Main implements JanusEventsEmissions {
 	static final String JANUS_URL = "https://visioconf.qalqul.io/janus";
 	static String JANUS_ADMIN_SECRET= "JYL8UqUe9XLacMe8F2MGs46H68vv4WGX";
 	public static void main( String[] args ) {
+		
+		Janus.DB_ACCESS =(new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser"));
 		Janus janus = new Janus(true,new JanusConfiguration(JANUS_URL,"","",JANUS_ADMIN_SECRET));
 		/*var result = janus.janusRestApiClient.janusVideoRoomPlugInAPI.checkIfVideoRoomExists("1234");
 		var result1 = janus.janusRestApiClient.janusVideoRoomPlugInAPI.checkIfVideoRoomExistsBoolCheck("1234");
