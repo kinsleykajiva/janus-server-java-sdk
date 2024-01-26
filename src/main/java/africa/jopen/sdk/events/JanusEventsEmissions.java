@@ -42,6 +42,50 @@ public interface JanusEventsEmissions {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
+			if (type == 32) {
+				var jsonEventObj = jsonEvent.getJSONObject("event");
+				var jevent = new JanusMediaEvent.Event(
+						jsonEventObj.optString("mid",null),
+						jsonEventObj.optBoolean("receiving",false),
+						jsonEventObj.optInt("receiving",0),
+						jsonEventObj.optString("media",null),
+						jsonEventObj.optString("codec",null),
+						jsonEventObj.optInt("base",0),
+						jsonEventObj.optInt("rtt",0),
+						jsonEventObj.optInt("lost",0),
+						jsonEventObj.optInt("lost_by_remote",0),
+						jsonEventObj.optInt("jitter_local",0),
+						jsonEventObj.optInt("jitter_remote",0),
+						jsonEventObj.optInt("in_link_quality",0),
+						jsonEventObj.optInt("in_media_link_quality",0),
+						jsonEventObj.optInt("out_link_quality",0),
+						jsonEventObj.optInt("out_media_link_quality",0),
+						jsonEventObj.optInt("packets_received",0),
+						jsonEventObj.optInt("packets_sent",0),
+						jsonEventObj.optInt("bytes_received",0),
+						jsonEventObj.optInt("bytes_sent",0),
+						jsonEventObj.optInt("bytes_received_lastsec",0),
+						jsonEventObj.optInt("bytes_sent_lastsec",0),
+						jsonEventObj.optInt("nacks_received",0),
+						jsonEventObj.optInt("nacks_sent",0),
+						jsonEventObj.optInt("retransmissions_received",0)
+						
+				);
+				var janusEvent = new JanusMediaEvent.Root(
+						jsonEvent.getString("emitter"),
+						jsonEvent.getInt("type"),
+						jsonEvent.getInt("subtype"),
+						jsonEvent.getLong("timestamp"),
+						jsonEvent.getLong("session_id"),
+						jsonEvent.getLong("handle_id"),
+						jsonEvent.getString("opaque_id"),
+						jevent
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusMediaEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+			}
 			if (type == 8) {
 				var jsep = jsonEvent.getJSONObject("event").has("jsep") ? new JanusJSEPEvent.Jsep(jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("type", null),
 						jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("sdp", null)) : null;
