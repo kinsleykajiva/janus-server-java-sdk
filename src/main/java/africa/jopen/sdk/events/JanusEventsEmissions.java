@@ -53,11 +53,7 @@ public interface JanusEventsEmissions {
 					case MEDIA -> janusEventsFactory.processEvent32();
 					case JSEP -> janusEventsFactory.processEvent8();
 					case SESSION -> janusEventsFactory.processEvent1();
-					case PLUGIN -> {
-						
-						processVideoRoomEvent(jsonEvent);
-						
-					}
+					case PLUGIN -> processVideoRoomEvent(jsonEvent);
 					default -> {
 						// Handle the case where no other cases match, if necessary
 					}
