@@ -29,4 +29,12 @@ public enum EventType {
 	public String getEventDescription() {
 		return eventDescription;
 	}
+	public static EventType fromTypeValue(int typeValue) {
+		for (EventType eventType : EventType.values()) {
+			if (eventType.getTypeValue() == typeValue) {
+				return eventType;
+			}
+		}
+		return null; // or throw an exception
+	}
 }

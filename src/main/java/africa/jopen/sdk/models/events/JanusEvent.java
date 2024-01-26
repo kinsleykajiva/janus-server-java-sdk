@@ -95,15 +95,15 @@ public class JanusEvent {
         if (((VideoRoomPluginEventData) event).getStream() != null) {
             for (int i = 0; i < ((VideoRoomPluginEventData) event).getStream().length; i++) {
                 JSONObject stream = new JSONObject();
-                stream.put("type", ((VideoRoomPluginEventData) event).getStream()[i].type());
-                stream.put("mindex", ((VideoRoomPluginEventData) event).getStream()[i].mindex());
-                stream.put("mid", ((VideoRoomPluginEventData) event).getStream()[i].mid());
-                stream.put("codec", ((VideoRoomPluginEventData) event).getStream()[i].codec());
-                stream.put("ready", ((VideoRoomPluginEventData) event).getStream()[i].ready());
-                stream.put("send", ((VideoRoomPluginEventData) event).getStream()[i].send());
-                stream.put("feed_id", ((VideoRoomPluginEventData) event).getStream()[i].feed_id());
-                stream.put("feed_display", ((VideoRoomPluginEventData) event).getStream()[i].feed_display());
-                stream.put("feed_mid", ((VideoRoomPluginEventData) event).getStream()[i].feed_mid());
+                stream.put("type", ((VideoRoomPluginEventData) event).getStream()[i].getType());
+                stream.put("mindex", ((VideoRoomPluginEventData) event).getStream()[i].getMindex());
+                stream.put("mid", ((VideoRoomPluginEventData) event).getStream()[i].getMid());
+                stream.put("codec", ((VideoRoomPluginEventData) event).getStream()[i].getCodec());
+                stream.put("ready", ((VideoRoomPluginEventData) event).getStream()[i].isReady());
+                stream.put("send", ((VideoRoomPluginEventData) event).getStream()[i].isSend());
+                stream.put("feed_id", ((VideoRoomPluginEventData) event).getStream()[i].getFeed_id());
+                stream.put("feed_display", ((VideoRoomPluginEventData) event).getStream()[i].getFeed_display());
+                stream.put("feed_mid", ((VideoRoomPluginEventData) event).getStream()[i].getFeed_mid());
                 streamsJ.put(stream);
             }
         }
