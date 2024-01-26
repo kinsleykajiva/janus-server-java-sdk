@@ -24,7 +24,7 @@ public class DBAccess {
 	private        MySqlConfiguration mySqlConfiguration;
 	private final  Object             lock            = new Object(); // For synchronization
 	
-	private DBAccess( MySqlConfiguration mySqlConfiguration ) {
+	public DBAccess( MySqlConfiguration mySqlConfiguration ) {
 		connection();
 	}
 	
@@ -61,14 +61,16 @@ public class DBAccess {
 				log.severe("Could not connect to database");
 				return;
 			}
+			executorService.submit(() -> {
+				try (Statement batchStatement = connect.createStatement()) {
+					log.info("SQL-" + sql);
+					batchStatement.addBatch(sql);
+					batchStatement.executeBatch();
+				} catch (SQLException e) {
+					log.log(Level.SEVERE, e.getMessage(), e);
+				}
+			});
 			
-			try (Statement batchStatement = connect.createStatement()) {
-				log.info("SQL-" + sql);
-				batchStatement.addBatch(sql);
-				batchStatement.executeBatch();
-			} catch (SQLException e) {
-				log.log(Level.SEVERE, e.getMessage(), e);
-			}
 		}
 	}
 	

@@ -1,10 +1,10 @@
 package africa.jopen.sdk.events;
 
 
+import africa.jopen.sdk.Janus;
 import africa.jopen.sdk.SdkUtils;
-import africa.jopen.sdk.models.events.ParticipantPojo;
-import africa.jopen.sdk.models.events.VideoRoomPluginEventData;
-import africa.jopen.sdk.models.events.VideoRoomPluginEventDataStream;
+import africa.jopen.sdk.models.events.*;
+import africa.jopen.sdk.mysql.DBAccess;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,11 +34,51 @@ public interface JanusEventsEmissions {
 	 */
 	void onRoomSessionEnded( String roomId );
 	
+	/**
+	 * Event fired when a new event is received from Janus
+	 */
 	default void consumeEventAsync( String event ) {
 		JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
+			if (type == 8) {
+				var jsep = jsonEvent.getJSONObject("event").has("jsep") ? new JanusJSEPEvent.Jsep(jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("type", null),
+						jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("sdp", null)) : null;
+				var janusJSEPEventEvent = new JanusJSEPEvent.Event(jsonEvent.getString("name"), jsep);
+				var janusEvent = new JanusJSEPEvent.Root(
+						jsonEvent.optString("emitter", null),
+						jsonEvent.optInt("type", 0),
+						jsonEvent.optLong("timestamp", 0),
+						jsonEvent.optLong("session_id", 0),
+						jsonEvent.optLong("handle_id", 0),
+						jsonEvent.optString("opaque_id", null),
+						janusJSEPEventEvent
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusJSEPEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+			}
+			if (type == 1) {
+				var janusEvent = new JanusSessionEvent.Root(
+						jsonEvent.optString("emitter", null),
+						jsonEvent.optInt("type", 0),
+						jsonEvent.optLong("timestamp", 0),
+						jsonEvent.optLong("session_id", 0),
+						new JanusSessionEvent.Event(
+								jsonEvent.getString("name"),
+								jsonEvent.has("transport") ? new JanusSessionEvent.Transport(
+										jsonEvent.getJSONObject("transport").optString("transport", null),
+										jsonEvent.getJSONObject("transport").optLong("id", 0)
+								) : null
+						)
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusSessionEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+			}
 			if (type == 64) {
 				if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin")
 						&& jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
