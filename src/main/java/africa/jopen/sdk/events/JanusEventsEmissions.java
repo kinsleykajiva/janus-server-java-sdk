@@ -42,15 +42,40 @@ public interface JanusEventsEmissions {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonEvent = jsonArray.getJSONObject(i);
 			int        type      = jsonEvent.getInt("type");
+			if (type == 16) {
+				var jsonEventObj = jsonEvent.getJSONObject("event");
+				var jevent = new JanusWebRTCStateEvent.Event(
+						jsonEventObj.optString("ice", null),
+						jsonEventObj.optInt("stream_id", 0),
+						jsonEventObj.optInt("component_id", 0),
+						jsonEventObj.optString("local-candidate", null),
+						jsonEventObj.optString("remote-candidate", null)
+				);
+				var janusEvent = new JanusWebRTCStateEvent.Root(
+						jsonEventObj.optString("emitter", null),
+						jsonEventObj.optInt("type", 0),
+						jsonEventObj.optInt("subtype", 0),
+						jsonEventObj.optLong("timestamp", 0),
+						jsonEventObj.optLong("session_id", 0),
+						jsonEventObj.optLong("handle_id", 0),
+						jsonEventObj.optString("opaque_id", null),
+						jevent
+				);
+				if (Janus.DB_ACCESS != null) {
+					var insertSEL = new JanusWebRTCStateEvent().trackInsert(janusEvent);
+					DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+				}
+				
+			}
 			if (type == 2) {
 				var jsonEventObj = jsonEvent.getJSONObject("event");
 				var jevent = new JanusHandleEvent.Event(
-						jsonEventObj.optString("name",null),
+						jsonEventObj.optString("name", null),
 						jsonEventObj.optString("plugin", null),
 						jsonEventObj.optString("opaque_id", null)
 				);
 				var janusEvent = new JanusHandleEvent.Root(
-						jsonEventObj.optString("emitter",null),
+						jsonEventObj.optString("emitter", null),
 						jsonEventObj.optInt("type", 0),
 						jsonEventObj.optLong("timestamp", 0),
 						jsonEventObj.optLong("session_id", 0),
@@ -66,31 +91,31 @@ public interface JanusEventsEmissions {
 			if (type == 32) {
 				var jsonEventObj = jsonEvent.getJSONObject("event");
 				var jevent = new JanusMediaEvent.Event(
-						jsonEventObj.optString("mid",null),
-						jsonEventObj.optBoolean("receiving",false),
-						jsonEventObj.optInt("receiving",0),
-						jsonEventObj.optString("media",null),
-						jsonEventObj.optString("codec",null),
-						jsonEventObj.optInt("base",0),
-						jsonEventObj.optInt("rtt",0),
-						jsonEventObj.optInt("lost",0),
-						jsonEventObj.optInt("lost_by_remote",0),
-						jsonEventObj.optInt("jitter_local",0),
-						jsonEventObj.optInt("jitter_remote",0),
-						jsonEventObj.optInt("in_link_quality",0),
-						jsonEventObj.optInt("in_media_link_quality",0),
-						jsonEventObj.optInt("out_link_quality",0),
-						jsonEventObj.optInt("out_media_link_quality",0),
-						jsonEventObj.optInt("packets_received",0),
-						jsonEventObj.optInt("packets_sent",0),
-						jsonEventObj.optInt("bytes_received",0),
-						jsonEventObj.optInt("bytes_sent",0),
-						jsonEventObj.optInt("bytes_received_lastsec",0),
-						jsonEventObj.optInt("bytes_sent_lastsec",0),
-						jsonEventObj.optInt("nacks_received",0),
-						jsonEventObj.optInt("nacks_sent",0),
-						jsonEventObj.optInt("retransmissions_received",0)
-						
+						jsonEventObj.optString("mid", null),
+						jsonEventObj.optBoolean("receiving", false),
+						jsonEventObj.optInt("receiving", 0),
+						jsonEventObj.optString("media", null),
+						jsonEventObj.optString("codec", null),
+						jsonEventObj.optInt("base", 0),
+						jsonEventObj.optInt("rtt", 0),
+						jsonEventObj.optInt("lost", 0),
+						jsonEventObj.optInt("lost_by_remote", 0),
+						jsonEventObj.optInt("jitter_local", 0),
+						jsonEventObj.optInt("jitter_remote", 0),
+						jsonEventObj.optInt("in_link_quality", 0),
+						jsonEventObj.optInt("in_media_link_quality", 0),
+						jsonEventObj.optInt("out_link_quality", 0),
+						jsonEventObj.optInt("out_media_link_quality", 0),
+						jsonEventObj.optInt("packets_received", 0),
+						jsonEventObj.optInt("packets_sent", 0),
+						jsonEventObj.optInt("bytes_received", 0),
+						jsonEventObj.optInt("bytes_sent", 0),
+						jsonEventObj.optInt("bytes_received_lastsec", 0),
+						jsonEventObj.optInt("bytes_sent_lastsec", 0),
+						jsonEventObj.optInt("nacks_received", 0),
+						jsonEventObj.optInt("nacks_sent", 0),
+						jsonEventObj.optInt("retransmissions_received", 0)
+				
 				);
 				var janusEvent = new JanusMediaEvent.Root(
 						jsonEvent.getString("emitter"),
