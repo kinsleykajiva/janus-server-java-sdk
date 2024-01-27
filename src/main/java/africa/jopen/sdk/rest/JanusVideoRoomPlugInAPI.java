@@ -24,14 +24,14 @@ public class JanusVideoRoomPlugInAPI {
 	 * @param secret  The secret token required to authenticate the deletion request.
 	 * @return A JSONObject containing the response from the Janus server after attempting to delete the room.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.videoroom",
 	 *     "data": {
@@ -39,8 +39,8 @@ public class JanusVideoRoomPlugInAPI {
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the room deletion is successful, "janus" will be "success" and "videoroom" will be "destroyed".
 	 * If an error occurs, "janus" will be "error" and additional details may be available in the "error" field.
 	 * If the specified room does not exist, null will be returned.
@@ -115,14 +115,14 @@ public class JanusVideoRoomPlugInAPI {
 	 * @param rec_dir     The directory path for storing recorded sessions (nullable).
 	 * @return A JSONObject containing the response from the Janus server after attempting to create the room.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.videoroom",
 	 *     "data": {
@@ -130,8 +130,8 @@ public class JanusVideoRoomPlugInAPI {
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the room creation is successful, "janus" will be "success" and "videoroom" will be "created".
 	 * If an error occurs, "janus" will be "error" and additional details may be available in the "error" field.
 	 * If the specified room already exists, null will be returned.
@@ -173,7 +173,7 @@ public class JanusVideoRoomPlugInAPI {
 				);
 				
 				String response = janusRestApiClient.makePostRequest(json);
-				System.out.println("xxxx=> " + response);
+				System.out.println("xxxx=&gt; " + response);
 				JSONObject responseObject = new JSONObject(response);
 				
 				if (responseObject.getString("janus").equals("success")) {
@@ -198,14 +198,14 @@ public class JanusVideoRoomPlugInAPI {
 	 * @param roomId The identifier of the room to check for existence (string or integer).
 	 * @return A JSONObject containing the response from the Janus server after attempting to check the room's existence.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.videoroom",
 	 *     "data": {
@@ -213,8 +213,8 @@ public class JanusVideoRoomPlugInAPI {
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the room exists, "janus" will be "success" and "videoroom" will be "exists".
 	 * If the room does not exist, "janus" will be "success" and "videoroom" will be "error".
 	 * If an error occurs during the check, "janus" will be "error" and additional details may be available in the "error" field.
@@ -262,27 +262,27 @@ public class JanusVideoRoomPlugInAPI {
 	 *
 	 * @return A JSONObject containing the response from the Janus server after attempting to retrieve the list of video rooms.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.videoroom",
 	 *     "data": {
 	 *       "videoroom": "list" or "error",
 	 *       "rooms": [
 	 *         {
-	 *           "room": <room_id>,
-	 *           "description": "<room_description>",
-	 *           "audiocodec": "<codec eg opus, pcma, pcmu, isac, g722, g726, g711, speex, silk, isac16k, isac32k, isac48k, isac128k, isac256k, ilbc, siren7, siren14, silk12, silk16, silk24, silk48>",
-	 *           "videocodec": "<codec eg vp8, h264>",
-	 *           "fir_freq": "<fir_freq>",
-	 *           "num_participants": "<fir_freq>",
-	 *           "num_participants": <number_of_participants>,
+	 *           "room": &lt;room_id&gt;,
+	 *           "description": "&lt;room_description&gt;",
+	 *           "audiocodec": "&lt;codec eg opus, pcma, pcmu, isac, g722, g726, g711, speex, silk, isac16k, isac32k, isac48k, isac128k, isac256k, ilbc, siren7, siren14, silk12, silk16, silk24, silk48&gt;",
+	 *           "videocodec": "&lt;codec eg vp8, h264&gt;",
+	 *           "fir_freq": "&lt;fir_freq&gt;",
+	 *           "num_participants": "&lt;fir_freq&gt;",
+	 *           "num_participants": &lt;number_of_participants&gt;,
 	 *           "is_private": true or false,
 	 *           "audiolevel_event": true or false,
 	 *           "require_e2ee": true or false,
@@ -290,13 +290,13 @@ public class JanusVideoRoomPlugInAPI {
 	 *           "videoorient_ext": true or false,
 	 *           "notify_joining": true or false,
 	 *           "require_pvtid": true or false,
-	 *           "bitrate": <bitrate>,
-	 *           "bitrate_audio": <audio_bitrate>,
-	 *           "bitrate_video": <video_bitrate>,
-	 *           "created": <timestamp>,
+	 *           "bitrate": &lt;bitrate&gt;,
+	 *           "bitrate_audio": &lt;audio_bitrate&gt;,
+	 *           "bitrate_video": &lt;video_bitrate&gt;,
+	 *           "created": &lt;timestamp&gt;,
 	 *           "permanent": true or false,
 	 *           "record": true or false,
-	 *           "rec_dir": "<recording_directory>"
+	 *           "rec_dir": "&lt;recording_directory&gt;"
 	 *           ...
 	 *         },
 	 *         ...
@@ -304,8 +304,8 @@ public class JanusVideoRoomPlugInAPI {
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the list retrieval is successful, "janus" will be "success" and "videoroom" will be "list".
 	 * If an error occurs during the retrieval, "janus" will be "error" and additional details may be available in the "error" field.
 	 */
@@ -343,25 +343,25 @@ public class JanusVideoRoomPlugInAPI {
 	 * @param roomId The identifier of the room for which to retrieve the list of participants (string or integer).
 	 * @return A JSONObject containing the response from the Janus server after attempting to retrieve the list of room participants.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.videoroom",
 	 *     "data": {
 	 *       "videoroom": "listparticipants" or "error",
 	 *       "participants": [
 	 *         {
-	 *           "id": <participant_id>,
-	 *           "display": "<display_name>",
-	 *           "audio_codec": "<audio_codec>",
-	 *           "video_codec": "<video_codec>",
-	 *           "feed": <feed_id>,
+	 *           "id": &lt;participant_id&gt;,
+	 *           "display": "&lt;display_name&gt;",
+	 *           "audio_codec": "&lt;audio_codec&gt;",
+	 *           "video_codec": "&lt;video_codec&gt;",
+	 *           "feed": &lt;feed_id&gt;,
 	 *           ...
 	 *         },
 	 *         ...
@@ -369,8 +369,8 @@ public class JanusVideoRoomPlugInAPI {
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the participant list retrieval is successful, "janus" will be "success" and "videoroom" will be "listparticipants".
 	 * If an error occurs during the retrieval, "janus" will be "error" and additional details may be available in the "error" field.
 	 */
