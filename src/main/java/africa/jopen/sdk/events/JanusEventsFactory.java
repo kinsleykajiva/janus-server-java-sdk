@@ -15,13 +15,24 @@ public class JanusEventsFactory {
 	
 	private JSONObject jsonEvent;
 	private JanusEventsEmissions emissions;
-	public  static Map<String, List<ParticipantPojo>> videoRoomMap = new ConcurrentHashMap<>();
+	private static final Map<String, List<ParticipantPojo>> VIDEO_ROOM_MAP = new ConcurrentHashMap<>();
 	
+	/**
+	 * Constructs a JanusEventsFactory object with the specified JSON event and emissions.
+	 *
+	 * @param jsonEvent The JSON event associated with the factory.
+	 * @param emissions The JanusEventsEmissions object used for emitting events.
+	 */
 	public JanusEventsFactory( JSONObject jsonEvent ,JanusEventsEmissions emissions) {
 		this.jsonEvent = jsonEvent;
 		this.emissions = emissions;
 	}
 	
+	/**
+	 * Processes event 16.
+	 * This method extracts information from a JSON event object and creates a JanusWebRTCStateEvent object.
+	 * If a DBAccess instance is available, it inserts the JanusWebRTCStateEvent into the database using SQLBatchExec.
+	 */
 	public void processEvent16() {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusWebRTCStateEvent.Event(
@@ -70,6 +81,12 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	/**
+	 * Processes the event with ID 128.
+	 * This method extracts the necessary information from the JSON event object
+	 * and creates a JanusTransportOriginatedEvent object to represent the event.
+	 * If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
+	 */
 	public void processEvent128() {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusTransportOriginatedEvent.Event(
@@ -202,6 +219,11 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	/**
+	 * Processes a video room event.
+	 *
+	 * @param jsonEvent the JSON object representing the event
+	 */
 	public void processVideoRoomEvent( JSONObject jsonEvent ) {
 		
 		if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin") && jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
@@ -210,7 +232,7 @@ public class JanusEventsFactory {
 			VideoRoomPluginEventData roomPluginEventData = createVideoRoomPluginEventData(dataJSON);
 			
 			String                room                 = String.valueOf(dataJSON.getInt("room"));
-			List<ParticipantPojo> roomParticipantsList = videoRoomMap.get(room);
+			List<ParticipantPojo> roomParticipantsList = VIDEO_ROOM_MAP.get(room);
 			
 			if (dataJSON.getString("event").equals("leaving")) {
 				handleLeavingEvent(dataJSON, roomParticipantsList, room);
@@ -300,12 +322,12 @@ public class JanusEventsFactory {
 		if (roomParticipantsList == null) {
 			List<ParticipantPojo> participants = new ArrayList<>();
 			participants.add(new ParticipantPojo(id, display, private_id));
-			videoRoomMap.put(room, participants);
+			VIDEO_ROOM_MAP.put(room, participants);
 			emissions.onRoomSessionStarted(room, id, display);
 			emissions.onParticipantJoined(id, display, room);
 		} else {
 			roomParticipantsList.add(new ParticipantPojo(id, display, private_id));
-			videoRoomMap.put(room, roomParticipantsList);
+			VIDEO_ROOM_MAP.put(room, roomParticipantsList);
 			emissions.onParticipantJoined(id, display, room);
 		}
 	}
