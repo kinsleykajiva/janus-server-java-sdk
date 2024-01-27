@@ -14,6 +14,10 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class represents a database access object for interacting with the MySQL database.
+ * It provides methods for executing SQL queries and managing database connections.
+ */
 @ApiStatus.NonExtendable
 public class DBAccess {
 	static         Logger             log             = Logger.getLogger(DBAccess.class.getName());
@@ -48,6 +52,11 @@ public class DBAccess {
 		}
 	}
 	
+	/**
+	 * Executes a batch SQL statement asynchronously.
+	 * 
+	 * @param sql the SQL statement to be executed
+	 */
 	public void SQLBatchExec( String sql ) {
 		
 		
