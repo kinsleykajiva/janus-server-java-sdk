@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @ApiStatus.NonExtendable
 public class DBAccess {
 	static         Logger             log             = Logger.getLogger(DBAccess.class.getName());
-	private        ExecutorService    executorService = Executors.newSingleThreadExecutor();
+	private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private static DBAccess           instance;
 	private        Connection         connect         = null;
 	private        Statement          statement       = null;
