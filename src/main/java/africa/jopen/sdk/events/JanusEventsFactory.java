@@ -3,12 +3,19 @@ package africa.jopen.sdk.events;
 import africa.jopen.sdk.Janus;
 import africa.jopen.sdk.models.events.*;
 import africa.jopen.sdk.mysql.DBAccess;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JanusEventsFactory {
 	
 	private JSONObject jsonEvent;
 	private JanusEventsEmissions emissions;
+	public  static Map<String, List<ParticipantPojo>> videoRoomMap = new ConcurrentHashMap<>();
 	
 	public JanusEventsFactory( JSONObject jsonEvent ,JanusEventsEmissions emissions) {
 		this.jsonEvent = jsonEvent;
@@ -195,5 +202,111 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	public void processVideoRoomEvent( JSONObject jsonEvent ) {
+		
+		if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin") && jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
+			
+			JSONObject               dataJSON            = jsonEvent.getJSONObject("event").getJSONObject("data");
+			VideoRoomPluginEventData roomPluginEventData = createVideoRoomPluginEventData(dataJSON);
+			
+			String                room                 = String.valueOf(dataJSON.getInt("room"));
+			List<ParticipantPojo> roomParticipantsList = videoRoomMap.get(room);
+			
+			if (dataJSON.getString("event").equals("leaving")) {
+				handleLeavingEvent(dataJSON, roomParticipantsList, room);
+			} else if (dataJSON.getString("event").equals("joined")) {
+				handleJoinedEvent(dataJSON, roomParticipantsList, room);
+			}
+			
+			roomPluginEventData.setOpaque_id(jsonEvent.optString("opaque_id"));
+			JanusEvent janusEvent = new JanusEvent();
+			janusEvent.setEmitter(jsonEvent.optString("emitter"));
+			janusEvent.setSubtype(0);
+			janusEvent.setTimestamp(jsonEvent.optLong("timestamp"));
+			janusEvent.setType(jsonEvent.optInt("type"));
+			janusEvent.setHandle_id(jsonEvent.optLong("handle_id"));
+			janusEvent.setSession_id(jsonEvent.optLong("session_id"));
+			janusEvent.setOpaque_id(jsonEvent.optString("opaque_id"));
+			janusEvent.setEvent(roomPluginEventData);
+			
+			if (Janus.DB_ACCESS != null) {
+				DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(janusEvent.trackInsert());
+			}
+		}
+	}
+	private VideoRoomPluginEventData createVideoRoomPluginEventData( JSONObject dataJSON ) {
+		VideoRoomPluginEventData roomPluginEventData = new VideoRoomPluginEventData("janus.plugin.videoroom");
+		roomPluginEventData.setRoom(dataJSON.optString("room"));
+		roomPluginEventData.setDisplay(dataJSON.optString("display"));
+		roomPluginEventData.setBitrate(dataJSON.optLong("bitrate"));
+		roomPluginEventData.setId(dataJSON.optLong("id"));
+		roomPluginEventData.setPrivate_id(dataJSON.optLong("private_id"));
+		
+		if (dataJSON.has("streams")) {
+			JSONArray                        streams                         = dataJSON.getJSONArray("streams");
+			VideoRoomPluginEventDataStream[] videoRoomPluginEventDataStreams = createVideoRoomEventDataStreams(streams);
+			roomPluginEventData.setStream(videoRoomPluginEventDataStreams);
+		}
+		
+		roomPluginEventData.setEvent(dataJSON.optString("event"));
+		return roomPluginEventData;
+	}
+	private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams( JSONArray streams ) {
+		VideoRoomPluginEventDataStream[] videoRoomPluginEventDataStreams = new VideoRoomPluginEventDataStream[streams.length()];
+		for (int i = 0; i < streams.length(); i++) {
+			JSONObject                     stream                         = streams.getJSONObject(i);
+			VideoRoomPluginEventDataStream videoRoomPluginEventDataStream = new VideoRoomPluginEventDataStream();
+			videoRoomPluginEventDataStream.setMid(stream.optInt("mid"));
+			videoRoomPluginEventDataStream.setMindex(stream.optInt("mindex"));
+			videoRoomPluginEventDataStream.setCodec(stream.optString("codec"));
+			videoRoomPluginEventDataStream.setType(stream.optString("type"));
+			videoRoomPluginEventDataStreams[i] = videoRoomPluginEventDataStream;
+		}
+		return videoRoomPluginEventDataStreams;
+	}
+	private void handleLeavingEvent( JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room ) {
+		if (roomParticipantsList == null) {
+			return;
+		}
+		
+		long            participantId      = dataJSON.optLong("id");
+		ParticipantPojo leavingParticipant = findAndRemoveParticipant(roomParticipantsList, participantId);
+		
+		if (leavingParticipant != null) {
+			emissions.onParticipantLeft(leavingParticipant.id(), leavingParticipant.display(), room);
+		}
+		
+		if (roomParticipantsList.isEmpty()) {
+			emissions.onRoomSessionEnded(room);
+		}
+	}
 	
+	private ParticipantPojo findAndRemoveParticipant( List<ParticipantPojo> roomParticipantsList, long participantId ) {
+		ParticipantPojo participant = roomParticipantsList.stream()
+				.filter(participantPojo -> participantPojo.id() == participantId)
+				.findFirst()
+				.orElse(null);
+		
+		if (participant != null) {
+			roomParticipantsList.remove(participant);
+		}
+		
+		return participant;
+	}
+	private void handleJoinedEvent( JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room ) {
+		var id         = dataJSON.getLong("id");
+		var display    = dataJSON.getString("display");
+		var private_id = dataJSON.getLong("private_id");
+		if (roomParticipantsList == null) {
+			List<ParticipantPojo> participants = new ArrayList<>();
+			participants.add(new ParticipantPojo(id, display, private_id));
+			videoRoomMap.put(room, participants);
+			emissions.onRoomSessionStarted(room, id, display);
+			emissions.onParticipantJoined(id, display, room);
+		} else {
+			roomParticipantsList.add(new ParticipantPojo(id, display, private_id));
+			videoRoomMap.put(room, roomParticipantsList);
+			emissions.onParticipantJoined(id, display, room);
+		}
+	}
 }
