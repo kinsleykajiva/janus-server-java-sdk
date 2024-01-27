@@ -79,8 +79,6 @@ public class VideoRoomPluginEventData extends Event {
 		this.stream = stream;
 	}
 	
-	public String buildSQLInsert() {
-		return null;
-	}
+	
 	
 }

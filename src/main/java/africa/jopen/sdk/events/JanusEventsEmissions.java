@@ -77,14 +77,16 @@ public interface JanusEventsEmissions {
 			} else if (dataJSON.getString("event").equals("joined")) {
 				handleJoinedEvent(dataJSON, roomParticipantsList, room);
 			}
+			
+			roomPluginEventData.setOpaque_id(jsonEvent.optString("opaque_id"));
 			JanusEvent janusEvent = new JanusEvent();
-			janusEvent.setEmitter(dataJSON.optString("emitter"));
-			janusEvent.setSubtype(dataJSON.optInt("subtype"));
-			janusEvent.setTimestamp(dataJSON.optLong("timestamp"));
-			janusEvent.setType(dataJSON.optInt("type"));
-			janusEvent.setHandle_id(dataJSON.optLong("handle_id"));
-			janusEvent.setSession_id(dataJSON.optLong("session_id"));
-			janusEvent.setOpaque_id(dataJSON.optString("opaque_id"));
+			janusEvent.setEmitter(jsonEvent.optString("emitter"));
+			janusEvent.setSubtype(0);
+			janusEvent.setTimestamp(jsonEvent.optLong("timestamp"));
+			janusEvent.setType(jsonEvent.optInt("type"));
+			janusEvent.setHandle_id(jsonEvent.optLong("handle_id"));
+			janusEvent.setSession_id(jsonEvent.optLong("session_id"));
+			janusEvent.setOpaque_id(jsonEvent.optString("opaque_id"));
 			janusEvent.setEvent(roomPluginEventData);
 			
 			if (Janus.DB_ACCESS != null) {
