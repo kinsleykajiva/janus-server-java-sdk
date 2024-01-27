@@ -43,17 +43,12 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 	 *
 	 * @return A JSONObject containing the type of the message ("answer") and the SDP of the answer.
 	 * The returned JSONObject will look like this:
-	 * <p>
-	 * <code>
-	 * <strong>
+	 * <pre>
 	 * {
 	 *   "type": "answer",
-	 *   "sdp": "<SDP answer description string>"
+	 *   "sdp": "&lt;sdp answer description string&gt;"
 	 * }
-	 * </strong>
-	 * </code>
-	 * </p><br>
-	 *
+	 * </pre>
 	 * <p><strong>Steps:</strong></p>
 	 * 1. A CompletableFuture for RTCSessionDescription is created. <br><br>
 	 * 2. An RTCAnswerOptions object is created and passed to the createAnswer method of the RTCPeerConnection instance.<br><br>
@@ -65,10 +60,10 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 	 * 8. The jsep object is returned.<br><br>
 	 * @throws NullPointerException if the generated RTC answer description is null.
 	 *
-	 * @apiNote
+	 * 
 	 * The customizeSdp method is called to apply any additional customizations to the SDP answer.
 	 *
-	 * @implNote
+	 * 
 	 * This method uses the PeerConnection's createAnswer method to generate the RTC answer.
 	 * The SDP answer is then customized using the customizeSdp method.
 	 * The local description of the PeerConnection is set to the generated answer.
@@ -170,17 +165,15 @@ public class JanusPeerConnection implements PeerConnectionObserver {
 	 * @return A JSONObject representing the RTC offer in SDP format, with additional customizations if any.
 	 * @throws NullPointerException if the generated RTC offer description is null.
 	 *
-	 * @apiNote
+	 * 
 	 * The returned JSONObject has the following structure:
-	 * <p>
-	 * <code>
+	 * <pre>
 	 * {
-	 *     "type": "offer",
-	 *     "sdp": "<SDP offer description string>"
+	 *   "type": "answer",
+	 *   "sdp": "&lt;sdp answer description string&gt;"
 	 * }
-	 * </code>
-	 * </p>
-	 * @implNote
+	 * </pre>
+	 * 
 	 * This method uses the PeerConnection's createOffer method to generate the RTC offer.
 	 * The SDP offer is then customized using the customizeSdp method.
 	 * The local description of the PeerConnection is set to the generated offer.

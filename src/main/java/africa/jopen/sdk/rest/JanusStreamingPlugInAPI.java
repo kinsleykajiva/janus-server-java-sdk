@@ -33,26 +33,26 @@ public class JanusStreamingPlugInAPI {
 	 *                              Example: "[{"type": "audio"}, {"type": "video"}]"
 	 * @return A JSONObject containing the response from the Janus server after attempting to create the mounting point.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "create" or "error",
-	 *       "id": "<mounting_point_id>",
+	 *       "id": "&lt;mounting_point_id&gt;",
 	 *       "result": "success" or "error",
-	 *       "error": "<error_message>"
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the mounting point creation is successful, "janus" will be "success" and "streaming" will be "create".
 	 * The "id" field will contain the unique identifier for the created mounting point.
 	 * If an error occurs during the creation, "janus" will be "error", "streaming" will be "error", and the "error" field may contain additional details.
@@ -111,26 +111,26 @@ public class JanusStreamingPlugInAPI {
 	 * @param permanent         Indicates whether the mounting point should be permanent or temporary.
 	 * @return A JSONObject containing the response from the Janus server after attempting to edit the mounting point.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "edit" or "error",
-	 *       "id": "<mounting_point_id>",
+	 *       "id": "&lt;mounting_point_id&gt;",
 	 *       "result": "success" or "error",
-	 *       "error": "<error_message>"
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the mounting point edit is successful, "janus" will be "success" and "streaming" will be "edit".
 	 * The "id" field will contain the unique identifier of the edited mounting point.
 	 * If an error occurs during the edit, "janus" will be "error", "streaming" will be "error", and the "error" field may contain additional details.
@@ -176,26 +176,26 @@ public class JanusStreamingPlugInAPI {
 	 * @param permanent Indicates whether the mounting point should be permanently deleted.
 	 * @return A JSONObject containing the response from the Janus server after attempting to delete the mounting point.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "destroy" or "error",
-	 *       "id": "<mounting_point_id>",
+	 *       "id": "&lt;mounting_point_id&gt;",
 	 *       "result": "success" or "error",
-	 *       "error": "<error_message>"
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the mounting point deletion is successful, "janus" will be "success" and "streaming" will be "destroy".
 	 * The "id" field will contain the unique identifier of the deleted mounting point.
 	 * If an error occurs during the deletion, "janus" will be "error", "streaming" will be "error", and the "error" field may contain additional details.
@@ -231,26 +231,26 @@ public class JanusStreamingPlugInAPI {
 	 * @param secret The secret token required to authenticate the enablement request (nullable).
 	 * @return A JSONObject containing the response from the Janus server after attempting to enable the mounting point.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "event",
 	 *       "result": "enabled" or "error",
-	 *       "id": "<mounting_point_id>",
-	 *       "error": "<error_message>"
+	 *       "id": "&lt;mounting_point_id&gt;",
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If the mounting point enablement is successful, "janus" will be "success", "streaming" will be "event", and "result" will be "enabled".
 	 * The "id" field will contain the unique identifier of the enabled mounting point.
 	 * If an error occurs during the enablement, "janus" will be "error", "streaming" will be "event", "result" will be "error", and the "error" field may contain additional details.
@@ -287,26 +287,26 @@ public class JanusStreamingPlugInAPI {
 	 * @param secret The secret token required to authenticate the kick-all request (nullable).
 	 * @return A JSONObject containing the response from the Janus server after attempting to kick all participants.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "event",
 	 *       "result": "kicked_all" or "error",
-	 *       "id": "<mounting_point_id>",
-	 *       "error": "<error_message>"
+	 *       "id": "&lt;mounting_point_id&gt;",
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If kicking all participants is successful, "janus" will be "success", "streaming" will be "event", and "result" will be "kicked_all".
 	 * The "id" field will contain the unique identifier of the affected mounting point.
 	 * If an error occurs during the kick-all operation, "janus" will be "error", "streaming" will be "event", "result" will be "error", and the "error" field may contain additional details.
@@ -344,26 +344,26 @@ public class JanusStreamingPlugInAPI {
 	 *                             Example: '["audio", "video"]'
 	 * @return A JSONObject containing the response from the Janus server after attempting to start recording.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "event",
 	 *       "result": "recording_started" or "error",
-	 *       "id": "<mounting_point_id>",
-	 *       "error": "<error_message>"
+	 *       "id": "&lt;mounting_point_id&gt;",
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If recording is successfully started, "janus" will be "success", "streaming" will be "event", and "result" will be "recording_started".
 	 * The "id" field will contain the unique identifier of the recording mounting point.
 	 * If an error occurs during the recording initiation, "janus" will be "error", "streaming" will be "event", "result" will be "error", and the "error" field may contain additional details.
@@ -404,26 +404,26 @@ public class JanusStreamingPlugInAPI {
 	 *                             Example: '["audio", "video"]'
 	 * @return A JSONObject containing the response from the Janus server after attempting to stop recording.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "event",
 	 *       "result": "recording_stopped" or "error",
-	 *       "id": "<mounting_point_id>",
-	 *       "error": "<error_message>"
+	 *       "id": "&lt;mounting_point_id&gt;",
+	 *       "error": "&lt;error_message&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If recording is successfully stopped, "janus" will be "success", "streaming" will be "event", and "result" will be "recording_stopped".
 	 * The "id" field will contain the unique identifier of the recording mounting point.
 	 * If an error occurs during the recording stop, "janus" will be "error", "streaming" will be "event", "result" will be "error", and the "error" field may contain additional details.
@@ -460,34 +460,34 @@ public class JanusStreamingPlugInAPI {
 	 * @param secret The secret token required to authenticate the information retrieval request (nullable).
 	 * @return A JSONObject containing the response from the Janus server after attempting to retrieve information.
 	 * The response will have the structure:
-	 * <p>
-	 * <code>
+	 * &lt;p&gt;
+	 * &lt;code&gt;
 	 * {
 	 *   "janus": "success" or "error",
-	 *   "transaction": "<transaction_id>",
-	 *   "session_id": <session_id>,
-	 *   "handle_id": <handle_id>,
-	 *   "sender": <sender_id>,
+	 *   "transaction": "&lt;transaction_id&gt;",
+	 *   "session_id": &lt;session_id&gt;,
+	 *   "handle_id": &lt;handle_id&gt;,
+	 *   "sender": &lt;sender_id&gt;,
 	 *   "plugindata": {
 	 *     "plugin": "janus.plugin.streaming",
 	 *     "data": {
 	 *       "streaming": "info",
 	 *       "result": "ok" or "error",
-	 *       "id": "<mounting_point_id>",
-	 *       "description": "<mounting_point_description>",
-	 *       "metadata": "<mounting_point_metadata>",
+	 *       "id": "&lt;mounting_point_id&gt;",
+	 *       "description": "&lt;mounting_point_description&gt;",
+	 *       "metadata": "&lt;mounting_point_metadata&gt;",
 	 *       "is_private": true or false,
 	 *       "permanent": true or false,
 	 *       "recording": true or false,
-	 *       "rec_dir": "<recording_directory>",
-	 *       "pin": "<pin>",
-	 *       "api_key": "<api_key>",
-	 *       "admin_key": "<admin_key>"
+	 *       "rec_dir": "&lt;recording_directory&gt;",
+	 *       "pin": "&lt;pin&gt;",
+	 *       "api_key": "&lt;api_key&gt;",
+	 *       "admin_key": "&lt;admin_key&gt;"
 	 *     }
 	 *   }
 	 * }
-	 * </code>
-	 * </p>
+	 * &lt;/code&gt;
+	 * &lt;/p&gt;
 	 * If information retrieval is successful, "janus" will be "success", "streaming" will be "info", and "result" will be "ok".
 	 * The response will contain details about the specified mounting point such as its description, metadata, privacy status, permanence, recording status, recording directory, PIN, API key, and admin key.
 	 * If an error occurs during information retrieval, "janus" will be "error", "streaming" will be "info", "result" will be "error", and the "error" field may contain additional details.
