@@ -4,6 +4,10 @@ package africa.jopen.sdk.models.events;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a Janus JSEP event, containing information about the emitter,
+ * event type, timestamp, session ID, handle ID, opaque ID, and the nested event details.
+ */
 public class JanusJSEPEvent {
 	
 	/**

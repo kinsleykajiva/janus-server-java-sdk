@@ -1,5 +1,8 @@
 package africa.jopen.sdk.models.events;
 
+/**
+ * Represents the data associated with a video room plugin event.
+ */
 public class VideoRoomPluginEventData extends Event {
 	private String                           event;
 	private String                           room;

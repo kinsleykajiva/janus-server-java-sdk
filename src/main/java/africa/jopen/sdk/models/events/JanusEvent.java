@@ -5,6 +5,9 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 
+/**
+ * Represents a Janus event.
+ */
 public class JanusEvent {
 	private String emitter;
 	private int type;
