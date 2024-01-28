@@ -25,7 +25,7 @@ public class Playground {
 		//System.out.println("jsonContent = " + jsonContent);
 		//System.exit(0);
 		
-		Janus.DB_ACCESS =(new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser"));
+		Janus.DB_ACCESS =new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser");
 		DBAccess.getInstance(Janus.DB_ACCESS);
 		JanusEventsEmissions emissionsMock = new JanusEventsEmissions() {
 			@Override

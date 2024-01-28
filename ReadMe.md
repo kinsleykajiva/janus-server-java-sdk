@@ -233,6 +233,37 @@ Here are the methods that will be called when an event is received from Janus se
     }
 ```
 
+## Events Database Caching 
+
+This SDK provides a way to cache the events received from Janus server in a database.Currently only MySQL is supported but other databases can be added easily(PRs are welcome).
+To save the events to an existing database consider the following example :
+    
+```java
+
+Janus.DB_ACCESS =new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser");
+DBAccess.getInstance(Janus.DB_ACCESS);
+
+````
+This SDK will start to cache the events in the database if `Janus.DB_ACCESS` is not null.If the details to access the database are incorrect ,the app wil throw an exception and stop.
+
+So far this SDK cache supports the [following Janus Events](https://janus.conf.meetecho.com/docs/eventhandlers.html) :
+* **Type 1** Session related event
+* **Type 2**	-Handle related event
+* **Type 4**	External event (injected via Admin API)
+* **Type 8**	JSEP event (SDP offer/answer)
+* **Type 16**	WebRTC state event (ICE/DTLS states, candidates, etc.)
+* **Type 32**	Media event (media state, reports, etc.)
+* **Type 64**	Plugin-originated event (e.g., event coming from VideoRoom)
+* **Type 128**	Transport-originated event (e.g., WebSocket connection state)
+* **Type 256**	Core event (server startup/shutdown)
+
+Please note that in fields like session id or handle id are stored as they are but if they are not found the value is set to 0 in the database .
+Timestamp are saved as `DateTime` in the database, this aims at making searching easy as well based on dates.
+
+In the event you want to search, try to consider session , handle the timestamp  as well .
+
+All events are saved on a background thread ,This is done to avoid blocking the parent thread.
+
 ## Contributing
 
 I welcome contributions! If you find a bug, have a feature request, or want to improve the documentation, feel free to open an issue or submit a pull request.
