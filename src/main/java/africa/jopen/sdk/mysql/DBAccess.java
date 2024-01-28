@@ -283,39 +283,39 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
   """,
 				"""
   -- We are not going to link	janus_plugins_id to this because of threading issues
-				CREATE TABLE IF NOT EXISTS janus_videoroom_plugin_event (
-				                                                            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				                                                           
-				                                                            session BIGINT(30) NOT NULL,
-				                                                            handle BIGINT(30) NOT NULL,
-				                                                            data_id BIGINT(30) DEFAULT 0,
-				                                                            data_private_id BIGINT(30) DEFAULT 0,
-				                                                            display VARCHAR(200) DEFAULT NULL,
-				                                                            room TEXT DEFAULT NULL,
-				                                                            opaque_id TEXT DEFAULT NULL,
-				                                                            streams_array TEXT DEFAULT NULL, /*this is a json array*/
-				                                                            timestamp DATETIME NOT NULL /*This can act as a timestamp for the event, or a timestamp for the event and the plugin but wil need to work*/
-				);
+	CREATE TABLE IF NOT EXISTS janus_videoroom_plugin_event (
+	                                                            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	                                                           
+	                                                            session BIGINT(30) NOT NULL,
+	                                                            handle BIGINT(30) NOT NULL,
+	                                                            data_id BIGINT(30) DEFAULT 0,
+	                                                            data_private_id BIGINT(30) DEFAULT 0,
+	                                                            display VARCHAR(200) DEFAULT NULL,
+	                                                            room TEXT DEFAULT NULL,
+	                                                            opaque_id TEXT DEFAULT NULL,
+	                                                            streams_array TEXT DEFAULT NULL, /*this is a json array*/
+	                                                            timestamp DATETIME NOT NULL /*This can act as a timestamp for the event, or a timestamp for the event and the plugin but wil need to work*/
+	);
   """,
 				"""
-  CREATE TABLE IF NOT EXISTS janus_transports (
-				                                                id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				                                                type INT NOT NULL,
-				                                                port INT NOT NULL,
-				                                                session BIGINT(30) DEFAULT NULL,
-				                                                handle BIGINT(30) DEFAULT NULL,
-				                                                plugin VARCHAR(100) DEFAULT NULL,
-				                                                event_id VARCHAR(100) NOT NULL,
-				                                                ip VARCHAR(100) NOT NULL,
-				                                                admin_api VARCHAR(10) DEFAULT NULL,
-				                                                emitter VARCHAR(300) DEFAULT NULL,
-				                                                transport VARCHAR(300) DEFAULT NULL,
-				                                                event VARCHAR(300) DEFAULT NULL,
-				                                                timestamp DATETIME NOT NULL,
-				                                                INDEX janus_idx_session_handle (session, handle),
-				                                                INDEX janus_idx_plugin (plugin),
-				                                                INDEX janus_idx_timestamp (timestamp)
-				);
+						  CREATE TABLE IF NOT EXISTS janus_transports (
+						        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+						        type INT NOT NULL,
+						        port INT NOT NULL,
+						        session BIGINT(30) DEFAULT NULL,
+						        handle BIGINT(30) DEFAULT NULL,
+						        plugin VARCHAR(100) DEFAULT NULL,
+						        event_id VARCHAR(100) NOT NULL,
+						        ip VARCHAR(100) NOT NULL,
+						        admin_api VARCHAR(10) DEFAULT NULL,
+						        emitter VARCHAR(300) DEFAULT NULL,
+						        transport VARCHAR(300) DEFAULT NULL,
+						        event VARCHAR(300) DEFAULT NULL,
+						        timestamp DATETIME NOT NULL,
+						        INDEX janus_idx_session_handle (session, handle),
+						        INDEX janus_idx_plugin (plugin),
+						        INDEX janus_idx_timestamp (timestamp)
+										);
   """,
 		};
 		for (final String sql : table) {
