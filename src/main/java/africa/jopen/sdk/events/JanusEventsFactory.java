@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class represents a factory for creating Janus events.
+ */
 public class JanusEventsFactory {
 	
 	private JSONObject jsonEvent;
@@ -29,9 +32,10 @@ public class JanusEventsFactory {
 	}
 	
 	/**
-	 * Processes event 16.
-	 * This method extracts information from a JSON event object and creates a JanusWebRTCStateEvent object.
-	 * If a DBAccess instance is available, it inserts the JanusWebRTCStateEvent into the database using SQLBatchExec.
+	 * Processes the event with ID 16.
+	 * This method extracts the necessary information from the JSON event object
+	 * and creates a JanusWebRTCStateEvent object to represent the event.
+	 * If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
 	 */
 	public void processEvent16() {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
@@ -59,6 +63,11 @@ public class JanusEventsFactory {
 		
 	}
 	
+	/**
+	 * This method processes the given event. It extracts the necessary information from the JSON event object
+	 * and creates a JanusHandleEvent.Root object to represent the event. If Janus.DB_ACCESS is not null, it
+	 * inserts the event into the database using SQLBatchExec.
+	 */
 	public void processEvent2(  ) {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusHandleEvent.Event(
@@ -111,6 +120,11 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	/**
+	 * This method processes the event with ID 32.
+	 * It extracts the necessary information from the JSON event object and creates a JanusMediaEvent object to represent the event.
+	 * If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
+	 */
 	public void processEvent32(  ) {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusMediaEvent.Event(
@@ -156,6 +170,13 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	/**
+	 * Processes the event with ID 8.
+	 *
+	 * This method extracts the necessary information from the JSON event object and creates
+	 * a JanusJSEPEvent.Root object to represent the event. If Janus.DB_ACCESS is not null,
+	 * it inserts the event into the database using SQLBatchExec.
+	 */
 	public void processEvent8( ) {
 		var jsep = jsonEvent.getJSONObject("event").has("jsep") ? new JanusJSEPEvent.Jsep(jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("type", null),
 				jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("sdp", null)) : null;
@@ -175,6 +196,13 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	/**
+	 * Processes the event with ID 1.
+	 *
+	 * This method extracts the necessary information from the JSON event object and creates a JanusSessionEvent.Root
+	 * object to represent the event. If Janus.DB_ACCESS is not null, it inserts the event into the database using
+	 * SQLBatchExec.
+	 */
 	public void processEvent1( ) {
 		var janusEvent = new JanusSessionEvent.Root(
 				jsonEvent.optString("emitter", null),
@@ -195,6 +223,14 @@ public class JanusEventsFactory {
 		}
 	}
 	
+	/**
+	 * Processes the event with ID 256.
+	 *
+	 * This method extracts the necessary information from the JSON event object and creates a JanusCoreEvent.Root object to represent the event.
+	 * If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
+	 *
+	 * This method does not return any value.
+	 */
 	public void processEvent256( ) {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusCoreEvent.Event(

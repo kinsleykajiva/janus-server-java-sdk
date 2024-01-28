@@ -14,22 +14,42 @@ public interface JanusEventsEmissions {
 	
 	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	
+	/**
+	 * Callback method called when a participant joins a room.
+	 *
+	 * @param participantId       The ID of the participant who joined the room.
+	 * @param participantDisplay  The display name of the participant who joined the room.
+	 * @param roomId              The ID of the room which the participant joined.
+	 */
 	void onParticipantJoined( long participantId, String participantDisplay, String roomId );
 	
+	/**
+	 * Callback method called when a participant leaves a room.
+	 *
+	 * @param participantId       The ID of the participant who left the room.
+	 * @param participantDisplay  The display name of the participant who left the room.
+	 * @param roomId              The ID of the room from which the participant left.
+	 */
 	void onParticipantLeft( long participantId, String participantDisplay, String roomId );
 	
 	/**
 	 * Event fired when the first participant joins the room
+	 * @param roomId the room id
+	 * @param firstParticipantId the first participant id
+	 * @param firstParticipantDisplay the first participant display name
 	 */
 	void onRoomSessionStarted( String roomId, long firstParticipantId, String firstParticipantDisplay );
 	
 	/**
-	 * Event fired when the last participant leaves the room, indicating an empty room
+	 * Callback method called when a room session ends.
+	 *
+	 * @param roomId The ID of the room that ended the session.
 	 */
 	void onRoomSessionEnded( String roomId );
 	
 	/**
 	 * Event fired when a new event is received from Janus
+	 * @param event the event json dump
 	 */
 	default void consumeEventAsync( String event ) {
 		if(!SdkUtils.isJson(event)){

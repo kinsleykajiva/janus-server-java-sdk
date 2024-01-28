@@ -31,6 +31,11 @@ public class JanusTransportOriginatedEvent {
 	/**
 	 * The record representing data associated with a Janus transport-originated event,
 	 * including the event name, admin API status, IP address, and port.
+	 *
+	 * @param event The name of the event.
+	 * @param admin_api The admin API status.
+	 * @param ip The IP address.
+	 * @param port The port.
 	 */
 	public record Data(String event, boolean admin_api, String ip, int port) {
 	}

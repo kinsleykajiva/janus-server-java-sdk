@@ -16,6 +16,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+/**
+ * The Janus class represents a Janus instance that communicates with the Janus server.
+ */
 public class Janus implements JanusEventHandler {
 	static Logger log = Logger.getLogger(Janus.class.getName());
 	private ScheduledExecutorService   executorService          = new ScheduledThreadPoolExecutor(1);
