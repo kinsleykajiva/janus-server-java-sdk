@@ -1,6 +1,8 @@
 package africa.jopen.sdk.models.events;
 
 
+import java.sql.Timestamp;
+
 /**
  * Represents a Janus transport-originated event.
  * This class contains records for the root event, the event itself, and the associated data.
@@ -51,7 +53,7 @@ public class JanusTransportOriginatedEvent {
 	public String trackInsert(JanusTransportOriginatedEvent.Root root) {
     String emitter = root.emitter();
     int type = root.type();
-    long timestamp = root.timestamp();
+		var timestamp = new Timestamp(root.timestamp() / 1000);
     JanusTransportOriginatedEvent.Event event = root.event();
 
     String transport = event.transport();

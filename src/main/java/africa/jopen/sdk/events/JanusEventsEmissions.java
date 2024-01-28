@@ -55,6 +55,7 @@ public interface JanusEventsEmissions {
 		if(!SdkUtils.isJson(event)){
 			return;
 		}
+		
 		JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
 		IntStream.range(0, jsonArray.length())
 				.parallel()
@@ -62,6 +63,7 @@ public interface JanusEventsEmissions {
 					JSONObject jsonEvent = jsonArray.getJSONObject(i);
 					JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, this);
 					EventType eventType = EventType.fromTypeValue(jsonEvent.getInt("type"));
+					System.out.println(11  +" :: "+ eventType);
 					switch (eventType) {
 						case CORE -> janusEventsFactory.processEvent256();
 						case TRANSPORT -> janusEventsFactory.processEvent128();

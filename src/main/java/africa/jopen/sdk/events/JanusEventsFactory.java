@@ -46,14 +46,16 @@ public class JanusEventsFactory {
 				jsonEventObj.optString("local-candidate", null),
 				jsonEventObj.optString("remote-candidate", null)
 		);
+		System.out.println(jsonEvent.toString());
+		System.out.println("99 + " + jsonEvent.optLong("timestamp", 0));
 		var janusEvent = new JanusWebRTCStateEvent.Root(
-				jsonEventObj.optString("emitter", null),
-				jsonEventObj.optInt("type", 0),
-				jsonEventObj.optInt("subtype", 0),
-				jsonEventObj.optLong("timestamp", 0),
-				jsonEventObj.optLong("session_id", 0),
-				jsonEventObj.optLong("handle_id", 0),
-				jsonEventObj.optString("opaque_id", null),
+				jsonEvent.optString("emitter", null),
+				jsonEvent.optInt("type", 0),
+				jsonEvent.optInt("subtype", 0),
+				jsonEvent.optLong("timestamp", 0),
+				jsonEvent.optLong("session_id", 0),
+				jsonEvent.optLong("handle_id", 0),
+				jsonEvent.optString("opaque_id", null),
 				jevent
 		);
 		if (Janus.DB_ACCESS != null) {
@@ -76,12 +78,12 @@ public class JanusEventsFactory {
 				jsonEventObj.optString("opaque_id", null)
 		);
 		var janusEvent = new JanusHandleEvent.Root(
-				jsonEventObj.optString("emitter", null),
-				jsonEventObj.optInt("type", 0),
-				jsonEventObj.optLong("timestamp", 0),
-				jsonEventObj.optLong("session_id", 0),
-				jsonEventObj.optLong("handle_id", 0),
-				jsonEventObj.optString("opaque_id", null),
+				jsonEvent.optString("emitter", null),
+				jsonEvent.optInt("type", 0),
+				jsonEvent.optLong("timestamp", 0),
+				jsonEvent.optLong("session_id", 0),
+				jsonEvent.optLong("handle_id", 0),
+				jsonEvent.optString("opaque_id", null),
 				jevent
 		);
 		if (Janus.DB_ACCESS != null) {
@@ -109,9 +111,9 @@ public class JanusEventsFactory {
 				)
 		);
 		var janusEvent = new JanusTransportOriginatedEvent.Root(
-				jsonEventObj.optString("emitter", null),
-				jsonEventObj.optInt("type", 0),
-				jsonEventObj.optLong("timestamp", 0),
+				jsonEvent.optString("emitter", null),
+				jsonEvent.optInt("type", 0),
+				jsonEvent.optLong("timestamp", 0),
 				jevent
 		);
 		if (Janus.DB_ACCESS != null) {
@@ -243,10 +245,10 @@ public class JanusEventsFactory {
 				)
 		);
 		var janusEvent = new JanusCoreEvent.Root(
-				jsonEventObj.optString("emitter", null),
-				jsonEventObj.optInt("type", 0),
-				jsonEventObj.optInt("subtype", 0),
-				jsonEventObj.optLong("timestamp", 0),
+				jsonEvent.optString("emitter", null),
+				jsonEvent.optInt("type", 0),
+				jsonEvent.optInt("subtype", 0),
+				jsonEvent.optLong("timestamp", 0),
 				jevent
 		);
 		if (Janus.DB_ACCESS != null) {

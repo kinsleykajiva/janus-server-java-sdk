@@ -1,6 +1,8 @@
 package africa.jopen.sdk.models.events;
 
 
+import java.sql.Timestamp;
+
 /**
  * Represents a Janus handle event, containing information about the emitter,
  * event type, timestamp, session ID, handle ID, opaque ID, and the nested event details.
@@ -28,9 +30,10 @@ public class JanusHandleEvent {
 	 * @return The SQL INSERT statement.
 	 */
 	public String trackInsert(JanusHandleEvent.Root root){
+		var timestamp = new Timestamp(root.timestamp() / 1000);
     return String.format(
         "INSERT INTO janus_handles (session, handle, event, plugin, timestamp) VALUES (%d, %d, '%s', '%s', FROM_UNIXTIME(%d))",
-        root.session_id(), root.handle_id(), root.event().name(), root.event().plugin(), root.timestamp()
+        root.session_id(), root.handle_id(), root.event().name(), root.event().plugin(), timestamp
     );
 }
 

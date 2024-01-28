@@ -1,6 +1,8 @@
 package africa.jopen.sdk.models.events;
 
 
+import java.sql.Timestamp;
+
 public class JanusCoreEvent {
 	
 	/**
@@ -44,9 +46,10 @@ public class JanusCoreEvent {
 	 *
 	 * */
 	public String trackInsert( JanusCoreEvent.Root root ) {
+		var timestamp = new Timestamp(root.timestamp() / 1000);
 		return String.format(
-				"INSERT INTO janus_core (name, value, timestamp) VALUES ('%s', '%s', FROM_UNIXTIME(%d))",
-				root.emitter(), root.event().status(), root.timestamp()
+				"INSERT INTO janus_core (name, value, timestamp) VALUES ('%s', '%s', '%s')",
+				root.emitter(), root.event().status(), timestamp
 		);
 		
 	}

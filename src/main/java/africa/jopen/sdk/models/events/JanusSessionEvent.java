@@ -1,5 +1,7 @@
 package africa.jopen.sdk.models.events;
 
+import java.sql.Timestamp;
+
 /**
  * The JanusSessionEvent class represents a Janus session event, including information about the emitter,
  * event type, timestamp, session ID, and the nested event details.
@@ -46,9 +48,10 @@ public class JanusSessionEvent {
 	 * @return The SQL INSERT statement.
 	 */
 	public String trackInsert( JanusSessionEvent.Root root ) {
+		var timestamp = new Timestamp(root.timestamp() / 1000);
 		return String.format(
-				"INSERT INTO janus_sessions (session, event, timestamp) VALUES (%d, '%s', FROM_UNIXTIME(%d))",
-				root.session_id(), root.event().name(), root.timestamp()
+				"INSERT INTO janus_sessions (session, event, timestamp) VALUES (%d, '%s', '%s')",
+				root.session_id(), root.event().name(), timestamp
 		);
 	}
 }

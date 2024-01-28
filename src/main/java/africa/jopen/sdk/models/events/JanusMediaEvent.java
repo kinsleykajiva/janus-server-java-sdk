@@ -79,6 +79,7 @@ public class JanusMediaEvent {
 	 * @return A String containing two SQL insert statements: one for the janus_stats table and one for the janus_media table.
 	 */
 	public String trackInsert(JanusMediaEvent.Root root){
+		var timestamp = new Timestamp(root.timestamp() / 1000);
 		//ToDo! this needs to be review because it will be false positive as not all events will have all these attributes even if they are set to default values of zero , null and false values
 		// but yet this can or is harmless but just be aware if this affects your data integrity as two inserts are made regardless
 		return "INSERT INTO janus_stats (session, handle, medium, base, lsr, lostlocal, lostremote, jitterlocal, jitterremote, packetssent, packetsrecv, bytessent, bytesrecv, nackssent, nacksrecv, timestamp) VALUES ("
@@ -97,12 +98,12 @@ public class JanusMediaEvent {
 				+ root.event.bytes_received() + ", "
 				+ root.event.nacks_sent() + ", "
 				+ root.event.nacks_received() + ", '"
-				+ new Timestamp(root.timestamp()) + "');"+
+				+ timestamp + "');"+
 				"INSERT INTO janus_media (session, handle, receiving, timestamp) VALUES ("
 				+ root.session_id() + ", "+
 				root.handle_id() + ", '"+
-				root.event.receiving() + "', "+
-				new Timestamp(root.timestamp()) + ");";
+				root.event.receiving() + "', '"+
+				timestamp + "');";
 	}
 }
 

@@ -2,6 +2,12 @@ package africa.jopen.sdk.models.events;
 
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class JanusWebRTCStateEvent {
 	
@@ -44,17 +50,19 @@ public class JanusWebRTCStateEvent {
 	 * @param root the JanusWebRTCStateEvent.Root object containing the data to be inserted
 	 * @return the SQL INSERT statement
 	 */
-	public String trackInsert( JanusWebRTCStateEvent.Root root ) {
+	public String trackInsert(JanusWebRTCStateEvent.Root root) {
+
+    var timestamp = new Timestamp(root.timestamp() / 1000);
+		//
 		
-		return "INSERT INTO janus_ice (session, handle, stream, component, state, timestamp,local_candidate,remote_candidate) VALUES ("
-				+ root.session_id() + ", "
-				+ root.handle_id() + ", "
-				+ root.event().stream_id() + ", "
-				+ root.event().component_id() + ", '"
-				+ root.event().ice() + "', '"
-				+ new Timestamp(root.timestamp()) + "' , '" +
-				root.event().local_candidate() + "','" +
-				root.event().remote_candidate() + "'); ";
-				
-	}
+    return "INSERT INTO janus_ice (session, handle, stream, component, state, timestamp,local_candidate,remote_candidate) VALUES ("
+        + root.session_id() + ", "
+        + root.handle_id() + ", "
+        + root.event().stream_id() + ", "
+        + root.event().component_id() + ", '"
+        + root.event().ice() + "', '"
+        + timestamp + "' , '"
+        + root.event().local_candidate() + "','"
+        + root.event().remote_candidate() + "'); ";
+}
 }

@@ -86,13 +86,14 @@ public class JanusEvent {
 	
 	public String trackInsert() {
     StringBuilder sql = new StringBuilder();
+		var timestamp = new Timestamp(this.getTimestamp() / 1000);
     if (event instanceof VideoRoomPluginEventData) {
         sql.append("INSERT INTO janus_plugins (session, handle, plugin, event, timestamp) VALUES (")
             .append(this.getSession_id()).append(", ")
             .append(this.getHandle_id()).append(", '")
             .append(this.getEvent().getPlugin()).append("', '")
             .append(((VideoRoomPluginEventData) event).getEvent()).append("', '")
-            .append(new Timestamp(this.getTimestamp())).append("');");
+            .append(timestamp).append("');");
 
         JSONArray streamsJ = new JSONArray();
         if (((VideoRoomPluginEventData) event).getStream() != null) {
@@ -119,7 +120,7 @@ public class JanusEvent {
             .append(((VideoRoomPluginEventData) event).getRoom()).append("', '")
             .append(((VideoRoomPluginEventData) event).getOpaque_id()).append("', '")
             .append(streamsJ.toString(2)).append("', '")
-            .append(new Timestamp(this.getTimestamp())).append("' )");
+            .append(timestamp).append("' )");
 		// clean up objects not in use for GC to collect
 	    		streamsJ = null;
 				

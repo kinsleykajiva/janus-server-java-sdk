@@ -4,6 +4,8 @@ package africa.jopen.sdk.models.events;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Timestamp;
+
 /**
  * Represents a Janus JSEP event, containing information about the emitter,
  * event type, timestamp, session ID, handle ID, opaque ID, and the nested event details.
@@ -48,9 +50,10 @@ public class JanusJSEPEvent {
 	* @param root The root record for a Janus JSEP event.
 	* */
 	public String trackInsert(@NotNull JanusJSEPEvent.Root root){
+		var timestamp = new Timestamp(root.timestamp() / 1000);
     return String.format(
         "INSERT INTO janus_sdps (session, handle, remote, offer, sdp, timestamp) VALUES (%d, %d, %b, %b, '%s', FROM_UNIXTIME(%d))",
-        root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), root.timestamp()
+        root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
     );
 }
 }
