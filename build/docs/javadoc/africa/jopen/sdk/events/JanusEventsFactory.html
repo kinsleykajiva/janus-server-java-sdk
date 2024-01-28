@@ -91,6 +91,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JanusEventsFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">This class represents a factory for creating Janus events.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,7 +124,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent1()" class="member-name-link">processEvent1</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Processes the event with ID 1.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent128()" class="member-name-link">processEvent128</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -132,20 +135,28 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent16()" class="member-name-link">processEvent16</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Processes event 16.</div>
+<div class="block">Processes the event with ID 16.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent2()" class="member-name-link">processEvent2</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">This method processes the given event.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent256()" class="member-name-link">processEvent256</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Processes the event with ID 256.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent32()" class="member-name-link">processEvent32</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">This method processes the event with ID 32.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processEvent8()" class="member-name-link">processEvent8</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Processes the event with ID 8.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processVideoRoomEvent(org.json.JSONObject)" class="member-name-link">processVideoRoomEvent</a><wbr>(org.json.JSONObject&nbsp;jsonEvent)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -193,15 +204,19 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="processEvent16()">
 <h3>processEvent16</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">processEvent16</span>()</div>
-<div class="block">Processes event 16.
- This method extracts information from a JSON event object and creates a JanusWebRTCStateEvent object.
- If a DBAccess instance is available, it inserts the JanusWebRTCStateEvent into the database using SQLBatchExec.</div>
+<div class="block">Processes the event with ID 16.
+ This method extracts the necessary information from the JSON event object
+ and creates a JanusWebRTCStateEvent object to represent the event.
+ If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="processEvent2()">
 <h3>processEvent2</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">processEvent2</span>()</div>
+<div class="block">This method processes the given event. It extracts the necessary information from the JSON event object
+ and creates a JanusHandleEvent.Root object to represent the event. If Janus.DB_ACCESS is not null, it
+ inserts the event into the database using SQLBatchExec.</div>
 </section>
 </li>
 <li>
@@ -218,24 +233,43 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="processEvent32()">
 <h3>processEvent32</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">processEvent32</span>()</div>
+<div class="block">This method processes the event with ID 32.
+ It extracts the necessary information from the JSON event object and creates a JanusMediaEvent object to represent the event.
+ If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="processEvent8()">
 <h3>processEvent8</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">processEvent8</span>()</div>
+<div class="block">Processes the event with ID 8.
+
+ This method extracts the necessary information from the JSON event object and creates
+ a JanusJSEPEvent.Root object to represent the event. If Janus.DB_ACCESS is not null,
+ it inserts the event into the database using SQLBatchExec.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="processEvent1()">
 <h3>processEvent1</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">processEvent1</span>()</div>
+<div class="block">Processes the event with ID 1.
+
+ This method extracts the necessary information from the JSON event object and creates a JanusSessionEvent.Root
+ object to represent the event. If Janus.DB_ACCESS is not null, it inserts the event into the database using
+ SQLBatchExec.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="processEvent256()">
 <h3>processEvent256</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">processEvent256</span>()</div>
+<div class="block">Processes the event with ID 256.
+
+ This method extracts the necessary information from the JSON event object and creates a JanusCoreEvent.Root object to represent the event.
+ If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
+
+ This method does not return any value.</div>
 </section>
 </li>
 <li>

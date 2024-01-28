@@ -129,16 +129,20 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onParticipantJoined(long,java.lang.String,java.lang.String)" class="member-name-link">onParticipantJoined</a><wbr>(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Callback method called when a participant joins a room.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onParticipantLeft(long,java.lang.String,java.lang.String)" class="member-name-link">onParticipantLeft</a><wbr>(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Callback method called when a participant leaves a room.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onRoomSessionEnded(java.lang.String)" class="member-name-link">onRoomSessionEnded</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Event fired when the last participant leaves the room, indicating an empty room</div>
+<div class="block">Callback method called when a room session ends.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#onRoomSessionStarted(java.lang.String,long,java.lang.String)" class="member-name-link">onRoomSessionStarted</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
@@ -181,6 +185,13 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">onParticipantJoined</span><wbr><span class="parameters">(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
+<div class="block">Callback method called when a participant joins a room.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>participantId</code> - The ID of the participant who joined the room.</dd>
+<dd><code>participantDisplay</code> - The display name of the participant who joined the room.</dd>
+<dd><code>roomId</code> - The ID of the room which the participant joined.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -189,6 +200,13 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">onParticipantLeft</span><wbr><span class="parameters">(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
+<div class="block">Callback method called when a participant leaves a room.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>participantId</code> - The ID of the participant who left the room.</dd>
+<dd><code>participantDisplay</code> - The display name of the participant who left the room.</dd>
+<dd><code>roomId</code> - The ID of the room from which the participant left.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -198,13 +216,23 @@ loadScripts(document, 'script');</script>
  long&nbsp;firstParticipantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;firstParticipantDisplay)</span></div>
 <div class="block">Event fired when the first participant joins the room</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>roomId</code> - the room id</dd>
+<dd><code>firstParticipantId</code> - the first participant id</dd>
+<dd><code>firstParticipantDisplay</code> - the first participant display name</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="onRoomSessionEnded(java.lang.String)">
 <h3>onRoomSessionEnded</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">onRoomSessionEnded</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
-<div class="block">Event fired when the last participant leaves the room, indicating an empty room</div>
+<div class="block">Callback method called when a room session ends.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>roomId</code> - The ID of the room that ended the session.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -212,6 +240,10 @@ loadScripts(document, 'script');</script>
 <h3>consumeEventAsync</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">consumeEventAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;event)</span></div>
 <div class="block">Event fired when a new event is received from Janus</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>event</code> - the event json dump</dd>
+</dl>
 </section>
 </li>
 </ul>

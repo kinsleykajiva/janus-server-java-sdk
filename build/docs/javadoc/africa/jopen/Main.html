@@ -139,16 +139,20 @@ implements <a href="sdk/events/JanusEventsEmissions.html" title="interface in af
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onParticipantJoined(long,java.lang.String,java.lang.String)" class="member-name-link">onParticipantJoined</a><wbr>(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Callback method called when a participant joins a room.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onParticipantLeft(long,java.lang.String,java.lang.String)" class="member-name-link">onParticipantLeft</a><wbr>(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Callback method called when a participant leaves a room.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRoomSessionEnded(java.lang.String)" class="member-name-link">onRoomSessionEnded</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Event fired when the last participant leaves the room, indicating an empty room</div>
+<div class="block">Callback method called when a room session ends.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRoomSessionStarted(java.lang.String,long,java.lang.String)" class="member-name-link">onRoomSessionStarted</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
@@ -203,9 +207,15 @@ implements <a href="sdk/events/JanusEventsEmissions.html" title="interface in af
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onParticipantJoined</span><wbr><span class="parameters">(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html#onParticipantJoined(long,java.lang.String,java.lang.String)">JanusEventsEmissions</a></code></span></div>
+<div class="block">Callback method called when a participant joins a room.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="sdk/events/JanusEventsEmissions.html#onParticipantJoined(long,java.lang.String,java.lang.String)">onParticipantJoined</a></code>&nbsp;in interface&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html" title="interface in africa.jopen.sdk.events">JanusEventsEmissions</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>participantId</code> - The ID of the participant who joined the room.</dd>
+<dd><code>participantDisplay</code> - The display name of the participant who joined the room.</dd>
+<dd><code>roomId</code> - The ID of the room which the participant joined.</dd>
 </dl>
 </section>
 </li>
@@ -215,9 +225,15 @@ implements <a href="sdk/events/JanusEventsEmissions.html" title="interface in af
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onParticipantLeft</span><wbr><span class="parameters">(long&nbsp;participantId,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;participantDisplay,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html#onParticipantLeft(long,java.lang.String,java.lang.String)">JanusEventsEmissions</a></code></span></div>
+<div class="block">Callback method called when a participant leaves a room.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="sdk/events/JanusEventsEmissions.html#onParticipantLeft(long,java.lang.String,java.lang.String)">onParticipantLeft</a></code>&nbsp;in interface&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html" title="interface in africa.jopen.sdk.events">JanusEventsEmissions</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>participantId</code> - The ID of the participant who left the room.</dd>
+<dd><code>participantDisplay</code> - The display name of the participant who left the room.</dd>
+<dd><code>roomId</code> - The ID of the room from which the participant left.</dd>
 </dl>
 </section>
 </li>
@@ -232,6 +248,10 @@ implements <a href="sdk/events/JanusEventsEmissions.html" title="interface in af
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="sdk/events/JanusEventsEmissions.html#onRoomSessionStarted(java.lang.String,long,java.lang.String)">onRoomSessionStarted</a></code>&nbsp;in interface&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html" title="interface in africa.jopen.sdk.events">JanusEventsEmissions</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>roomId</code> - the room id</dd>
+<dd><code>firstParticipantId</code> - the first participant id</dd>
+<dd><code>firstParticipantDisplay</code> - the first participant display name</dd>
 </dl>
 </section>
 </li>
@@ -240,10 +260,12 @@ implements <a href="sdk/events/JanusEventsEmissions.html" title="interface in af
 <h3>onRoomSessionEnded</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onRoomSessionEnded</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html#onRoomSessionEnded(java.lang.String)">JanusEventsEmissions</a></code></span></div>
-<div class="block">Event fired when the last participant leaves the room, indicating an empty room</div>
+<div class="block">Callback method called when a room session ends.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="sdk/events/JanusEventsEmissions.html#onRoomSessionEnded(java.lang.String)">onRoomSessionEnded</a></code>&nbsp;in interface&nbsp;<code><a href="sdk/events/JanusEventsEmissions.html" title="interface in africa.jopen.sdk.events">JanusEventsEmissions</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>roomId</code> - The ID of the room that ended the session.</dd>
 </dl>
 </section>
 </li>
