@@ -80,9 +80,10 @@ public class JanusMediaEvent {
 	 */
 	public String trackInsert(JanusMediaEvent.Root root){
 		var timestamp = new Timestamp(root.timestamp() / 1000);
+		String receiving = root.event.receiving() ? "true": "false";
 		//ToDo! this needs to be review because it will be false positive as not all events will have all these attributes even if they are set to default values of zero , null and false values
 		// but yet this can or is harmless but just be aware if this affects your data integrity as two inserts are made regardless
-		return "INSERT INTO janus_stats (session, handle, medium, base, lsr, lostlocal, lostremote, jitterlocal, jitterremote, packetssent, packetsrecv, bytessent, bytesrecv, nackssent, nacksrecv, timestamp) VALUES ("
+		var sql= "INSERT INTO janus_stats (session, handle, medium, base, lsr, lostlocal, lostremote, jitterlocal, jitterremote, packetssent, packetsrecv, bytessent, bytesrecv, nackssent, nacksrecv, timestamp) VALUES ("
 				+ root.session_id() + ", "
 				+ root.handle_id() + ", '"
 				+ root.event.media() + "', "
@@ -98,12 +99,13 @@ public class JanusMediaEvent {
 				+ root.event.bytes_received() + ", "
 				+ root.event.nacks_sent() + ", "
 				+ root.event.nacks_received() + ", '"
-				+ timestamp + "');"+
-				"INSERT INTO janus_media (session, handle, receiving, timestamp) VALUES ("
+				+ timestamp + "'); "
+				+"INSERT INTO janus_media (session, handle, receiving, timestamp) VALUES ("
 				+ root.session_id() + ", "+
-				root.handle_id() + ", '"+
-				root.event.receiving() + "', '"+
-				timestamp + "');";
+				root.handle_id() + "," +
+				" '"+receiving+ "', " +
+				"'"+timestamp + "');";
+		return sql;
 	}
 }
 

@@ -51,6 +51,7 @@ public class JanusTransportOriginatedEvent {
 	 *
 	 */
 	public String trackInsert(JanusTransportOriginatedEvent.Root root) {
+		System.out.println("ccc");
     String emitter = root.emitter();
     int type = root.type();
 		var timestamp = new Timestamp(root.timestamp() / 1000);
@@ -65,7 +66,7 @@ public class JanusTransportOriginatedEvent {
     String ip = data.ip();
     int port = data.port();
 		
-		return "INSERT INTO janus_transports (emitter, type, timestamp, transport, id, event, admin_api, ip, port) " +
-                 "VALUES ('" + emitter + "', " + type + ", " + timestamp + ", '" + transport + "', '" + id + "', '" + eventName + "', " + adminApi + ", '" + ip + "', " + port + ")";
+		return "INSERT INTO janus_transports (emitter, type, timestamp, transport, event_id, event, admin_api, ip, port) " +
+                 "VALUES ('" + emitter + "', " + type + ", '" + timestamp + "', '" + transport + "', '" + id + "', '" + eventName + "', '" + adminApi + "', '" + ip + "', " + port + ")";
 }
 }

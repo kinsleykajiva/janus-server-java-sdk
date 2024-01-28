@@ -48,7 +48,7 @@ public class JanusCoreEvent {
 	public String trackInsert( JanusCoreEvent.Root root ) {
 		var timestamp = new Timestamp(root.timestamp() / 1000);
 		return String.format(
-				"INSERT INTO janus_core (name, value, timestamp) VALUES ('%s', '%s', '%s')",
+				"INSERT INTO janus_core (name, value, timestamp) VALUES ('%s', '%s', '%s');",
 				root.emitter(), root.event().status(), timestamp
 		);
 		

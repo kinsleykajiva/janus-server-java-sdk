@@ -54,36 +54,72 @@ public class DBAccess {
 		}
 	}
 	
-	/**
-	 * Executes a batch SQL statement asynchronously.
-	 *
-	 * @param sql the SQL statement to be executed
-	 */
-	public void SQLBatchExec( String sql ) {
-		
-		
+	public void SQLExec(String sql) {
 		synchronized (lock) {
 			if (connect == null) {
 				connection();
 			}
 			
 			if (connect == null) {
-				
 				log.severe("Could not connect to database");
 				return;
 			}
-			executorService.submit(() -> {
-				try (Statement batchStatement = connect.createStatement()) {
-					log.info("SQL-" + sql);
-					batchStatement.addBatch(sql);
-					batchStatement.executeBatch();
-				} catch (SQLException e) {
-					log.log(Level.SEVERE, e.getMessage(), e);
-				}
-			});
 			
+			// Split the input SQL string into individual statements
+			String[] sqlStatements = sql.split(";");
+			
+			// Execute each SQL statement separately
+			for (String statement : sqlStatements) {
+				try (Statement batchStatement = connect.createStatement()) {
+					if (!statement.trim().isEmpty()) { // Skip empty statements
+						log.info("SQL-" + statement);
+						batchStatement.addBatch(statement);
+						batchStatement.executeBatch();
+					}
+				} catch (SQLException e) {
+					log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+				}
+			}
 		}
 	}
+	
+	
+	/**
+	 * Executes a batch SQL statement asynchronously.
+	 *
+	 * @param sql the SQL statement to be executed
+	 */
+	public void SQLBatchExec(String sql) {
+		synchronized (lock) {
+			if (connect == null) {
+				connection();
+			}
+			
+			if (connect == null) {
+				log.severe("Could not connect to database");
+				return;
+			}
+			
+			// Split the input SQL string into individual statements
+			String[] sqlStatements = sql.split(";");
+			
+			// Execute each SQL statement separately
+			for (String statement : sqlStatements) {
+				executorService.submit(() -> {
+					try (Statement batchStatement = connect.createStatement()) {
+						if (!statement.trim().isEmpty()) { // Skip empty statements
+							log.info("SQL-" + statement);
+							batchStatement.addBatch(statement);
+							batchStatement.executeBatch();
+						}
+					} catch (SQLException e) {
+						log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+					}
+				});
+			}
+		}
+	}
+	
 	
 	@Blocking
 	private void createJanusTables() {
@@ -200,7 +236,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                           session BIGINT(30) NOT NULL,
 				                                           handle BIGINT(30) NOT NULL,
 				                                           medium VARCHAR(30) DEFAULT NULL,
-				                                           receiving BOOLEAN DEFAULT NULL,
+				                                           receiving VARCHAR(30) DEFAULT NULL,
 				                                           timestamp DATETIME NOT NULL,
 				                                           INDEX janus_idx_session_handle (session, handle),
 				    
@@ -249,7 +285,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
   -- We are not going to link	janus_plugins_id to this because of threading issues
 				CREATE TABLE IF NOT EXISTS janus_videoroom_plugin_event (
 				                                                            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				                                                            janus_plugins_id INT NOT NULL,
+				                                                           
 				                                                            session BIGINT(30) NOT NULL,
 				                                                            handle BIGINT(30) NOT NULL,
 				                                                            data_id BIGINT(30) DEFAULT 0,
@@ -264,10 +300,17 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				"""
   CREATE TABLE IF NOT EXISTS janus_transports (
 				                                                id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				                                                session BIGINT(30) NOT NULL,
-				                                                handle BIGINT(30) NOT NULL,
-				                                                plugin VARCHAR(100) NOT NULL,
-				                                                event VARCHAR(300) NOT NULL,
+				                                                type INT NOT NULL,
+				                                                port INT NOT NULL,
+				                                                session BIGINT(30) DEFAULT NULL,
+				                                                handle BIGINT(30) DEFAULT NULL,
+				                                                plugin VARCHAR(100) DEFAULT NULL,
+				                                                event_id VARCHAR(100) NOT NULL,
+				                                                ip VARCHAR(100) NOT NULL,
+				                                                admin_api VARCHAR(10) DEFAULT NULL,
+				                                                emitter VARCHAR(300) DEFAULT NULL,
+				                                                transport VARCHAR(300) DEFAULT NULL,
+				                                                event VARCHAR(300) DEFAULT NULL,
 				                                                timestamp DATETIME NOT NULL,
 				                                                INDEX janus_idx_session_handle (session, handle),
 				                                                INDEX janus_idx_plugin (plugin),
@@ -275,8 +318,14 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				);
   """,
 		};
-		for (String sql : table) {
-			SQLBatchExec(sql);
+		for (final String sql : table) {
+			try (Statement batchStatement = connect.createStatement()) {
+				if (!sql.trim().isEmpty()) {
+					batchStatement.execute(sql);
+				}
+			} catch (SQLException e) {
+				log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+			}
 		}
 		
 	}

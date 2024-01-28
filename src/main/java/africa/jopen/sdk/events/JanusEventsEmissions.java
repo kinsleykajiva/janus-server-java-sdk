@@ -53,6 +53,7 @@ public interface JanusEventsEmissions {
 	 */
 	default void consumeEventAsync( String event ) {
 		if(!SdkUtils.isJson(event)){
+			System.err.println("Event is not a valid json");
 			return;
 		}
 		
@@ -63,7 +64,7 @@ public interface JanusEventsEmissions {
 					JSONObject jsonEvent = jsonArray.getJSONObject(i);
 					JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, this);
 					EventType eventType = EventType.fromTypeValue(jsonEvent.getInt("type"));
-					System.out.println(11  +" :: "+ eventType);
+					
 					switch (eventType) {
 						case CORE -> janusEventsFactory.processEvent256();
 						case TRANSPORT -> janusEventsFactory.processEvent128();

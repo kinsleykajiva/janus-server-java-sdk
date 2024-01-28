@@ -4,10 +4,26 @@ import africa.jopen.sdk.events.JanusEventsEmissions;
 import africa.jopen.sdk.models.MySqlConfiguration;
 import africa.jopen.sdk.mysql.DBAccess;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class Playground {
-	
+	public static String loadJsonFile(String filePath) {
+		String content = "";
+		try {
+			content = new String(Files.readAllBytes(Paths.get(filePath)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
 	
 	public static void main( String[] args ) {
+		
+		String jsonContent = loadJsonFile("./samples/janus_log.json");
+		//System.out.println("jsonContent = " + jsonContent);
+		//System.exit(0);
 		
 		Janus.DB_ACCESS =(new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser"));
 		DBAccess.getInstance(Janus.DB_ACCESS);
@@ -34,63 +50,16 @@ public class Playground {
 		};
 		
 		
-		String event = """
-                [
-                    {
-                       "emitter": "MyJanusInstance",
-                       "type": 256,
-                       "subtype": 1,
-                       "timestamp": 1705879077642460,
-                       "event": {
-                          "status": "update",
-                          "info": {
-                             "sessions": 2,
-                             "handles": 4,
-                             "peerconnections": 4,
-                             "stats-period": 1
-                          }
-                       }
-                    },
-                    {
-                           "emitter": "MyJanusInstance",
-                           "type": 256,
-                           "subtype": 1,
-                           "timestamp": 1705879017642365,
-                           "event": {
-                              "status": "update",
-                              "info": {
-                                 "sessions": 0,
-                                 "handles": 0,
-                                 "peerconnections": 0,
-                                 "stats-period": 1
-                              }
-                           }
-                        },
-                         {
-                               "emitter": "MyJanusInstance",
-                               "type": 16,
-                               "subtype": 3,
-                               "timestamp": 1705879036830185,
-                               "session_id": 7198949627396591,
-                               "handle_id": 4947903859375804,
-                               "opaque_id": "videoroomtest-ihrfLaK2eabM",
-                               "event": {
-                                  "remote-candidate": "1191289763 1 udp 2122260223 172.24.0.1 52827 typ host generation 0 ufrag ik1d network-id 1",
-                                  "stream_id": 1,
-                                  "component_id": 1
-                               }
-                            }
-                 ]
-                """;
+		
         /*JSONArray  jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonEvent = jsonArray.getJSONObject(i);
             JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, emissionsMock);
             janusEventsFactory.processEvent256();
         }*/
-		emissionsMock.consumeEventAsync(event);
+		//System.out.println(jsonContent);
+		emissionsMock.consumeEventAsync(jsonContent);
 		
-		System.out.println("Hello World");
 		
 	}
 }

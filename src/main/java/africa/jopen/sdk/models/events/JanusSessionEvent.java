@@ -50,7 +50,7 @@ public class JanusSessionEvent {
 	public String trackInsert( JanusSessionEvent.Root root ) {
 		var timestamp = new Timestamp(root.timestamp() / 1000);
 		return String.format(
-				"INSERT INTO janus_sessions (session, event, timestamp) VALUES (%d, '%s', '%s')",
+				"INSERT INTO janus_sessions (session, event, timestamp) VALUES (%d, '%s', '%s');",
 				root.session_id(), root.event().name(), timestamp
 		);
 	}
