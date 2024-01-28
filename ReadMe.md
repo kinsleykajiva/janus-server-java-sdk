@@ -241,4 +241,8 @@ I welcome contributions! If you find a bug, have a feature request, or want to i
 
 This project is licensed under the [MIT License](LICENSE).
 
+```shell
+ git push origin +refs/heads/master:refs/heads/master
+```
+
 
