@@ -27,10 +27,12 @@ jobs:
         run: |
           for file in ./build/libs/*; do
             echo "Processing $file file..."
-            curl \
+            curl -L \
               -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
               -H "Content-Type: $(file -b --mime-type $file)" \
-              --data-binary "@$file" \
-              "${{ steps.create_release.outputs.upload_url }}?name=$(basename $file)"
+              "${{ steps.create_release.outputs.upload_url }}?name=$(basename $file)" \
+              --data-binary "@$file"
           done
