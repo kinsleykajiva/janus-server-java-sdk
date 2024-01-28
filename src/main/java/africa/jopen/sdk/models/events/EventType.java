@@ -21,20 +21,33 @@ public enum EventType {
 		this.typeValue = typeValue;
 		this.eventDescription = eventDescription;
 	}
-	
+	/**
+	 * Returns the type value of the event.
+	 * @return the type value of the event
+	 * */
 	public int getTypeValue() {
 		return typeValue;
 	}
 	
+	/**
+	 * Returns the description of the event.
+	 * @return  the description of the event
+	 * */
 	public String getEventDescription() {
 		return eventDescription;
 	}
+	
+	/**
+	 * Returns the event type corresponding to the type value.
+	 * @param typeValue the type value of the event
+	 * @return the event type corresponding to the type value
+	 * */
 	public static EventType fromTypeValue(int typeValue) {
 		for (EventType eventType : EventType.values()) {
 			if (eventType.getTypeValue() == typeValue) {
 				return eventType;
 			}
 		}
-		return null; // or throw an exception
+		return null;
 	}
 }

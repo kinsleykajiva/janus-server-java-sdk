@@ -84,7 +84,12 @@ signing {
 test {
     useJUnitPlatform()
 }
-
+task buildJar(type: Jar) {
+    from sourceSets.main.output
+    archiveBaseName.set('janus-server-java-sdk')
+    archiveVersion.set(version)
+    archiveExtension.set('jar')
+}
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
