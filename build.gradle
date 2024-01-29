@@ -53,6 +53,7 @@ publishing {
                 username = env.getProperty('PUBLISHING_USERNAME')
                 password = env.getProperty('PUBLISHING_PASSWORD')
             }
+            url = uri('https://jitpack.io')
         }
     }
 }
@@ -72,6 +73,13 @@ dependencies {
     implementation group: "dev.onvoid.webrtc", name: "webrtc-java", version: "0.8.0", classifier: classifier
     implementation 'org.jetbrains:annotations:24.1.0'
     implementation 'com.mysql:mysql-connector-j:8.3.0'
+
+        implementation group: 'org.bytedeco', name: 'javacv-platform', version: '1.5.9'
+
+//    implementation 'com.github.manevolent:ffmpeg4j:534e72e6e7'
+//    implementation 'org.bytedeco:ffmpeg-platform:1.5.9'
+    implementation 'org.bytedeco:ffmpeg:6.0-1.5.9'
+
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.mockito:mockito-core:5.10.0'

@@ -1,8 +1,10 @@
 package africa.jopen.sdk;
 
 import africa.jopen.sdk.events.JanusEventsEmissions;
+import africa.jopen.sdk.ffmpeg.RTPStreamEndpoint;
 import africa.jopen.sdk.models.MySqlConfiguration;
 import africa.jopen.sdk.mysql.DBAccess;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,9 +21,41 @@ public class Playground {
 		return content;
 	}
 	
-	public static void main( String[] args ) {
+	// RTPStreamEndpoint
+	public static void main( String[] args ) throws InterruptedException {
+		RTPStreamEndpoint endpoint = new RTPStreamEndpoint(5014);
+		Thread            thread   = new Thread(endpoint);
+		thread.start();
+		// Let the stream run for 10 seconds
+		Thread.sleep(190_000);
+		// ffmpeg -re -i MinaNawe.mp4 -vn -acodec opus -payload_type 111 -f rtp rtp://127.0.0.1:5044
 		
-		String jsonContent = loadJsonFile("./samples/janus_log.json");
+//		// Let the stream run for a certain duration (e.g., 10 seconds)
+//		Thread.sleep(10000);
+//
+//		// Stop the endpoint gracefully
+//		endpoint.stop();
+//		thread.join(); // Wait for the thread to finish execution
+// Java equivalent code
+		
+		try {
+			Thread.sleep(10000);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+// to Stop the endpoint gracefully
+		endpoint.stop();
+		
+		try {
+			thread.join(); // Wait for the thread to finish execution
+		} catch (Exception ex) {
+			System.out.println(ex);
+		}
+	}
+	public static void mainXX( String[] args ) {
+		
+		String             jsonContent = loadJsonFile("./samples/janus_log.json");
 		//System.out.println("jsonContent = " + jsonContent);
 		//System.exit(0);
 		

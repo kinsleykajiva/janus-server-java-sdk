@@ -1,0 +1,7 @@
+v=0
+t=0 0
+m=audio 5002 RTP/AVP 111
+c=IN IP4 127.0.0.1
+a=recvonly
+a=rtpmap:111 opus/48000/2
+a=fmtp:98 stereo=1; sprop-stereo=0; useinbandfec=1
