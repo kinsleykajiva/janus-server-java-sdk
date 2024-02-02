@@ -18,10 +18,10 @@ import java.util.regex.Pattern;
 
 @ApiStatus.NonExtendable
 public class MediaFactory {
-	static  Logger            log = Logger.getLogger(MediaFactory.class.getName());
-	private MediaOutputTarget mediaOutputTarget;
-	private String            roomId;
-	private String            recordingFolder;
+	static        Logger            log          = Logger.getLogger(MediaFactory.class.getName());
+	private       MediaOutputTarget mediaOutputTarget;
+	private       String            roomId;
+	private       String            recordingFolder;
 	private       String            outputFolder;
 	private final List<FileInfoMJR> fileInfoMJRs = new ArrayList<>();
 	
@@ -80,9 +80,9 @@ public class MediaFactory {
 			if (fileInfoMJRs.size() % 2 != 0) {
 				throw new RuntimeException("The files do not match . For each video mjr file there is a audio mjr file and vice versa");
 			}
-			var participantStreamsList = processPairForUser();
-			createParticipantStreamMediaFile(participantStreamsList);
-			
+			var                              participantStreamsList = processPairForUser();
+			List<ParticipantStreamMediaFile> participantsFullStreams       = createParticipantStreamMediaFile(participantStreamsList);
+			// now lets combine all participant streams into a single media file who where in the same room.
 			
 		} catch (IOException e) {
 			throw new RuntimeException("Error reading directory", e);
@@ -90,32 +90,56 @@ public class MediaFactory {
 		
 	}
 	
-	private void createParticipantStreamMediaFile( List<ParticipantStream> participantStreamsList ){
-		List<Map<String,String>> mediaFilesList = new ArrayList<>();
+	
+	/**
+	 * Creates ParticipantStreamMediaFile objects .These are full media file for each participant (Video and Audio merged together for each participant)
+	 *
+	 * @param participantStreamsList The list of ParticipantStream objects.
+	 * @return A list of ParticipantStreamMediaFile objects.
+	 */
+	/**/
+	private List<ParticipantStreamMediaFile> createParticipantStreamMediaFile( List<ParticipantStream> participantStreamsList ) {
+		List<ParticipantStreamMediaFile> streamMediaFiles = new ArrayList<>();
 		participantStreamsList.forEach(participantStream -> {
-			Map<String,String> mediaFiles = new HashMap<>();
-			String audioInput = participantStream.audio() .file().getAbsolutePath();
-			String audioOutput = participantStream.audio() .file().getAbsolutePath().replace(".mjr", ".opus");
+			String audioInput  = participantStream.audio().file().getAbsolutePath();
+			String audioOutput = participantStream.audio().file().getAbsolutePath().replace(".mjr", ".opus");
 			
 			try {
-				SdkUtils.bashExecute("janus-pp-rec " + audioInput+ " " +  audioOutput);
+				SdkUtils.bashExecute("janus-pp-rec " + audioInput + " " + audioOutput);
 			} catch (IOException | InterruptedException e) {
-				audioOutput= "";
+				audioOutput = "";
 				log.log(java.util.logging.Level.SEVERE, "exec error: " + e.getMessage(), e);
 				
 			}
-			String videoInput = participantStream.video().file().getAbsolutePath();
+			String videoInput  = participantStream.video().file().getAbsolutePath();
 			String videoOutput = participantStream.video().file().getAbsolutePath().replace(".mjr", ".webm");
 			try {
-				SdkUtils.bashExecute("janus-pp-rec " + videoInput+ " " +  videoOutput);
+				SdkUtils.bashExecute("janus-pp-rec " + videoInput + " " + videoOutput);
 			} catch (IOException | InterruptedException e) {
-				videoOutput= "";
+				videoOutput = "";
 				log.log(java.util.logging.Level.SEVERE, "exec error: " + e.getMessage(), e);
 			}
-			mediaFiles.put("audio",audioOutput);
-			mediaFiles.put("video",videoOutput);
-			mediaFilesList.add(mediaFiles);
+			// compare the start time of the video and audio files get the oldest one
+			long officialStartTime = getOldestTimestamp(participantStream.audio().startTime(), participantStream.video().startTime());
+			if (!videoOutput.isEmpty()) {
+				try {
+					
+					String output = recordingFolder + "/videoroom-" + participantStream.video().videoRoom() + "-user-" + participantStream.video().userId() + "-" + officialStartTime + "-merged-output.webm";
+					
+					SdkUtils.bashExecute("ffmpeg -i " + audioOutput + " -i " + videoOutput + " -c:v copy -c:a opus -strict experimental " + output);
+					
+					var mediaFile = new ParticipantStreamMediaFile( participantStream.video().videoRoom(), participantStream.video().userId(), officialStartTime, new File(output) );
+					streamMediaFiles.add(mediaFile);
+				} catch (IOException | InterruptedException e) {
+					log.log(java.util.logging.Level.SEVERE, "Error creating media file" + e.getMessage(), e);
+				}
+			}
 		});
+		return streamMediaFiles;
+	}
+	
+	private long getOldestTimestamp( long time1, long time2 ) {
+		return Math.min(time1, time2);
 	}
 	
 	private List<ParticipantStream> processPairForUser() {
