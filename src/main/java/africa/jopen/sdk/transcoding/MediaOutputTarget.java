@@ -1,6 +1,6 @@
 package africa.jopen.sdk.transcoding;
 
 public enum MediaOutputTarget {
-	AUDIO,
-	VIDEO
+	AUDIO_BRIDGE_PLUGIN,
+	VIDEO_ROOM_PLUGIN
 }
