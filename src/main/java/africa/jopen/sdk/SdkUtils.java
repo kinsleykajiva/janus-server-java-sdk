@@ -5,13 +5,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalTime;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SdkUtils {
@@ -123,7 +126,66 @@ public class SdkUtils {
 		
 		return uniID.toString().replaceAll("[^a-z0-9]", "");
 	}
+	public static List<String> bashExecute( final String command) throws IOException, InterruptedException {
+		if(command.isEmpty()) {
+			return new ArrayList<>();
+		}
+		log.info("Executing command: " +command);
+		
+		List<String>   output         = new ArrayList<>();
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.startsWith("win")) {
+			processBuilder.command("cmd.exe", "/c", command);
+		} else {
+			processBuilder.command("bash", "-c", command);
+		}
+		
+		processBuilder.redirectErrorStream(true); // Redirect error stream to input stream
+		
+		Process process = processBuilder.start();
+		// Process standard output
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+				output.add(line);
+			}
+		}
+		
+		int exitCode = process.waitFor();
+		// convert to seconds time taken
+		
+		if (exitCode != 0) {
+			throw new RuntimeException("Execution failed with error code " + exitCode + "\n for command: " + command);
+		}
+		
+		return output;
+	}
 	
+	public static boolean isJanusInstalled() {
+		try {
+			List<String> output = bashExecute("janus-pp-rec --version");
+			for (String line : output) {
+				log.info("line " + line);
+				if (line.contains("Janus version:") ||line.contains("Janus commit:") ||line.contains("Compiled on:")) {
+					return true;
+				}
+			}
+		} catch (IOException | InterruptedException e) {
+			log.log(Level.SEVERE, "exec error: " + e.getMessage(), e);
+		}
+		
+		return false;
+	}
 	
-	
+	public static boolean folderExists( String recordingFolder ) {
+		
+		File file = new File(recordingFolder);
+		if (file.exists() && file.isDirectory()) {
+			return true;
+		}
+		return false;
+	}
 }
