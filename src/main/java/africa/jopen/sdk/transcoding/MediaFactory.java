@@ -43,12 +43,19 @@ public class MediaFactory {
 		if (!SdkUtils.folderExists(recordingFolder)) {
 			if (postProcessing != null) {
 				postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "Recording folder does not exist");
+			} else {
+				throw new RuntimeException("Recording folder does not exist");
 			}
-			throw new RuntimeException("Recording folder does not exist");
+			
 		}
 		// test if the output folder exists
 		if (!SdkUtils.folderExists(outputFolder)) {
-			throw new RuntimeException("Output folder does not exist");
+			if (postProcessing != null) {
+				postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "Output folder does not exist");
+			} else {
+				throw new RuntimeException("Output folder does not exist");
+			}
+			
 		}
 		if (mediaOutputTarget == MediaOutputTarget.VIDEO_ROOM_PLUGIN) {
 			processForVideoRoom();
@@ -252,7 +259,8 @@ public class MediaFactory {
 			
 			//for six participant's streams.make it into 3×2 Grid
 			if (participantsFullStreams.size() == 6) {
-				var   firstObject6  = participantsFullStreams.get(0);				var   secondObject6 = participantsFullStreams.get(1);
+				var   firstObject6  = participantsFullStreams.get(0);
+				var   secondObject6 = participantsFullStreams.get(1);
 				var   thirdObject6  = participantsFullStreams.get(2);
 				var   fourthObject6 = participantsFullStreams.get(3);
 				var   fifthObject6  = participantsFullStreams.get(4);
@@ -287,7 +295,7 @@ public class MediaFactory {
 							"-map \"[v5]\" -map \"[a]\" " + output);
 					postProcessing.onProcessingEnded(roomId, System.currentTimeMillis(), List.of(new File(output)), Thread.currentThread());
 					
-				}catch (IOException | InterruptedException e) {
+				} catch (IOException | InterruptedException e) {
 					log.log(java.util.logging.Level.SEVERE, "Error creating final video file" + e.getMessage(), e);
 					if (postProcessing != null) {
 						postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "Error creating final video file " + e.getMessage());
