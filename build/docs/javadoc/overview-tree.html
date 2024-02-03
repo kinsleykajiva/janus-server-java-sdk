@@ -56,7 +56,8 @@ loadScripts(document, 'script');</script>
 <li><a href="africa/jopen/sdk/models/package-tree.html">africa.jopen.sdk.models</a>, </li>
 <li><a href="africa/jopen/sdk/models/events/package-tree.html">africa.jopen.sdk.models.events</a>, </li>
 <li><a href="africa/jopen/sdk/mysql/package-tree.html">africa.jopen.sdk.mysql</a>, </li>
-<li><a href="africa/jopen/sdk/rest/package-tree.html">africa.jopen.sdk.rest</a></li>
+<li><a href="africa/jopen/sdk/rest/package-tree.html">africa.jopen.sdk.rest</a>, </li>
+<li><a href="africa/jopen/sdk/transcoding/package-tree.html">africa.jopen.sdk.transcoding</a></li>
 </ul>
 <section class="hierarchy">
 <h2 title="Class Hierarchy">Class Hierarchy</h2>
@@ -84,6 +85,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">africa.jopen.sdk.rest.<a href="africa/jopen/sdk/rest/JanusVideoRoomPlugInAPI.html" class="type-name-link" title="class in africa.jopen.sdk.rest">JanusVideoRoomPlugInAPI</a></li>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/JanusWebRTCStateEvent.html" class="type-name-link" title="class in africa.jopen.sdk.models.events">JanusWebRTCStateEvent</a></li>
 <li class="circle">africa.jopen.sdk.<a href="africa/jopen/sdk/JanusWebSocketClient.html" class="type-name-link" title="class in africa.jopen.sdk">JanusWebSocketClient</a> (implements africa.jopen.sdk.<a href="africa/jopen/sdk/WebSocketClient.html" title="interface in africa.jopen.sdk">WebSocketClient</a>)</li>
+<li class="circle">africa.jopen.sdk.transcoding.<a href="africa/jopen/sdk/transcoding/MediaFactory.html" class="type-name-link" title="class in africa.jopen.sdk.transcoding">MediaFactory</a></li>
 <li class="circle">africa.jopen.sdk.<a href="africa/jopen/sdk/Playground.html" class="type-name-link" title="class in africa.jopen.sdk">Playground</a></li>
 <li class="circle">africa.jopen.sdk.<a href="africa/jopen/sdk/SdkUtils.html" class="type-name-link" title="class in africa.jopen.sdk">SdkUtils</a></li>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/VideoRoomPluginEventDataStream.html" class="type-name-link" title="class in africa.jopen.sdk.models.events">VideoRoomPluginEventDataStream</a></li>
@@ -96,6 +98,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">africa.jopen.sdk.<a href="africa/jopen/sdk/JanusEventHandler.html" class="type-name-link" title="interface in africa.jopen.sdk">JanusEventHandler</a></li>
 <li class="circle">africa.jopen.sdk.events.<a href="africa/jopen/sdk/events/JanusEventsEmissions.html" class="type-name-link" title="interface in africa.jopen.sdk.events">JanusEventsEmissions</a></li>
+<li class="circle">africa.jopen.sdk.transcoding.<a href="africa/jopen/sdk/transcoding/PostProcessing.html" class="type-name-link" title="interface in africa.jopen.sdk.transcoding">PostProcessing</a></li>
 <li class="circle">africa.jopen.sdk.<a href="africa/jopen/sdk/WebSocketClient.html" class="type-name-link" title="interface in africa.jopen.sdk">WebSocketClient</a></li>
 </ul>
 </section>
@@ -108,6 +111,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/EventType.html" class="type-name-link" title="enum class in africa.jopen.sdk.models.events">EventType</a></li>
 <li class="circle">africa.jopen.sdk.<a href="africa/jopen/sdk/JanusPlugins.html" class="type-name-link" title="enum class in africa.jopen.sdk">JanusPlugins</a></li>
+<li class="circle">africa.jopen.sdk.transcoding.<a href="africa/jopen/sdk/transcoding/MediaOutputTarget.html" class="type-name-link" title="enum class in africa.jopen.sdk.transcoding">MediaOutputTarget</a></li>
 </ul>
 </li>
 </ul>
@@ -121,6 +125,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
 <ul>
+<li class="circle">africa.jopen.sdk.transcoding.<a href="africa/jopen/sdk/transcoding/FileInfoMJR.html" class="type-name-link" title="class in africa.jopen.sdk.transcoding">FileInfoMJR</a></li>
 <li class="circle">africa.jopen.sdk.models.<a href="africa/jopen/sdk/models/JanusConfiguration.html" class="type-name-link" title="class in africa.jopen.sdk.models">JanusConfiguration</a></li>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/JanusCoreEvent.Event.html" class="type-name-link" title="class in africa.jopen.sdk.models.events">JanusCoreEvent.Event</a></li>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/JanusCoreEvent.Info.html" class="type-name-link" title="class in africa.jopen.sdk.models.events">JanusCoreEvent.Info</a></li>
@@ -143,6 +148,8 @@ loadScripts(document, 'script');</script>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/JanusWebRTCStateEvent.Root.html" class="type-name-link" title="class in africa.jopen.sdk.models.events">JanusWebRTCStateEvent.Root</a></li>
 <li class="circle">africa.jopen.sdk.models.<a href="africa/jopen/sdk/models/MySqlConfiguration.html" class="type-name-link" title="class in africa.jopen.sdk.models">MySqlConfiguration</a></li>
 <li class="circle">africa.jopen.sdk.models.events.<a href="africa/jopen/sdk/models/events/ParticipantPojo.html" class="type-name-link" title="class in africa.jopen.sdk.models.events">ParticipantPojo</a></li>
+<li class="circle">africa.jopen.sdk.transcoding.<a href="africa/jopen/sdk/transcoding/ParticipantStream.html" class="type-name-link" title="class in africa.jopen.sdk.transcoding">ParticipantStream</a></li>
+<li class="circle">africa.jopen.sdk.transcoding.<a href="africa/jopen/sdk/transcoding/ParticipantStreamMediaFile.html" class="type-name-link" title="class in africa.jopen.sdk.transcoding">ParticipantStreamMediaFile</a></li>
 </ul>
 </li>
 </ul>

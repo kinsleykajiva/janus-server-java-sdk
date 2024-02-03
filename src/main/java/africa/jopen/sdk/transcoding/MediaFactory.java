@@ -14,6 +14,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The MediaFactory class provides methods for creating and processing media files.
+ */
 @ApiStatus.NonExtendable
 public class MediaFactory {
 	static        Logger            log          = Logger.getLogger(MediaFactory.class.getName());
