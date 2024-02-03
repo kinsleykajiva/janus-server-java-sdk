@@ -36,21 +36,20 @@ public class MediaFactory {
 			throw new RuntimeException("FFMPEG is not installed");
 		}
 		
-		
 	}
 	
 	public MediaFactory( @NotNull MediaOutputTarget mediaOutputTarget, @NotNull String roomId,
-	                     @NotNull String recordingFolder, @NotNull String outputFolder, @Nullable PostProcessing postProcessing ) {
+	                     @NotNull String recordingFolder, @NotNull String outputFolder, @Nullable PostProcessing postProcessingCallback ) {
 		this();
 		this.mediaOutputTarget = mediaOutputTarget;
 		this.roomId = roomId;
-		this.recordingFolder = recordingFolder;
-		this.outputFolder = outputFolder;
-		this.postProcessing = postProcessing;
+		this.recordingFolder = SdkUtils.cleanFilePath(recordingFolder);
+		this.outputFolder = SdkUtils.cleanFilePath(outputFolder);
+		this.postProcessing = postProcessingCallback;
 		// test if the recording folder exists
 		if (!SdkUtils.folderExists(recordingFolder)) {
-			if (postProcessing != null) {
-				postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "Recording folder does not exist");
+			if (postProcessingCallback != null) {
+				postProcessingCallback.onProcessingFailed(roomId, System.currentTimeMillis(), "Recording folder does not exist");
 			} else {
 				throw new RuntimeException("Recording folder does not exist");
 			}
@@ -58,8 +57,8 @@ public class MediaFactory {
 		}
 		// test if the output folder exists
 		if (!SdkUtils.folderExists(outputFolder)) {
-			if (postProcessing != null) {
-				postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "Output folder does not exist");
+			if (postProcessingCallback != null) {
+				postProcessingCallback.onProcessingFailed(roomId, System.currentTimeMillis(), "Output folder does not exist");
 			} else {
 				throw new RuntimeException("Output folder does not exist");
 			}
@@ -91,6 +90,7 @@ public class MediaFactory {
 					// is not full path,its just name
 					fullFilePath = recordingFolder + File.separator + file;
 				}
+				fullFilePath = SdkUtils.cleanFilePath(fullFilePath);
 				fileInfoMJRs.add(getFileMJRInfo(fullFilePath));
 			});
 			
@@ -119,7 +119,7 @@ public class MediaFactory {
 	private void createVideoRoomFinalVideo( List<ParticipantStreamMediaFile> participantsFullStreams ) {
 		if (mediaOutputTarget == MediaOutputTarget.VIDEO_ROOM_PLUGIN) {
 			
-			String output = outputFolder + File.separator + "final-videoroom-" + roomId + ".webm";
+			String output = SdkUtils.cleanFilePath(outputFolder + File.separator + "final-videoroom-" + roomId + ".webm");
 			output = getIncrementedFileName(output);
 			//for one participant's streams.
 			if (participantsFullStreams.size() == 1) {
@@ -310,8 +310,70 @@ public class MediaFactory {
 					}
 				}
 			}
+			try {
+				cleanUpFiles(false);
+			} catch (IOException e) {
+				log.log(java.util.logging.Level.SEVERE, "Error cleaning up files" + e.getMessage(), e);
+			}
 			
 		}
+	}
+	
+	void moveFiles( List<File> files, File destDir ) throws IOException {
+		if (!destDir.exists()) {
+			destDir.mkdirs();
+		}
+		
+		for (File file : files) {
+			Files.move(file.toPath(), new File(destDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+	
+	List<File> filterRoomFiles( File[] files, String roomId ) {
+		List<File> roomFiles = new ArrayList<>();
+		
+		for (File file : files) {
+			if (file.getName().startsWith("videoroom-" + roomId)) {
+				roomFiles.add(file);
+			}
+		}
+		
+		return roomFiles;
+	}
+	
+	void deleteFiles( List<File> files ) throws IOException {
+		for (File file : files) {
+			Files.delete(file.toPath());
+		}
+	}
+	
+	List<File> filterFiles( List<File> files, String ext ) {
+		List<File> filteredFiles = new ArrayList<>();
+		
+		for (File file : files) {
+			if (file.getName().endsWith(ext)) {
+				filteredFiles.add(file);
+			}
+		}
+		
+		return filteredFiles;
+	}
+	
+	private void cleanUpFiles( boolean removeMJR ) throws IOException {
+		/// recordingFolder
+		File   dir   = new File(recordingFolder);
+		File[] files = dir.listFiles();
+		
+		if (files == null) {
+			return;
+		}
+		List<File> roomFiles = filterRoomFiles(files, roomId);
+		if (removeMJR) {
+			//moveFiles(filterFiles(roomFiles, ".mjr"), new File(recordingFolder, "backups"));
+			deleteFiles(filterFiles(roomFiles, ".mjr"));
+		}
+		deleteFiles(filterFiles(roomFiles, ".webm"));
+		deleteFiles(filterFiles(roomFiles, ".opus"));
 	}
 	
 	/**

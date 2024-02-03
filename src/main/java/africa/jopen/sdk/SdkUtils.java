@@ -183,7 +183,9 @@ public class SdkUtils {
 		
 		return output;
 	}
-	
+	public static String cleanFilePath(String filePath) {
+		return filePath.replaceAll("//", "/");
+	}
 	public static boolean isFFMPEGInstalled() {
 		boolean       isFound          = false;
 		StringBuilder commandLinePrint = new StringBuilder();
