@@ -16,6 +16,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SdkUtils {
 	
@@ -149,7 +151,6 @@ public class SdkUtils {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
 				output.add(line);
 			}
 		}
@@ -164,6 +165,42 @@ public class SdkUtils {
 		return output;
 	}
 	
+	public static boolean isFFMPEGInstalled() {
+		boolean       isFound          = false;
+		StringBuilder commandLinePrint = new StringBuilder();
+		try {
+			List<String> output = bashExecute("ffmpeg -version");
+			for (String line : output) {
+				commandLinePrint.append(line);
+				if (line.contains("ffmpeg version")) {
+					isFound= true;
+				}
+			}
+		} catch (IOException | InterruptedException e) {
+			log.log(Level.SEVERE, "exec error: " + e.getMessage(), e);
+		}
+		if(!commandLinePrint.isEmpty()){
+			Pattern ffmpegPattern = Pattern.compile("ffmpeg version (\\S+)");
+			Matcher     ffmpegMatcher = ffmpegPattern.matcher(commandLinePrint.toString());
+			if (ffmpegMatcher.find()) {
+				System.out.println("FFmpeg version: " + ffmpegMatcher.group(1));
+			}
+			
+			Pattern toolPattern = Pattern.compile("(lib\\D+)\\s+(\\d+\\.\\d+\\.\\d+)");
+			Matcher toolMatcher = toolPattern.matcher(commandLinePrint.toString());
+			
+			Map<String, String> toolVersions = new HashMap<>();
+			while (toolMatcher.find()) {
+				toolVersions.put(toolMatcher.group(1).trim(), toolMatcher.group(2));
+			}
+			
+			for (Map.Entry<String, String> entry : toolVersions.entrySet()) {
+				System.out.println(entry.getKey() + " version: " + entry.getValue());
+			}
+		}
+		
+		return isFound;
+	}
 	public static boolean isJanusInstalled() {
 		try {
 			List<String> output = bashExecute("janus-pp-rec --version");

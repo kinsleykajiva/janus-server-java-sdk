@@ -20,6 +20,9 @@ public class Playground {
 	}
 	
 	public static void main( String[] args ) {
+		SdkUtils.isFFMPEGInstalled();
+	}
+	public static void main0( String[] args ) {
 		
 		String jsonContent = loadJsonFile("./samples/janus_log.json");
 		//System.out.println("jsonContent = " + jsonContent);

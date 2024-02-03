@@ -29,6 +29,11 @@ public class MediaFactory {
 		if (!SdkUtils.isJanusInstalled()) {
 			throw new RuntimeException("Janus is not installed");
 		}
+		if (!SdkUtils.isFFMPEGInstalled()) {
+			throw new RuntimeException("FFMPEG is not installed");
+		}
+		
+		
 	}
 	
 	public MediaFactory( @NotNull MediaOutputTarget mediaOutputTarget, @NotNull String roomId,
