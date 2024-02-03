@@ -107,6 +107,13 @@ public class SdkUtils {
 		return true;
 	}
 	
+	/**
+	 * Generates a unique ID based on the current time, a seed string, and a maximum size.
+	 *
+	 * @param seed    The seed string to prepend to the generated ID.
+	 * @param maxSize The maximum size of the generated ID.
+	 * @return The generated unique ID.
+	 */
 	public static String uniqueIDGenerator( String seed, int maxSize ) {
 		LocalTime time       = LocalTime.now();
 		String    timeString = String.format("%02d%02d%02d", time.getHour(), time.getMinute(), time.getSecond());
@@ -128,6 +135,18 @@ public class SdkUtils {
 		
 		return uniID.toString().replaceAll("[^a-z0-9]", "");
 	}
+	/**
+	 * Executes the given command in the bash or cmd.exe shell and returns the output as a list of strings.
+	 * If the command is empty, an empty list will be returned.
+	 * The method will throw an IOException if there is an error reading or writing to the process.
+	 * The method will throw an InterruptedException if the current thread is interrupted while waiting for the process to complete.
+	 *
+	 * @param command The command to execute.
+	 * @return A list of strings representing the output of the command.
+	 * @throws IOException              If there is an error reading or writing to the process.
+	 * @throws InterruptedException     If the current thread is interrupted while waiting for the process to complete.
+	 * @throws RuntimeException         If the execution fails with a non-zero exit code.
+	 */
 	public static List<String> bashExecute( final String command) throws IOException, InterruptedException {
 		if(command.isEmpty()) {
 			return new ArrayList<>();
