@@ -72,6 +72,9 @@ public class MediaFactory {
 		
 	}
 	
+	/**
+	 * Processes the files for a video room.
+	 */
 	private void processForVideoRoom() {
 		// look for files start with 'videoroom' ends with mjr in folder recordingFolder
 		List<String> matchingFiles = new ArrayList<>();
@@ -365,16 +368,19 @@ public class MediaFactory {
 	}
 	
 	private void cleanUpFiles() throws IOException {
+		postProcessing.onCleanUpStarted(roomId, System.currentTimeMillis(), filesToCleanup);
 		filesToCleanup.forEach(file -> {
 			Path filePath = Paths.get(file);
 			if (Files.exists(filePath)) {
 				try {
 					Files.delete(filePath);
 				} catch (IOException e) {
+					postProcessing.onCleanUpFailed(roomId, System.currentTimeMillis(), "Error deleting file " + file);
 					log.log(java.util.logging.Level.SEVERE, "Error deleting file" + e.getMessage(), e);
 				}
 			}
 		});
+		postProcessing.onCleanUpEnded(roomId, System.currentTimeMillis());
 	}
 	
 	/**
