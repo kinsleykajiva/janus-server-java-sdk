@@ -19,12 +19,13 @@ import java.util.regex.Pattern;
  */
 @ApiStatus.NonExtendable
 public class MediaFactory {
-	static        Logger            log          = Logger.getLogger(MediaFactory.class.getName());
+	static        Logger            log            = Logger.getLogger(MediaFactory.class.getName());
 	private       MediaOutputTarget mediaOutputTarget;
 	private       String            roomId;
 	private       String            recordingFolder;
 	private       String            outputFolder;
-	private final List<FileInfoMJR> fileInfoMJRs = new ArrayList<>();
+	private final List<FileInfoMJR> fileInfoMJRs   = new ArrayList<>();
+	private final Set<String>       filesToCleanup = new HashSet<>();
 	private       PostProcessing    postProcessing;
 	
 	
@@ -117,6 +118,9 @@ public class MediaFactory {
 	 * @param participantsFullStreams The list of participant stream files.
 	 */
 	private void createVideoRoomFinalVideo( List<ParticipantStreamMediaFile> participantsFullStreams ) {
+		participantsFullStreams.forEach(file -> {
+			filesToCleanup.add(file.file().getAbsolutePath());
+		});
 		if (mediaOutputTarget == MediaOutputTarget.VIDEO_ROOM_PLUGIN) {
 			
 			String output = SdkUtils.cleanFilePath(outputFolder + File.separator + "final-videoroom-" + roomId + ".webm");
@@ -228,6 +232,7 @@ public class MediaFactory {
 			
 			if (participantsFullStreams.size() == 5) {
 				
+				
 				var   firstObject5  = participantsFullStreams.get(0);
 				var   secondObject5 = participantsFullStreams.get(1);
 				var   thirdObject5  = participantsFullStreams.get(2);
@@ -311,7 +316,7 @@ public class MediaFactory {
 				}
 			}
 			try {
-				cleanUpFiles(false);
+				cleanUpFiles();
 			} catch (IOException e) {
 				log.log(java.util.logging.Level.SEVERE, "Error cleaning up files" + e.getMessage(), e);
 			}
@@ -359,21 +364,17 @@ public class MediaFactory {
 		return filteredFiles;
 	}
 	
-	private void cleanUpFiles( boolean removeMJR ) throws IOException {
-		/// recordingFolder
-		File   dir   = new File(recordingFolder);
-		File[] files = dir.listFiles();
-		
-		if (files == null) {
-			return;
-		}
-		List<File> roomFiles = filterRoomFiles(files, roomId);
-		if (removeMJR) {
-			//moveFiles(filterFiles(roomFiles, ".mjr"), new File(recordingFolder, "backups"));
-			deleteFiles(filterFiles(roomFiles, ".mjr"));
-		}
-		deleteFiles(filterFiles(roomFiles, ".webm"));
-		deleteFiles(filterFiles(roomFiles, ".opus"));
+	private void cleanUpFiles() throws IOException {
+		filesToCleanup.forEach(file -> {
+			Path filePath = Paths.get(file);
+			if (Files.exists(filePath)) {
+				try {
+					Files.delete(filePath);
+				} catch (IOException e) {
+					log.log(java.util.logging.Level.SEVERE, "Error deleting file" + e.getMessage(), e);
+				}
+			}
+		});
 	}
 	
 	/**
@@ -388,7 +389,7 @@ public class MediaFactory {
 		participantStreamsList.forEach(participantStream -> {
 			String audioInput  = participantStream.audio().file().getAbsolutePath();
 			String audioOutput = participantStream.audio().file().getAbsolutePath().replace(".mjr", ".opus");
-			
+			filesToCleanup.add(audioOutput);
 			try {
 				SdkUtils.bashExecute("janus-pp-rec " + audioInput + " " + audioOutput);
 			} catch (IOException | InterruptedException e) {
@@ -400,6 +401,7 @@ public class MediaFactory {
 			}
 			String videoInput  = participantStream.video().file().getAbsolutePath();
 			String videoOutput = participantStream.video().file().getAbsolutePath().replace(".mjr", ".webm");
+			filesToCleanup.add(videoOutput);
 			try {
 				SdkUtils.bashExecute("janus-pp-rec " + videoInput + " " + videoOutput);
 			} catch (IOException | InterruptedException e) {
@@ -417,7 +419,7 @@ public class MediaFactory {
 					String output = recordingFolder + "/videoroom-" + participantStream.video().videoRoom() + "-user-" + participantStream.video().userId() + "-" + officialStartTime + "-merged-output.webm";
 					
 					SdkUtils.bashExecute("ffmpeg -i " + audioOutput + " -i " + videoOutput + " -c:v copy -c:a opus -strict experimental " + output);
-					
+					filesToCleanup.add(output);
 					var mediaFile = new ParticipantStreamMediaFile(participantStream.video().videoRoom(), participantStream.video().userId(), officialStartTime, new File(output));
 					streamMediaFiles.add(mediaFile);
 				} catch (IOException | InterruptedException e) {
