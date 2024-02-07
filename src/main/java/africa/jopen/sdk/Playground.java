@@ -3,11 +3,18 @@ package africa.jopen.sdk;
 import africa.jopen.sdk.events.JanusEventsEmissions;
 import africa.jopen.sdk.models.MySqlConfiguration;
 import africa.jopen.sdk.mysql.DBAccess;
+import africa.jopen.sdk.transcoding.FileInfoMJR;
+import africa.jopen.sdk.transcoding.MediaFactory;
+import africa.jopen.sdk.transcoding.MediaOutputTarget;
+import africa.jopen.sdk.transcoding.PostProcessing;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
+//transcoding
 public class Playground {
 	public static String loadJsonFile(String filePath) {
 		String content = "";
@@ -20,6 +27,31 @@ public class Playground {
 	}
 	
 	public static void main( String[] args ) {
+		
+		MediaFactory mediaFactory = new MediaFactory(
+				MediaOutputTarget.VIDEO_ROOM_PLUGIN ,
+				"1234",
+				"/var/www/janus/recording-folder",
+				"/var/www/janus/recording-folder/processed",
+				
+				new PostProcessing(){
+					@Override
+					public void onProcessingStarted( String roomId, long millisecondsTimeStamp, List<FileInfoMJR> fileInfoMJRs, Thread thread ) {
+						System.out.println("Processing started " + roomId + " " + millisecondsTimeStamp + " " + fileInfoMJRs + " " + thread);
+					}
+					
+					@Override
+					public void onProcessingEnded( String roomId, long millisecondsTimeStamp, List<File> outputs, Thread thread ) {
+						System.out.println("Processing ended " + roomId + " " + millisecondsTimeStamp + " " + outputs + " " + thread);
+					}
+					
+					@Override
+					public void onProcessingFailed( String roomId, long millisecondsTimeStamp, String error ) {
+						System.out.println("Processing failed " + roomId + " " + millisecondsTimeStamp + " " + error);
+					}
+				});
+	}
+	public static void main0( String[] args ) {
 		
 		String jsonContent = loadJsonFile("./samples/janus_log.json");
 		//System.out.println("jsonContent = " + jsonContent);
