@@ -266,6 +266,7 @@ All events are saved on a background thread ,This is done to avoid blocking the 
 
 ## Post Processing for Video Room with also video transcoding
 
+This converts `mjr` files from the video room to have one file video file that includes  all participants in the room,so far a maximum of 6 participants stream media will be glued together.
 It operates via the system bash or command line, using Java to invoke commands via the `java.lang.ProcessBuilder` class. As the java.lang.ProcessBuilder class is not synchronized, it is up to the user to manage multi-threaded cases. It is recommended to create a pipeline that allows each room to be processed one at a time.
 
 This solution heavily depends on Janus being installed on the same machine, as it requires access to the command line tools `janus-pp-rec` and FFmpeg tool for transcoding .
