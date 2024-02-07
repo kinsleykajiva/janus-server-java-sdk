@@ -264,6 +264,66 @@ In the event you want to search, try to consider session , handle the timestamp 
 
 All events are saved on a background thread ,This is done to avoid blocking the parent thread.
 
+## Post Processing for Video Room with also video transcoding
+
+It operates via the system bash or command line, using Java to invoke commands via the `java.lang.ProcessBuilder` class. As the java.lang.ProcessBuilder class is not synchronized, it is up to the user to manage multi-threaded cases. It is recommended to create a pipeline that allows each room to be processed one at a time.
+
+This solution heavily depends on Janus being installed on the same machine, as it requires access to the command line tools `janus-pp-rec` and FFmpeg tool for transcoding .
+
+The process first converts from MJR type to Opus and WebM file types for audio and video respectively, then proceeds to transcode with FFmpeg.
+
+The process can be invoked using the `MediaFactory.class` object.You can pass a callback interface `PostProcessing` to get the results of the transcoding process.
+
+Here is an example of how this will the run
+
+```java
+public static void main( String[] args ) {
+		
+		MediaFactory mediaFactory = new MediaFactory(
+				MediaOutputTarget.VIDEO_ROOM_PLUGIN ,
+				"1234",
+				"/var/www/janus/recording-folder",
+				"/var/www/janus/recording-folder/processed",
+				
+				new PostProcessing(){
+					@Override
+					public void onProcessingStarted( String roomId, long millisecondsTimeStamp, List<FileInfoMJR> fileInfoMJRs, Thread thread ) {
+						System.out.println("Processing started " + roomId + " " + millisecondsTimeStamp + " " + fileInfoMJRs + " " + thread);
+					}
+					
+					@Override
+					public void onProcessingEnded( String roomId, long millisecondsTimeStamp, List<File> outputs, Thread thread ) {
+						System.out.println("Processing ended " + roomId + " " + millisecondsTimeStamp + " " + outputs + " " + thread);
+					}
+					
+					@Override
+					public void onProcessingFailed( String roomId, long millisecondsTimeStamp, String error ) {
+						System.out.println("Processing failed " + roomId + " " + millisecondsTimeStamp + " " + error);
+					}
+					
+					@Override
+					public void onCleanUpStarted( String roomId, long millisecondsTimeStamp, Set<String> filesToCleanup ) {
+						System.out.println("Clean up started " + roomId + " " + millisecondsTimeStamp + " " + filesToCleanup);
+					
+					}
+					
+					@Override
+					public void onCleanUpFailed( String roomId, long millisecondsTimeStamp, String error ) {
+						System.out.println("Clean up failed " + roomId + " " + millisecondsTimeStamp + " " + error);
+					}
+					
+					@Override
+					public void onCleanUpEnded( String roomId, long millisecondsTimeStamp ) {
+						System.out.println("Clean up ended " + roomId + " " + millisecondsTimeStamp);
+					}
+				});
+}
+
+
+```
+
+Internally there are checks on the call `SdkUtils.isJanusInstalled()` if this fails this wil throw an exception and stop the app.
+
 ## Contributing
 
 I welcome contributions! If you find a bug, have a feature request, or want to improve the documentation, feel free to open an issue or submit a pull request.

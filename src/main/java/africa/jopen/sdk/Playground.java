@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
 //transcoding
 public class Playground {
@@ -48,6 +49,22 @@ public class Playground {
 					@Override
 					public void onProcessingFailed( String roomId, long millisecondsTimeStamp, String error ) {
 						System.out.println("Processing failed " + roomId + " " + millisecondsTimeStamp + " " + error);
+					}
+					
+					@Override
+					public void onCleanUpStarted( String roomId, long millisecondsTimeStamp, Set<String> filesToCleanup ) {
+						System.out.println("Clean up started " + roomId + " " + millisecondsTimeStamp + " " + filesToCleanup);
+						
+					}
+					
+					@Override
+					public void onCleanUpFailed( String roomId, long millisecondsTimeStamp, String error ) {
+						System.out.println("Clean up failed " + roomId + " " + millisecondsTimeStamp + " " + error);
+					}
+					
+					@Override
+					public void onCleanUpEnded( String roomId, long millisecondsTimeStamp ) {
+						System.out.println("Clean up ended " + roomId + " " + millisecondsTimeStamp);
 					}
 				});
 	}
