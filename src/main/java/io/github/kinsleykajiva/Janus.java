@@ -20,7 +20,6 @@ import java.util.logging.Logger;
  */
 public class Janus implements JanusEventHandler {
 	static        Logger                   log                      = Logger.getLogger(Janus.class.getName());
-	private final ScheduledExecutorService executorService          = new ScheduledThreadPoolExecutor(1);
 	private final ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
 	private final CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 	
