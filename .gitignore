@@ -48,3 +48,4 @@ gradle.properties
 .env
 java/africa/jopen/Main.java
 settings.gradle
+settings.xml
