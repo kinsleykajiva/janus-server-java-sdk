@@ -2,10 +2,13 @@ plugins {
     id 'maven-publish'
     id 'java-library'
     id 'signing'
+//    id 'maven'
+
 }
 
 group = 'io.github.kinsleykajiva'
 version = '0.6'
+archivesBaseName = "janus-sdk"
 
 repositories {
     mavenCentral()
@@ -16,6 +19,8 @@ java {
 }
 def env = new Properties()
 file('.env').withInputStream { env.load(it) }
+
+
 
 publishing {
     publications {
@@ -55,6 +60,12 @@ publishing {
             }
         }
     }
+}
+artifacts {
+    archives javadocJar, sourcesJar
+}
+signing {
+    sign configurations.archives
 }
 
 var classifier = ''
@@ -97,4 +108,5 @@ javadoc {
         options.addBooleanOption('html5', true)
     }
 }
+
 
