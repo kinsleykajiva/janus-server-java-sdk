@@ -12,7 +12,8 @@ import java.util.stream.IntStream;
 
 public interface JanusEventsEmissions {
 	
-	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+//!	ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());// this is for java jdk 20 and less versons
+	ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();//! this is for java jdk 21 and  better
 	
 	/**
 	 * Callback method called when a participant joins a room.
