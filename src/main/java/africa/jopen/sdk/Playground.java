@@ -103,12 +103,15 @@ public class Playground {
 		
 		
         /*
+        
+        
         JSONArray  jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonEvent = jsonArray.getJSONObject(i);
             JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, emissionsMock);
             janusEventsFactory.processEvent256();
         }
+        //
         
         */
 		//System.out.println(jsonContent);
