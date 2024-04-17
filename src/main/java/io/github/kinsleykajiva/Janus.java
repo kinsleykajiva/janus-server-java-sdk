@@ -19,10 +19,10 @@ import java.util.logging.Logger;
  * The Janus class represents a Janus instance that communicates with the Janus server.
  */
 public class Janus implements JanusEventHandler {
-	static Logger log = Logger.getLogger(Janus.class.getName());
-	private ScheduledExecutorService   executorService          = new ScheduledThreadPoolExecutor(1);
-	private ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
-	private CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
+	static        Logger                   log                      = Logger.getLogger(Janus.class.getName());
+	private final ScheduledExecutorService executorService          = new ScheduledThreadPoolExecutor(1);
+	private final ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
+	private final CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 	
 	public static MySqlConfiguration DB_ACCESS = null;
 	private       String             sessionTransactionId;

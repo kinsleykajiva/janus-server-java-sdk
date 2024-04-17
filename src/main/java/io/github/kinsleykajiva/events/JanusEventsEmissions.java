@@ -2,6 +2,8 @@ package io.github.kinsleykajiva.events;
 
 
 
+import io.github.kinsleykajiva.SdkUtils;
+import io.github.kinsleykajiva.models.events.EventType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

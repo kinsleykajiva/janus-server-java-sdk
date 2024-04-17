@@ -1,6 +1,7 @@
 package io.github.kinsleykajiva.mysql;
 
 
+import io.github.kinsleykajiva.models.MySqlConfiguration;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Blocking;
 
@@ -19,13 +20,14 @@ import java.util.logging.Logger;
  */
 @ApiStatus.NonExtendable
 public class DBAccess {
-	static         Logger             log             = Logger.getLogger(DBAccess.class.getName());
-	private        ExecutorService    executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-	private static DBAccess           instance;
+	static         Logger          log             = Logger.getLogger(DBAccess.class.getName());
+//!	private final  ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());// this is for java jdk 20 and less versons
+	private final  ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+	private static DBAccess        instance;
 	private        Connection         connect         = null;
-	private        Statement          statement       = null;
-	private        MySqlConfiguration mySqlConfiguration;
-	private final  Object             lock            = new Object(); // For synchronization
+	private       Statement          statement       = null;
+	private final MySqlConfiguration mySqlConfiguration;
+	private final Object             lock            = new Object(); // For synchronization
 	
 	public DBAccess( MySqlConfiguration mySqlConfiguration ) {
 		this.mySqlConfiguration = mySqlConfiguration;
