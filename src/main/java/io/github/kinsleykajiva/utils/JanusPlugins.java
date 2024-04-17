@@ -1,4 +1,4 @@
-package io.github.kinsleykajiva;
+package io.github.kinsleykajiva.utils;
 
 public enum JanusPlugins {
 	JANUS_AUDIO_BRIDGE("janus.plugin.audiobridge"),

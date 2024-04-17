@@ -1,4 +1,4 @@
-package io.github.kinsleykajiva;
+package io.github.kinsleykajiva.utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,5 +1,7 @@
 package io.github.kinsleykajiva;
 
+import io.github.kinsleykajiva.utils.JanusEventHandler;
+import io.github.kinsleykajiva.utils.WebSocketClient;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -12,9 +14,9 @@ import java.util.logging.Logger;
 
 public class JanusWebSocketClient implements WebSocketClient {
 	static        Logger            log = Logger.getLogger(JanusWebSocketClient.class.getName());
-	private       WebSocket webSocket;
-	private final String    url;
-	private       Thread    thread;
+	private       WebSocket         webSocket;
+	private final String            url;
+	private       Thread            thread;
 	private final JanusEventHandler eventHandler;
 	
 	

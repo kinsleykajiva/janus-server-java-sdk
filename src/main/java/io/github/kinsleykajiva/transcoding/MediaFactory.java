@@ -2,7 +2,7 @@ package io.github.kinsleykajiva.transcoding;
 
 
 
-import io.github.kinsleykajiva.SdkUtils;
+import io.github.kinsleykajiva.utils.SdkUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

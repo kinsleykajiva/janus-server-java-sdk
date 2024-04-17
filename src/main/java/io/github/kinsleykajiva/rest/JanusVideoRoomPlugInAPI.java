@@ -1,7 +1,7 @@
 package io.github.kinsleykajiva.rest;
 
 
-import io.github.kinsleykajiva.JanusPlugins;
+import io.github.kinsleykajiva.utils.JanusPlugins;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;

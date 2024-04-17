@@ -1,8 +1,8 @@
 package io.github.kinsleykajiva.rest;
 
 
-import io.github.kinsleykajiva.JanusPlugins;
-import io.github.kinsleykajiva.SdkUtils;
+import io.github.kinsleykajiva.utils.JanusPlugins;
+import io.github.kinsleykajiva.utils.SdkUtils;
 import io.github.kinsleykajiva.models.JanusConfiguration;
 import org.json.JSONObject;
 

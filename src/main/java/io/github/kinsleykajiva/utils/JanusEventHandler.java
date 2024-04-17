@@ -1,4 +1,4 @@
-package io.github.kinsleykajiva;
+package io.github.kinsleykajiva.utils;
 
 import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
