@@ -68,6 +68,8 @@ public class Playground {
 					}
 				});
 	}
+	
+	
 	public static void main0( String[] args ) {
 		
 		String jsonContent = loadJsonFile("./samples/janus_log.json");
@@ -100,12 +102,15 @@ public class Playground {
 		
 		
 		
-        /*JSONArray  jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
+        /*
+        JSONArray  jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonEvent = jsonArray.getJSONObject(i);
             JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, emissionsMock);
             janusEventsFactory.processEvent256();
-        }*/
+        }
+        
+        */
 		//System.out.println(jsonContent);
 		emissionsMock.consumeEventAsync(jsonContent);
 		
