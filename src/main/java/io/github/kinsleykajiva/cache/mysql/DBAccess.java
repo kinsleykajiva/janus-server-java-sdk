@@ -1,4 +1,4 @@
-package io.github.kinsleykajiva.mysql;
+package io.github.kinsleykajiva.cache.mysql;
 
 
 import org.jetbrains.annotations.ApiStatus;

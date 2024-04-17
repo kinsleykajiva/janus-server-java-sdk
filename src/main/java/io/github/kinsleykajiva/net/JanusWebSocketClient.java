@@ -1,7 +1,6 @@
-package io.github.kinsleykajiva;
+package io.github.kinsleykajiva.net;
 
 import io.github.kinsleykajiva.utils.JanusEventHandler;
-import io.github.kinsleykajiva.utils.WebSocketClient;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -25,7 +24,7 @@ public class JanusWebSocketClient implements WebSocketClient {
 		this.url = url;
 	}
 	
-	protected void initializeWebSocket() {
+	public void initializeWebSocket() {
 		try {
 			HttpClient        httpClient       = HttpClient.newBuilder().build();
 			WebSocket.Builder webSocketBuilder = httpClient.newWebSocketBuilder();

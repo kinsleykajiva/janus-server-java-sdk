@@ -3,7 +3,8 @@ package io.github.kinsleykajiva;
 
 import io.github.kinsleykajiva.models.JanusConfiguration;
 import io.github.kinsleykajiva.models.JanusSession;
-import io.github.kinsleykajiva.mysql.MySqlConfiguration;
+import io.github.kinsleykajiva.cache.mysql.MySqlConfiguration;
+import io.github.kinsleykajiva.net.JanusWebSocketClient;
 import io.github.kinsleykajiva.rest.JanusRestApiClient;
 import io.github.kinsleykajiva.utils.JanusEventHandler;
 import io.github.kinsleykajiva.utils.SdkUtils;

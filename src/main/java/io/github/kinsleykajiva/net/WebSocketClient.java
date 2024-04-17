@@ -1,4 +1,4 @@
-package io.github.kinsleykajiva.utils;
+package io.github.kinsleykajiva.net;
 
 public interface WebSocketClient {
 	

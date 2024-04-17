@@ -3,7 +3,7 @@ package io.github.kinsleykajiva.events;
 
 import io.github.kinsleykajiva.Janus;
 import io.github.kinsleykajiva.models.events.*;
-import io.github.kinsleykajiva.mysql.DBAccess;
+import io.github.kinsleykajiva.cache.mysql.DBAccess;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

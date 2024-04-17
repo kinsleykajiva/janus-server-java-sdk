@@ -1,4 +1,4 @@
-package io.github.kinsleykajiva.mysql;
+package io.github.kinsleykajiva.cache.mysql;
 
 /**
  * MySqlConfiguration is a record that holds the configuration details for a MySQL database connection.
