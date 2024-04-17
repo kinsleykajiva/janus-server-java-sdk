@@ -1,7 +1,6 @@
 package io.github.kinsleykajiva.mysql;
 
 
-import io.github.kinsleykajiva.models.MySqlConfiguration;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Blocking;
 

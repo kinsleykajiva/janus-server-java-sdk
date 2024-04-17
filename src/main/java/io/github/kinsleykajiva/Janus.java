@@ -3,7 +3,7 @@ package io.github.kinsleykajiva;
 
 import io.github.kinsleykajiva.models.JanusConfiguration;
 import io.github.kinsleykajiva.models.JanusSession;
-import io.github.kinsleykajiva.models.MySqlConfiguration;
+import io.github.kinsleykajiva.mysql.MySqlConfiguration;
 import io.github.kinsleykajiva.rest.JanusRestApiClient;
 import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;

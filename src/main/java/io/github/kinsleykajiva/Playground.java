@@ -3,7 +3,7 @@ package io.github.kinsleykajiva;
 
 
 import io.github.kinsleykajiva.events.JanusEventsEmissions;
-import io.github.kinsleykajiva.models.MySqlConfiguration;
+import io.github.kinsleykajiva.mysql.MySqlConfiguration;
 import io.github.kinsleykajiva.mysql.DBAccess;
 import io.github.kinsleykajiva.transcoding.FileInfoMJR;
 import io.github.kinsleykajiva.transcoding.MediaFactory;
