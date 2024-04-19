@@ -51,10 +51,15 @@ public class JanusJSEPEvent {
 	* */
 	public String trackInsert(@NotNull JanusJSEPEvent.Root root){
 		var timestamp = new Timestamp(root.timestamp() / 1000);
-    return String.format(
-        "INSERT INTO janus_sdps (session, handle, remote, offer, sdp, timestamp) VALUES (%d, %d, %b, %b, '%s', FROM_UNIXTIME(%d))",
-        root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
-    );
-}
+		if (root.event().jsep() != null) {
+			if (root.event().jsep().type() != null) {
+				return String.format(
+				    "INSERT INTO janus_sdps (session, handle, remote, offer, sdp, timestamp) VALUES (%d, %d, %b, %b, '%s', FROM_UNIXTIME(%d))",
+				    root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
+				);
+			}
+		}
+		return "";
+	}
 }
 

@@ -21,7 +21,7 @@ If you have suggestions, feel free to create a pull request.
 ## How to use ?
 There are two way to use this you can :
 - copy all the files from the sdk package and paste into your project folder structure.
-- import the `.jar` from` build/libs` folder,so the target files is `build/libs/janus-server-sdk-{version}.jar`
+- import the `.jar` from` release/` folder,so the target files is `release/janus-server-sdk-{version}.jar`
 
 # Janus Streaming Plugin API
 

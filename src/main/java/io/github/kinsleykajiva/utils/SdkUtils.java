@@ -22,8 +22,13 @@ public class SdkUtils {
 	
 	static         Logger                   log       = Logger.getLogger(SdkUtils.class.getName());
 	private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	
-	
+	public static        boolean                  IS_LINUX  = true;
+	static {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.startsWith("win")) {
+			IS_LINUX = false;
+		}
+	}
 	
 	public static void runAfter(long delay, Runnable runnable) {
 		
@@ -51,8 +56,6 @@ public class SdkUtils {
 	
 	public static String getWebSocketUrl(String url) {
 		if (url == null || url.isEmpty()) return "";
-		if (url.startsWith("ws://")) return url;
-		if (url.startsWith("wss://")) return url;
 		return url;
 	}
 	
@@ -155,8 +158,8 @@ public class SdkUtils {
 		List<String>   output         = new ArrayList<>();
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		
-		String os = System.getProperty("os.name").toLowerCase();
-		if (os.startsWith("win")) {
+		
+		if (!IS_LINUX) {
 			processBuilder.command("cmd.exe", "/c", command);
 		} else {
 			processBuilder.command("bash", "-c", command);

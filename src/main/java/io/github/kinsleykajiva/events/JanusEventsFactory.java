@@ -8,17 +8,20 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * This class represents a factory for creating Janus events.
  */
 public class JanusEventsFactory {
 	
-	private JSONObject jsonEvent;
-	private JanusEventsEmissions                            emissions;
+	private final        JSONObject                         jsonEvent;
+	private final        JanusEventsEmissions               emissions;
 	private static final Map<String, List<ParticipantPojo>> VIDEO_ROOM_MAP = new ConcurrentHashMap<>();
 	
 	/**
@@ -175,7 +178,7 @@ public class JanusEventsFactory {
 	
 	/**
 	 * Processes the event with ID 8.
-	 *
+	 * <p>
 	 * This method extracts the necessary information from the JSON event object and creates
 	 * a JanusJSEPEvent.Root object to represent the event. If Janus.DB_ACCESS is not null,
 	 * it inserts the event into the database using SQLBatchExec.
@@ -201,7 +204,7 @@ public class JanusEventsFactory {
 	
 	/**
 	 * Processes the event with ID 1.
-	 *
+	 * <p>
 	 * This method extracts the necessary information from the JSON event object and creates a JanusSessionEvent.Root
 	 * object to represent the event. If Janus.DB_ACCESS is not null, it inserts the event into the database using
 	 * SQLBatchExec.
@@ -228,10 +231,10 @@ public class JanusEventsFactory {
 	
 	/**
 	 * Processes the event with ID 256.
-	 *
+	 * <p>
 	 * This method extracts the necessary information from the JSON event object and creates a JanusCoreEvent.Root object to represent the event.
 	 * If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
-	 *
+	 * <p>
 	 * This method does not return any value.
 	 */
 	public void processEvent256( ) {
@@ -312,7 +315,7 @@ public class JanusEventsFactory {
 		roomPluginEventData.setEvent(dataJSON.optString("event"));
 		return roomPluginEventData;
 	}
-	private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams( JSONArray streams ) {
+	/*private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams( JSONArray streams ) {
 		VideoRoomPluginEventDataStream[] videoRoomPluginEventDataStreams = new VideoRoomPluginEventDataStream[streams.length()];
 		for (int i = 0; i < streams.length(); i++) {
 			JSONObject                     stream                         = streams.getJSONObject(i);
@@ -324,7 +327,26 @@ public class JanusEventsFactory {
 			videoRoomPluginEventDataStreams[i] = videoRoomPluginEventDataStream;
 		}
 		return videoRoomPluginEventDataStreams;
+	}*/
+	
+	private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams(JSONArray streams) {
+		return IntStream.range(0, streams.length())
+				.mapToObj(streams::getJSONObject)
+				.map(this::createVideoRoomPluginEventDataStream)
+				.toArray(VideoRoomPluginEventDataStream[]::new);
 	}
+	
+	
+	private VideoRoomPluginEventDataStream createVideoRoomPluginEventDataStream(JSONObject stream) {
+		VideoRoomPluginEventDataStream videoRoomPluginEventDataStream = new VideoRoomPluginEventDataStream();
+		videoRoomPluginEventDataStream.setMid(stream.optInt("mid"));
+		videoRoomPluginEventDataStream.setMindex(stream.optInt("mindex"));
+		videoRoomPluginEventDataStream.setCodec(stream.optString("codec"));
+		videoRoomPluginEventDataStream.setType(stream.optString("type"));
+		return videoRoomPluginEventDataStream;
+	}
+	
+	
 	private void handleLeavingEvent( JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room ) {
 		if (roomParticipantsList == null) {
 			return;
