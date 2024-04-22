@@ -5,4 +5,8 @@ module janus.server.java.sdk {
 	requires java.sql;
 	requires java.net.http;
 	requires mysql.connector.j;
+	requires org.mongodb.driver.sync.client;
+	requires org.mongodb.driver.core;
+	requires org.mongodb.bson;
+	
 }

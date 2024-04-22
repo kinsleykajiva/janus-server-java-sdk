@@ -3,16 +3,14 @@ package io.github.kinsleykajiva.events;
 
 import io.github.kinsleykajiva.Janus;
 import io.github.kinsleykajiva.models.events.*;
-import io.github.kinsleykajiva.cache.mysql.DBAccess;
+import io.github.kinsleykajiva.cache.DBAccess;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -198,7 +196,13 @@ public class JanusEventsFactory {
 		);
 		if (Janus.DB_ACCESS != null) {
 			var insertSEL = new JanusJSEPEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			// DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec((String) insertSEL);
+			if(Janus.DB_ACCESS.databaseConnectionExists("mysql")) {
+				Janus.DB_ACCESS.getDatabaseConnection("mysql").executeDBActionCommand(insertSEL);
+			}
+			if(Janus.DB_ACCESS.databaseConnectionExists("mongo")) {
+			
+			}
 		}
 	}
 	

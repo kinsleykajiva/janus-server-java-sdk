@@ -2,9 +2,11 @@ package io.github.kinsleykajiva;
 
 
 
+import io.github.kinsleykajiva.cache.DatabaseConfig;
+import io.github.kinsleykajiva.cache.mongodb.MongoConfiguration;
 import io.github.kinsleykajiva.events.JanusEventsEmissions;
 import io.github.kinsleykajiva.cache.mysql.MySqlConfiguration;
-import io.github.kinsleykajiva.cache.mysql.DBAccess;
+import io.github.kinsleykajiva.cache.DBAccess;
 import io.github.kinsleykajiva.transcoding.FileInfoMJR;
 import io.github.kinsleykajiva.transcoding.MediaFactory;
 import io.github.kinsleykajiva.transcoding.MediaOutputTarget;
@@ -30,6 +32,15 @@ public class Playground {
 	}
 	
 	public static void main( String[] args ) {
+		//io.github.kinsleykajiva.cache.mongodb.DBAccess dbAccess =  io.github.kinsleykajiva.cache.mongodb.DBAccess.getInstance(new MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser"));
+		DBAccess dbAccess = DBAccess.getInstance();
+		DatabaseConfig mySqlConfig = new MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser");
+		dbAccess.addDatabaseConnection("mongodb", mySqlConfig);
+		
+		Janus.DB_ACCESS =dbAccess;
+	
+	}
+	public static void main1( String[] args ) {
 		
 		MediaFactory mediaFactory = new MediaFactory(
 				MediaOutputTarget.VIDEO_ROOM_PLUGIN ,
@@ -78,8 +89,12 @@ public class Playground {
 		//System.out.println("jsonContent = " + jsonContent);
 		//System.exit(0);
 		
-		Janus.DB_ACCESS =new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser");
-		DBAccess.getInstance(Janus.DB_ACCESS);
+		DBAccess dbAccess = DBAccess.getInstance();
+		DatabaseConfig mySqlConfig = new MySqlConfiguration("localhost", 3306, "mydatabase", "username", "password");
+		dbAccess.addDatabaseConnection("mysql", mySqlConfig);
+		
+		Janus.DB_ACCESS =dbAccess;
+		
 		JanusEventsEmissions emissionsMock = new JanusEventsEmissions() {
 			@Override
 			public void onParticipantJoined( long participantId, String participantDisplay, String roomId ) {

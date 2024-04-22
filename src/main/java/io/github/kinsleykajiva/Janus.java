@@ -1,6 +1,7 @@
 package io.github.kinsleykajiva;
 
 
+import io.github.kinsleykajiva.cache.DBAccess;
 import io.github.kinsleykajiva.models.JanusConfiguration;
 import io.github.kinsleykajiva.models.JanusSession;
 import io.github.kinsleykajiva.cache.mysql.MySqlConfiguration;
@@ -26,8 +27,8 @@ public class Janus implements JanusEventHandler {
 	private final ScheduledExecutorService   keppAliveExecutorService = new ScheduledThreadPoolExecutor(1);
 	private final CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 	
-	public static MySqlConfiguration DB_ACCESS = null;
-	private       String             sessionTransactionId;
+	public static DBAccess DB_ACCESS = null;
+	private       String   sessionTransactionId;
 	
 	private JanusWebSocketClient webSocketClient;
 	private JanusSession         janusSession;

@@ -1,48 +1,29 @@
 package io.github.kinsleykajiva.cache.mysql;
 
-
-import org.jetbrains.annotations.ApiStatus;
+import io.github.kinsleykajiva.cache.DatabaseConnection;
 import org.jetbrains.annotations.Blocking;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * This class represents a database access object for interacting with the MySQL database.
- * It provides methods for executing SQL queries and managing database connections.
- */
-@ApiStatus.NonExtendable
-public class DBAccess {
-	static         Logger          log             = Logger.getLogger(DBAccess.class.getName());
-//!	private final  ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());// this is for java jdk 20 and less versons
-	private final  ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
-	private static DBAccess        instance;
-	private        Connection         connect         = null;
-	private       Statement          statement       = null;
-	private final MySqlConfiguration mySqlConfiguration;
-	private final Object             lock            = new Object(); // For synchronization
+public class MySqlConnection implements DatabaseConnection {
+	static        Logger             log       = Logger.getLogger(MySqlConnection.class.getName());
+	private       Connection         connect   = null;
+	private       Statement          statement = null;
+	private       MySqlConfiguration mySqlConfiguration;
+	private final Object             lock      = new Object(); // For synchronization
 	
-	public DBAccess( MySqlConfiguration mySqlConfiguration ) {
+	public MySqlConnection( MySqlConfiguration mySqlConfiguration ) {
 		this.mySqlConfiguration = mySqlConfiguration;
-		connection();
 	}
 	
-	public static DBAccess getInstance( MySqlConfiguration mySqlConfiguration ) {
-		
-		if (instance == null) {
-			instance = new DBAccess(mySqlConfiguration);
-			
-		}
-		return instance;
-	}
-	
-	private void connection() {
+	@Blocking
+	@Override
+	public void connect() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			connect = DriverManager.getConnection("jdbc:mysql://" + mySqlConfiguration.host() + ":" + mySqlConfiguration.port() + "/" + mySqlConfiguration.database(), mySqlConfiguration.username(), mySqlConfiguration.password());
@@ -54,10 +35,25 @@ public class DBAccess {
 		}
 	}
 	
-	public void SQLExec(String sql) {
+	@Override
+	public void disconnect() {
+	
+	}
+	
+	@Override
+	public void executeDBActionCommand( String sql ) {
+		if(sql == null) {
+			return;
+		}
+		
+			SQLBatchExec((String) sql);
+		
+	}
+	
+	public void SQLExec( String sql ) {
 		synchronized (lock) {
 			if (connect == null) {
-				connection();
+				connect();
 			}
 			
 			if (connect == null) {
@@ -89,10 +85,10 @@ public class DBAccess {
 	 *
 	 * @param sql the SQL statement to be executed
 	 */
-	public void SQLBatchExec(String sql) {
+	public void SQLBatchExec( String sql ) {
 		synchronized (lock) {
 			if (connect == null) {
-				connection();
+				connect();
 			}
 			
 			if (connect == null) {
@@ -105,17 +101,17 @@ public class DBAccess {
 			
 			// Execute each SQL statement separately
 			for (String statement : sqlStatements) {
-				executorService.submit(() -> {
-					try (Statement batchStatement = connect.createStatement()) {
-						if (!statement.trim().isEmpty()) { // Skip empty statements
-							log.info("SQL-" + statement);
-							batchStatement.addBatch(statement);
-							batchStatement.executeBatch();
-						}
-					} catch (SQLException e) {
-						log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+				
+				try (Statement batchStatement = connect.createStatement()) {
+					if (!statement.trim().isEmpty()) { // Skip empty statements
+						log.info("SQL-" + statement);
+						batchStatement.addBatch(statement);
+						batchStatement.executeBatch();
 					}
-				});
+				} catch (SQLException e) {
+					log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+				}
+				
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package io.github.kinsleykajiva.cache.mysql;
 
+import io.github.kinsleykajiva.cache.DatabaseConfig;
+
 /**
  * MySqlConfiguration is a record that holds the configuration details for a MySQL database connection.
  * It includes the host, port, database name, username, and password.
@@ -16,7 +18,7 @@ package io.github.kinsleykajiva.cache.mysql;
  * @param username The username for the MySQL server. Defaults to "root" if null or empty.
  * @param password The password for the MySQL server. Throws IllegalArgumentException if null.
  */
-public record MySqlConfiguration(String host, int port, String database, String username, String password) {
+public record MySqlConfiguration(String host, int port, String database, String username, String password) implements DatabaseConfig {
     public MySqlConfiguration {
         if (host == null || host.isEmpty()) {
             host = "localhost";
@@ -33,5 +35,30 @@ public record MySqlConfiguration(String host, int port, String database, String 
         if (password == null) {
             throw new IllegalArgumentException("Password cannot be null");
         }
+    }
+    
+    @Override
+    public String getHost() {
+        return host();
+    }
+    
+    @Override
+    public int getPort() {
+        return port();
+    }
+    
+    @Override
+    public String getDatabase() {
+        return database();
+    }
+    
+    @Override
+    public String getUsername() {
+        return username();
+    }
+    
+    @Override
+    public String getPassword() {
+        return password();
     }
 }
