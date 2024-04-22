@@ -24,7 +24,8 @@ public class DBAccess {
 	private final  ExecutorService                  executorService     = Executors.newVirtualThreadPerTaskExecutor();
 	private final  Map<String, DatabaseConnection > databaseConnections = new ConcurrentHashMap<>();
 	private static DBAccess                         instance;
-
+public  static String MYSQL_CONNECTION_NAME="mysql";
+public  static String MONGO_DB_CONNECTION_NAME="mongo";
 	//private final MySqlConfiguration mySqlConfiguration;
 	private final Object             lock            = new Object(); // For synchronization
 	

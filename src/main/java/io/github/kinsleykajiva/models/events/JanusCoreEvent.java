@@ -1,7 +1,16 @@
 package io.github.kinsleykajiva.models.events;
 
 
+import io.github.kinsleykajiva.Janus;
+import io.github.kinsleykajiva.cache.DatabaseConnection;
+import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
+import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
+
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JanusCoreEvent {
 	
@@ -45,12 +54,25 @@ public class JanusCoreEvent {
 	 * @param root The root record for a Janus core event.
 	 *
 	 * */
-	public String trackInsert( Root root ) {
-		var timestamp = new Timestamp(root.timestamp() / 1000);
-		return String.format(
+	public  Map<DatabaseConnection, List<String >> trackInsert( Root root ) {
+		Map<DatabaseConnection, List<String >> map       = new HashMap<>();
+		var                                    timestamp = new Timestamp(root.timestamp() / 1000);
+		var sql= String.format(
 				"INSERT INTO janus_core (name, value, timestamp) VALUES ('%s', '%s', '%s');",
 				root.emitter(), root.event().status(), timestamp
 		);
-		
+		var docCore = String.format(
+				"{insert: 'janus_core', documents: [{name: '%s', value: '%s', timestamp: '%s'}]}",
+				root.emitter(), root.event().status(), timestamp
+		);
+		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
+			if (databaseConnection instanceof MySqlConnection) {
+				map.put(databaseConnection, List.of(sql));
+			}
+			if (databaseConnection instanceof MongoConnection) {
+				map.put(databaseConnection, List.of(docCore));
+			}
+		});
+		return map;
 	}
 }

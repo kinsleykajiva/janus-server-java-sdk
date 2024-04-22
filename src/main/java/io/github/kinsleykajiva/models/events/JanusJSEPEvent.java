@@ -9,9 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a Janus JSEP event, containing information about the emitter,
@@ -57,29 +55,34 @@ public class JanusJSEPEvent {
 	 * @param root The root record for a Janus JSEP event.
 	 * @return A map containing the SQL or MongoDB command strings for each database connection.
 	 */
-	public Map<DatabaseConnection, String> trackInsert( @NotNull JanusJSEPEvent.Root root ) {
-		Map<DatabaseConnection, String> map       = new HashMap<>();
+	public Map<DatabaseConnection, List<String >> trackInsert( @NotNull JanusJSEPEvent.Root root ) {
+		Map<DatabaseConnection, List<String >> map       = new HashMap<>();
+		
 		var                             timestamp = new Timestamp(root.timestamp() / 1000);
 		
 		if (root.event().jsep() != null) {
 			if (root.event().jsep().type() != null) {
+				List<String> sqlList = new ArrayList<>();
+				List<String> docList = new ArrayList<>();
 				var sql = String.format(
 						"INSERT INTO janus_sdps (session, handle, remote, offer, sdp, timestamp) VALUES (%d, %d, %b, %b, '%s', FROM_UNIXTIME(%d))",
 						root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
 				);
+				sqlList.add(sql);
 				
 				var doc = String.format(
 						"{insert: '%s', documents: [{session: %d, handle: %d, remote: %b, offer: %b, sdp: '%s', timestamp: %tc}]}",
 						"janus_sdps",
 						root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
 				);
-				//
+				docList.add(doc);
+				
 				Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
 					if (databaseConnection instanceof MySqlConnection) {
-						map.put(databaseConnection, sql);
+						map.put(databaseConnection, sqlList);
 					}
 					if (databaseConnection instanceof MongoConnection) {
-						map.put(databaseConnection, doc);
+						map.put(databaseConnection, docList);
 					}
 				});
 			}

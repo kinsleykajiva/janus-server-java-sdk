@@ -1,9 +1,17 @@
 package io.github.kinsleykajiva.models.events;
 
 
+import io.github.kinsleykajiva.Janus;
+import io.github.kinsleykajiva.cache.DatabaseConnection;
+import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
+import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a Janus media event, containing information about the emitter,
@@ -78,7 +86,11 @@ public class JanusMediaEvent {
 	 * @param root The JanusMediaEvent.Root object containing the data to be inserted into the database.
 	 * @return A String containing two SQL insert statements: one for the janus_stats table and one for the janus_media table.
 	 */
-	public String trackInsert( Root root){
+	public   Map<DatabaseConnection, List<String >> trackInsert( Root root){
+		Map<DatabaseConnection, List<String >> map       = new HashMap<>();
+		if(root == null){
+			return map;
+		}
 		var timestamp = new Timestamp(root.timestamp() / 1000);
 		String receiving = root.event.receiving() ? "true": "false";
 		//ToDo! this needs to be review because it will be false positive as not all events will have all these attributes even if they are set to default values of zero , null and false values
@@ -105,7 +117,40 @@ public class JanusMediaEvent {
 				root.handle_id() + "," +
 				" '"+receiving+ "', " +
 				"'"+timestamp + "');";
-		return sql;
+		var doc = String.format(
+				"{insert: '%s', documents: [{session: %d, handle: %d, medium: '%s', base: %d, lsr: %d, lostlocal: %d, lostremote: %d, jitterlocal: %d, jitterremote: %d, packetssent: %d, packetsrecv: %d, bytessent: %d, bytesrecv: %d, nackssent: %d, nacksrecv: %d, timestamp: '%s'}]}",
+				"janus_stats",
+				root.session_id(),
+				root.handle_id(),
+				root.event.media(),
+				root.event.base(),
+				root.event.rtt(),
+				root.event.lost(),
+				root.event.lost_by_remote(),
+				root.event.jitter_local(),
+				root.event.jitter_remote(),
+				root.event.packets_sent(),
+				root.event.packets_received(),
+				root.event.bytes_sent(),
+				root.event.bytes_received(),
+				root.event.nacks_sent(),
+				root.event.nacks_received(),
+				timestamp,
+				root.session_id(),
+				root.handle_id(),
+				receiving,
+				timestamp
+		);
+		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
+			if (databaseConnection instanceof MySqlConnection) {
+				map.put(databaseConnection, List.of(sql));
+			}
+			if (databaseConnection instanceof MongoConnection) {
+				map.put(databaseConnection, List.of(doc));
+			}
+		});
+		
+		return map;
 	}
 }
 

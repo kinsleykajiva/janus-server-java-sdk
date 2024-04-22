@@ -92,11 +92,14 @@ public class MongoConnection implements DatabaseConnection {
 		if (document == null) {
 			return;
 		}
-		try {
-			database.runCommand(Document.parse((String) document));
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Failed to execute MongoDB command: " + document, e);
-		}
+		
+		executorService.execute(() -> {
+			try {
+				database.runCommand(Document.parse((String) document));
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Failed to execute MongoDB command: " + document, e);
+			}
+		});
 		
 	}
 }

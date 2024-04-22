@@ -2,8 +2,11 @@ package io.github.kinsleykajiva.events;
 
 
 import io.github.kinsleykajiva.Janus;
-import io.github.kinsleykajiva.models.events.*;
 import io.github.kinsleykajiva.cache.DBAccess;
+import io.github.kinsleykajiva.cache.DatabaseConnection;
+import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
+import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
+import io.github.kinsleykajiva.models.events.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,7 +31,7 @@ public class JanusEventsFactory {
 	 * @param jsonEvent The JSON event associated with the factory.
 	 * @param emissions The JanusEventsEmissions object used for emitting events.
 	 */
-	public JanusEventsFactory( JSONObject jsonEvent ,JanusEventsEmissions emissions) {
+	public JanusEventsFactory( JSONObject jsonEvent, JanusEventsEmissions emissions ) {
 		this.jsonEvent = jsonEvent;
 		this.emissions = emissions;
 	}
@@ -62,7 +65,20 @@ public class JanusEventsFactory {
 		);
 		if (Janus.DB_ACCESS != null) {
 			var insertSEL = new JanusWebRTCStateEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			for (Map.Entry<DatabaseConnection, List<String>> entry : insertSEL.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
+			}
 		}
 		
 	}
@@ -72,7 +88,7 @@ public class JanusEventsFactory {
 	 * and creates a JanusHandleEvent.Root object to represent the event. If Janus.DB_ACCESS is not null, it
 	 * inserts the event into the database using SQLBatchExec.
 	 */
-	public void processEvent2(  ) {
+	public void processEvent2() {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusHandleEvent.Event(
 				jsonEventObj.optString("name", null),
@@ -90,7 +106,20 @@ public class JanusEventsFactory {
 		);
 		if (Janus.DB_ACCESS != null) {
 			var insertSEL = new JanusHandleEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			for (Map.Entry<DatabaseConnection, List<String>> entry : insertSEL.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
+			}
 		}
 	}
 	
@@ -119,8 +148,21 @@ public class JanusEventsFactory {
 				jevent
 		);
 		if (Janus.DB_ACCESS != null) {
-			var insertSEL = new JanusTransportOriginatedEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			var commandMap = new JanusTransportOriginatedEvent().trackInsert(janusEvent);
+			for (Map.Entry<DatabaseConnection, List<String>> entry : commandMap.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
+			}
 		}
 	}
 	
@@ -129,7 +171,7 @@ public class JanusEventsFactory {
 	 * It extracts the necessary information from the JSON event object and creates a JanusMediaEvent object to represent the event.
 	 * If Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
 	 */
-	public void processEvent32(  ) {
+	public void processEvent32() {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusMediaEvent.Event(
 				jsonEventObj.optString("mid", null),
@@ -169,8 +211,21 @@ public class JanusEventsFactory {
 				jevent
 		);
 		if (Janus.DB_ACCESS != null) {
-			var insertSEL = new JanusMediaEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			var commandMap = new JanusMediaEvent().trackInsert(janusEvent);
+			for (Map.Entry<DatabaseConnection, List<String>> entry : commandMap.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
+			}
 		}
 	}
 	
@@ -181,7 +236,7 @@ public class JanusEventsFactory {
 	 * a JanusJSEPEvent.Root object to represent the event. If Janus.DB_ACCESS is not null,
 	 * it inserts the event into the database using SQLBatchExec.
 	 */
-	public void processEvent8( ) {
+	public void processEvent8() {
 		var jsep = jsonEvent.getJSONObject("event").has("jsep") ? new JanusJSEPEvent.Jsep(jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("type", null),
 				jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("sdp", null)) : null;
 		var janusJSEPEventEvent = new JanusJSEPEvent.Event(jsonEvent.getString("name"), jsep);
@@ -195,14 +250,25 @@ public class JanusEventsFactory {
 				janusJSEPEventEvent
 		);
 		if (Janus.DB_ACCESS != null) {
-			var insertSEL = new JanusJSEPEvent().trackInsert(janusEvent);
-			// DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec((String) insertSEL);
-			if(Janus.DB_ACCESS.databaseConnectionExists("mysql")) {
-				Janus.DB_ACCESS.getDatabaseConnection("mysql").executeDBActionCommand(insertSEL);
-			}
-			if(Janus.DB_ACCESS.databaseConnectionExists("mongo")) {
+			var commandMap = new JanusJSEPEvent().trackInsert(janusEvent);
 			
+			
+			for (Map.Entry<DatabaseConnection, List<String>> entry : commandMap.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
 			}
+			
+			
 		}
 	}
 	
@@ -213,7 +279,7 @@ public class JanusEventsFactory {
 	 * object to represent the event. If Janus.DB_ACCESS is not null, it inserts the event into the database using
 	 * SQLBatchExec.
 	 */
-	public void processEvent1( ) {
+	public void processEvent1() {
 		var janusEvent = new JanusSessionEvent.Root(
 				jsonEvent.optString("emitter", null),
 				jsonEvent.optInt("type", 0),
@@ -229,7 +295,20 @@ public class JanusEventsFactory {
 		);
 		if (Janus.DB_ACCESS != null) {
 			var insertSEL = new JanusSessionEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			for (Map.Entry<DatabaseConnection, List<String>> entry : insertSEL.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
+			}
 		}
 	}
 	
@@ -241,7 +320,7 @@ public class JanusEventsFactory {
 	 * <p>
 	 * This method does not return any value.
 	 */
-	public void processEvent256( ) {
+	public void processEvent256() {
 		var jsonEventObj = jsonEvent.getJSONObject("event");
 		var jevent = new JanusCoreEvent.Event(
 				jsonEventObj.optString("status", null),
@@ -261,7 +340,20 @@ public class JanusEventsFactory {
 		);
 		if (Janus.DB_ACCESS != null) {
 			var insertSEL = new JanusCoreEvent().trackInsert(janusEvent);
-			DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(insertSEL);
+			for (Map.Entry<DatabaseConnection, List<String>> entry : insertSEL.entrySet()) {
+				DatabaseConnection connection = entry.getKey();
+				List<String>       command    = entry.getValue();
+				if (connection instanceof MySqlConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				} else if (connection instanceof MongoConnection) {
+					if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+						command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+					}
+				}
+				
+			}
 		}
 	}
 	
@@ -298,10 +390,26 @@ public class JanusEventsFactory {
 			janusEvent.setEvent(roomPluginEventData);
 			
 			if (Janus.DB_ACCESS != null) {
-				DBAccess.getInstance(Janus.DB_ACCESS).SQLBatchExec(janusEvent.trackInsert());
+				var insertSEL = janusEvent.trackInsert();
+				
+				for (Map.Entry<DatabaseConnection, List<String>> entry : insertSEL.entrySet()) {
+					DatabaseConnection connection = entry.getKey();
+					List<String>       command    = entry.getValue();
+					if (connection instanceof MySqlConnection) {
+						if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MYSQL_CONNECTION_NAME)) {
+							command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MYSQL_CONNECTION_NAME).executeDBActionCommand(insert));
+						}
+					} else if (connection instanceof MongoConnection) {
+						if (Janus.DB_ACCESS.databaseConnectionExists(DBAccess.MONGO_DB_CONNECTION_NAME)) {
+							command.forEach(insert -> Janus.DB_ACCESS.getDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME).executeDBActionCommand(insert));
+						}
+					}
+					
+				}
 			}
 		}
 	}
+	
 	private VideoRoomPluginEventData createVideoRoomPluginEventData( JSONObject dataJSON ) {
 		VideoRoomPluginEventData roomPluginEventData = new VideoRoomPluginEventData("janus.plugin.videoroom");
 		roomPluginEventData.setRoom(dataJSON.optString("room"));
@@ -333,7 +441,7 @@ public class JanusEventsFactory {
 		return videoRoomPluginEventDataStreams;
 	}*/
 	
-	private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams(JSONArray streams) {
+	private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams( JSONArray streams ) {
 		return IntStream.range(0, streams.length())
 				.mapToObj(streams::getJSONObject)
 				.map(this::createVideoRoomPluginEventDataStream)
@@ -341,7 +449,7 @@ public class JanusEventsFactory {
 	}
 	
 	
-	private VideoRoomPluginEventDataStream createVideoRoomPluginEventDataStream(JSONObject stream) {
+	private VideoRoomPluginEventDataStream createVideoRoomPluginEventDataStream( JSONObject stream ) {
 		VideoRoomPluginEventDataStream videoRoomPluginEventDataStream = new VideoRoomPluginEventDataStream();
 		videoRoomPluginEventDataStream.setMid(stream.optInt("mid"));
 		videoRoomPluginEventDataStream.setMindex(stream.optInt("mindex"));
@@ -380,6 +488,7 @@ public class JanusEventsFactory {
 		
 		return participant;
 	}
+	
 	private void handleJoinedEvent( JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room ) {
 		var id         = dataJSON.getLong("id");
 		var display    = dataJSON.getString("display");
