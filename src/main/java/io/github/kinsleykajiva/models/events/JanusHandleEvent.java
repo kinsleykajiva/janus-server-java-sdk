@@ -5,6 +5,7 @@ import io.github.kinsleykajiva.Janus;
 import io.github.kinsleykajiva.cache.DatabaseConnection;
 import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
 import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
+import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -47,8 +48,17 @@ public class JanusHandleEvent {
         root.session_id(), root.handle_id(), root.event().name(), root.event().plugin(), timestamp
     );
 		
+		/*var doc = String.format(
+				"{'insert': '%s', 'documents': [{'session': %d, 'handle': %d, 'event': '%s', 'plugin': '%s', 'timestamp': '%s'}]}",
+				"janus_handles",
+				root.session_id(),
+				root.handle_id(),
+				root.event().name(),
+				root.event().plugin(),
+				timestamp
+		);*/
 		var doc = String.format(
-				"{insert: '%s', documents: [{session: %d, handle: %d, event: '%s', plugin: '%s', timestamp: '%s'}]}",
+				"{\"insert\": \"%s\", \"documents\": [{\"session\": %d, \"handle\": %d, \"event\": \"%s\", \"plugin\": \"%s\", \"timestamp\": \"%s\"}]}",
 				"janus_handles",
 				root.session_id(),
 				root.handle_id(),
@@ -56,6 +66,7 @@ public class JanusHandleEvent {
 				root.event().plugin(),
 				timestamp
 		);
+		
 		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
 			if (databaseConnection instanceof MySqlConnection) {
 				map.put(databaseConnection, List.of(sql));

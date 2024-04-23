@@ -63,8 +63,12 @@ public class JanusSessionEvent {
 				"INSERT INTO janus_sessions (session, event, timestamp) VALUES (%d, '%s', '%s');",
 				root.session_id(), root.event().name(), timestamp
 		);
+		/*var docSessions = String.format(
+				"{'insert': 'janus_sessions', 'documents': [{'session': %d, 'event': '%s', 'timestamp': '%s'}]}",
+				root.session_id(), root.event().name(), timestamp
+		);*/
 		var docSessions = String.format(
-				"{insert: 'janus_sessions', documents: [{session: %d, event: '%s', timestamp: '%s'}]}",
+				"{\"insert\": \"janus_sessions\", \"documents\": [{\"session\": %d, \"event\": \"%s\", \"timestamp\": \"%s\"}]}",
 				root.session_id(), root.event().name(), timestamp
 		);
 		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {

@@ -66,12 +66,17 @@ public interface JanusEventsEmissions {
 				.parallel()
 				.mapToObj(jsonArray::getJSONObject)
 				.forEach(jsonEvent -> executorService.submit(() -> processEvent(jsonEvent)));
+//				.forEach(this::processEvent);
 	}
 	
 	private void processEvent( JSONObject jsonEvent ) {
+		System.out.println("");
 		JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, this);
+		System.out.println("");
 		EventType          eventType          = EventType.fromTypeValue(jsonEvent.getInt("type"));
 		
+		System.out.println("1zzzzz--xx--" + jsonEvent.getInt("type"));
+		//System.out.println("1zzzzz----1" + eventType);
 		switch (eventType) {
 			case CORE -> janusEventsFactory.processEvent256();
 			case TRANSPORT -> janusEventsFactory.processEvent128();

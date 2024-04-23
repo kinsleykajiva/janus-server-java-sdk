@@ -34,11 +34,38 @@ public class Playground {
 	public static void main( String[] args ) {
 		//io.github.kinsleykajiva.cache.mongodb.DBAccess dbAccess =  io.github.kinsleykajiva.cache.mongodb.DBAccess.getInstance(new MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser"));
 		DBAccess dbAccess = DBAccess.getInstance();
+		DBAccess.MONGO_DB_CONNECTION_NAME = "mongodb";
 		DatabaseConfig mySqlConfig = new MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser");
-		dbAccess.addDatabaseConnection("mongodb", mySqlConfig);
+		dbAccess.addDatabaseConnection(DBAccess.MONGO_DB_CONNECTION_NAME, mySqlConfig);
 		
 		Janus.DB_ACCESS =dbAccess;
-	
+		
+		JanusEventsEmissions emissionsMock = new JanusEventsEmissions() {
+			@Override
+			public void onParticipantJoined( long participantId, String participantDisplay, String roomId ) {
+				System.out.println("Participant joined" + participantId + " " + participantDisplay + " " + roomId);
+			}
+			
+			@Override
+			public void onParticipantLeft( long participantId, String participantDisplay, String roomId ) {
+				System.out.println("Participant left" + participantId + " " + participantDisplay + " " + roomId);
+			}
+			
+			@Override
+			public void onRoomSessionStarted( String roomId, long firstParticipantId, String firstParticipantDisplay ) {
+				System.out.println("Room session started" + firstParticipantId + " " + firstParticipantDisplay);
+			}
+			
+			@Override
+			public void onRoomSessionEnded( String roomId ) {
+				System.out.println("Room session ended");
+			}
+		};
+		String jsonContent = loadJsonFile("./samples/janus_log.json");
+		emissionsMock.consumeEventAsync(jsonContent);
+		System.out.println("something " + Janus.DB_ACCESS == null);
+		System.out.println("something " );
+		
 	}
 	public static void main1( String[] args ) {
 		

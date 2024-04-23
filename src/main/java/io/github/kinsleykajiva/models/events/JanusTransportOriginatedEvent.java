@@ -79,8 +79,13 @@ public class JanusTransportOriginatedEvent {
 		
 		var sql= "INSERT INTO janus_transports (emitter, type, timestamp, transport, event_id, event, admin_api, ip, port) " +
 				"VALUES ('" + emitter + "', " + type + ", '" + timestamp + "', '" + transport + "', '" + id + "', '" + eventName + "', '" + adminApi + "', '" + ip + "', " + port + ")";
+	/*	var docTransports = String.format(
+				"{'insert': 'janus_transports', 'documents': [{'emitter': '%s', 'type': %d, 'timestamp': '%s', 'transport': '%s', 'event_id': '%s', 'event': '%s', 'admin_api': '%s', 'ip': '%s', 'port': %d}]}",
+				emitter, type, timestamp, transport, id, eventName, adminApi, ip, port
+		);*/
+		
 		var docTransports = String.format(
-				"{insert: 'janus_transports', documents: [{emitter: '%s', type: %d, timestamp: '%s', transport: '%s', event_id: '%s', event: '%s', admin_api: '%s', ip: '%s', port: %d}]}",
+				"{\"insert\": \"janus_transports\", \"documents\": [{\"emitter\": \"%s\", \"type\": %d, \"timestamp\": \"%s\", \"transport\": \"%s\", \"event_id\": \"%s\", \"event\": \"%s\", \"admin_api\": \"%s\", \"ip\": \"%s\", \"port\": %d}]}",
 				emitter, type, timestamp, transport, id, eventName, adminApi, ip, port
 		);
 		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {

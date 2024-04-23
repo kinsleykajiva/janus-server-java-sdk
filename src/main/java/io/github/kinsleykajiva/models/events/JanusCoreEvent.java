@@ -5,6 +5,7 @@ import io.github.kinsleykajiva.Janus;
 import io.github.kinsleykajiva.cache.DatabaseConnection;
 import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
 import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
+import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -62,9 +63,10 @@ public class JanusCoreEvent {
 				root.emitter(), root.event().status(), timestamp
 		);
 		var docCore = String.format(
-				"{insert: 'janus_core', documents: [{name: '%s', value: '%s', timestamp: '%s'}]}",
+				"{\"insert\": \"janus_core\", \"documents\": [{\"name\": \"%s\", \"value\": \"%s\", \"timestamp\": \"%s\"}]}",
 				root.emitter(), root.event().status(), timestamp
 		);
+		
 		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
 			if (databaseConnection instanceof MySqlConnection) {
 				map.put(databaseConnection, List.of(sql));

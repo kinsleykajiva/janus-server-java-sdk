@@ -7,6 +7,7 @@ import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
 import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -70,8 +71,25 @@ public class JanusJSEPEvent {
 				);
 				sqlList.add(sql);
 				
+				/*var doc = String.format(
+						"{'insert': '%s', 'documents': [{'session': %d, 'handle': %d, 'remote': %b, 'offer': %b, 'sdp': '%s', 'timestamp': %tc}]}",
+						"janus_sdps",
+						root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
+				);*/
+				var json = new JSONObject()
+						.put("insert", "janus_sdps")
+						.put("documents",
+								new JSONObject()
+										.put("session", root.session_id())
+										.put("handle",root.handle_id())
+										.put("remote", root.event().jsep().type().equals("offer"))
+										.put("offer", root.event().jsep().type().equals("answer"))
+										.put("sdp", root.event().jsep().sdp())
+									
+										.put("timestamp", timestamp)
+						).toString();
 				var doc = String.format(
-						"{insert: '%s', documents: [{session: %d, handle: %d, remote: %b, offer: %b, sdp: '%s', timestamp: %tc}]}",
+						"{\"insert\": \"%s\", \"documents\": [{\"session\": %d, \"handle\": %d, \"remote\": %b, \"offer\": %b, \"sdp\": \"%s\", \"timestamp\": \"%tc\"}]}",
 						"janus_sdps",
 						root.session_id(), root.handle_id(), root.event().jsep().type().equals("offer"), root.event().jsep().type().equals("answer"), root.event().jsep().sdp(), timestamp
 				);

@@ -65,8 +65,20 @@ public class JanusWebRTCStateEvent {
 				+ root.event().local_candidate() + "','"
 				+ root.event().remote_candidate() + "'); ";
 		
+		/*var doc = String.format(
+				"{'insert': '%s', 'documents': [{'session': %d, 'handle': %d, 'stream': %d, 'component': %d, 'state': '%s', 'timestamp': '%s', 'local_candidate': '%s', 'remote_candidate': '%s'}]}",
+				"janus_ice",
+				root.session_id(),
+				root.handle_id(),
+				root.event().stream_id(),
+				root.event().component_id(),
+				root.event().ice(),
+				timestamp,
+				root.event().local_candidate(),
+				root.event().remote_candidate()
+		);*/
 		var doc = String.format(
-				"{insert: '%s', documents: [{session: %d, handle: %d, stream: %d, component: %d, state: '%s', timestamp: '%s', local_candidate: '%s', remote_candidate: '%s'}]}",
+				"{\"insert\": \"%s\", \"documents\": [{\"session\": %d, \"handle\": %d, \"stream\": %d, \"component\": %d, \"state\": \"%s\", \"timestamp\": \"%s\", \"local_candidate\": \"%s\", \"remote_candidate\": \"%s\"}]}",
 				"janus_ice",
 				root.session_id(),
 				root.handle_id(),

@@ -117,8 +117,8 @@ public class JanusMediaEvent {
 				root.handle_id() + "," +
 				" '"+receiving+ "', " +
 				"'"+timestamp + "');";
-		var doc = String.format(
-				"{insert: '%s', documents: [{session: %d, handle: %d, medium: '%s', base: %d, lsr: %d, lostlocal: %d, lostremote: %d, jitterlocal: %d, jitterremote: %d, packetssent: %d, packetsrecv: %d, bytessent: %d, bytesrecv: %d, nackssent: %d, nacksrecv: %d, timestamp: '%s'}]}",
+	/*	var doc = String.format(
+				"{\"insert\": '%s', \"documents\": [{\"session\": %d, \"handle\": %d, \"medium\": \"%s', 'base': %d, 'lsr': %d, 'lostlocal': %d, 'lostremote': %d, 'jitterlocal': %d, 'jitterremote': %d, 'packetssent': %d, 'packetsrecv': %d, 'bytessent': %d, 'bytesrecv': %d, 'nackssent': %d, 'nacksrecv': %d, 'timestamp': '%s'}]}",
 				"janus_stats",
 				root.session_id(),
 				root.handle_id(),
@@ -140,7 +140,13 @@ public class JanusMediaEvent {
 				root.handle_id(),
 				receiving,
 				timestamp
-		);
+		); */
+		var doc = String.format( "{\"insert\": \"%s\", \"documents\": [{\"session\": %d, \"handle\": %d, \"medium\": \"%s\", \"base\": %d, \"lsr\": %d, \"lostlocal\": %d, \"lostremote\": %d, \"jitterlocal\": %d, \"jitterremote\": %d, \"packetssent\": %d, \"packetsrecv\": %d, \"bytessent\": %d, \"bytesrecv\": %d, \"nackssent\": %d, \"nacksrecv\": %d, \"timestamp\": \"%s\"}]}", "janus_stats", root.session_id(), root.handle_id(), root.event.media(), root.event.base(), root.event.rtt(), root.event.lost(), root.event.lost_by_remote(), root.event.jitter_local(), root.event.jitter_remote(), root.event.packets_sent(), root.event.packets_received(), root.event.bytes_sent(), root.event.bytes_received(), root.event.nacks_sent(), root.event.nacks_received(), timestamp, root.session_id(), root.handle_id(), receiving, timestamp );
+		
+		
+		
+		
+		
 		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
 			if (databaseConnection instanceof MySqlConnection) {
 				map.put(databaseConnection, List.of(sql));
