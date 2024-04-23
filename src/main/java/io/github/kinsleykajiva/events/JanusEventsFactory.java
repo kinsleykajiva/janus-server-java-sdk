@@ -209,7 +209,22 @@ public class JanusEventsFactory {
 		var jsep = jsonEvent.getJSONObject("event").has("jsep") ? new JanusJSEPEvent.Jsep(jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("type", null),
 				jsonEvent.getJSONObject("event").getJSONObject("jsep").optString("sdp", null)) : null;
 		System.out.println(jsonEvent);
-		var janusJSEPEventEvent = new JanusJSEPEvent.Event(jsonEvent.getString("owner"), jsep);
+		var key = "";
+		if(
+				jsonEvent.has("owner")
+		){
+			key = "owner";
+		}
+		if(
+				
+				key.isEmpty() && jsonEvent.has("name")
+		){
+			key = "name";
+		}
+		if(key.isEmpty()){
+			return;
+		}
+		var janusJSEPEventEvent = new JanusJSEPEvent.Event(jsonEvent.getString(key), jsep);
 		var janusEvent = new JanusJSEPEvent.Root(
 				jsonEvent.optString("emitter", null),
 				jsonEvent.optInt("type", 0),
