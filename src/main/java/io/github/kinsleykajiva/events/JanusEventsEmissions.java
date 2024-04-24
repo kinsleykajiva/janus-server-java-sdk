@@ -63,10 +63,10 @@ public interface JanusEventsEmissions {
 		JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
 		
 		IntStream.range(0, jsonArray.length())
-				.parallel()
+			//	.parallel()
 				.mapToObj(jsonArray::getJSONObject)
-//				.forEach(jsonEvent -> executorService.submit(() -> processEvent(jsonEvent)));
-				.forEach(this::processEvent);
+				.forEach(jsonEvent -> executorService.submit(() -> processEvent(jsonEvent)));
+//				.forEach(this::processEvent);
 	}
 	
 	private void processEvent( JSONObject jsonEvent ) {

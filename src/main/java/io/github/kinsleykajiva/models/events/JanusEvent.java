@@ -102,8 +102,17 @@ public class JanusEvent {
 					.append(this.getEvent().getPlugin()).append("', '")
 					.append(((VideoRoomPluginEventData) event).getEvent()).append("', '")
 					.append(timestamp).append("');");
-			docList.add(String.format(
+			/*docList.add(String.format(
 					"{collection: 'janus_plugins', documents: [{session: %d, handle: %d, plugin: '%s', event: '%s', timestamp: '%s'}]}",
+					this.getSession_id(),
+					this.getHandle_id(),
+					this.getEvent().getPlugin(),
+					((VideoRoomPluginEventData) event).getEvent(),
+					timestamp
+			));*/
+			
+			docList.add(String.format(
+					"{\"insert\": \"janus_plugins\", \"documents\": [{\"session\": %d, \"handle\": %d, \"plugin\": \"%s\", \"event\": \"%s\", \"timestamp\": \"%s\"}]}",
 					this.getSession_id(),
 					this.getHandle_id(),
 					this.getEvent().getPlugin(),
@@ -152,7 +161,7 @@ public class JanusEvent {
 			));*/
 			
 			docList.add(String.format(
-					"{\"collection\": \"janus_videoroom_plugin_event\", \"documents\": [{\"session\": %d, \"handle\": %d, \"data_id\": %d, \"data_private_id\": %d, \"display\": \"%s\", \"room\": \"%s\", \"opaque_id\": \"%s\", \"streams_array\": %s, \"timestamp\": \"%s\"}]}",
+					"{\"insert\": \"janus_videoroom_plugin_event\", \"documents\": [{\"session\": %d, \"handle\": %d, \"data_id\": %d, \"data_private_id\": %d, \"display\": \"%s\", \"room\": \"%s\", \"opaque_id\": \"%s\", \"streams_array\": %s, \"timestamp\": \"%s\"}]}",
 					this.getSession_id(),
 					this.getHandle_id(),
 					((VideoRoomPluginEventData) event).getId(),

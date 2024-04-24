@@ -87,7 +87,7 @@ public class JanusWebRTCStateEvent {
 				root.event().ice(),
 				timestamp,
 				root.event().local_candidate(),
-				root.event().remote_candidate()
+				root.event().remote_candidate() == null ? null: root.event().remote_candidate().trim()
 		);
 		Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections()).forEach(databaseConnection -> {
 			if (databaseConnection instanceof MySqlConnection) {

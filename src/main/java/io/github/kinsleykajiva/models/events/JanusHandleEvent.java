@@ -44,7 +44,7 @@ public class JanusHandleEvent {
 		if(root == null) return map;
 		var timestamp = new Timestamp(root.timestamp() / 1000);
     var sql= String.format(
-        "INSERT INTO janus_handles (session, handle, event, plugin, timestamp) VALUES (%d, %d, '%s', '%s', FROM_UNIXTIME(%d))",
+        "INSERT INTO janus_handles (session, handle, event, plugin, timestamp) VALUES (%d, %d, '%s', '%s', '%s' )",
         root.session_id(), root.handle_id(), root.event().name(), root.event().plugin(), timestamp
     );
 		

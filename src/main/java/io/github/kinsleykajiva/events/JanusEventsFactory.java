@@ -258,10 +258,10 @@ public class JanusEventsFactory {
 				jsonEvent.optLong("timestamp", 0),
 				jsonEvent.optLong("session_id", 0),
 				new JanusSessionEvent.Event(
-						jsonEvent.getString("name"),
-						jsonEvent.has("transport") ? new JanusSessionEvent.Transport(
-								jsonEvent.getJSONObject("transport").optString("transport", null),
-								jsonEvent.getJSONObject("transport").optLong("id", 0)
+						jsonEvent.getJSONObject("event").getString("name"),
+						jsonEvent.getJSONObject("event").has("transport") ? new JanusSessionEvent.Transport(
+								jsonEvent.getJSONObject("event").getJSONObject("transport").optString("transport", null),
+								jsonEvent.getJSONObject("event").getJSONObject("transport").optLong("id", 0)
 						) : null
 				)
 		);System.out.println("1bbbbbb1");
