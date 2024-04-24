@@ -1,20 +1,17 @@
 package io.github.kinsleykajiva.cache.mongodb;
 
-import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.InsertManyOptions;
 import io.github.kinsleykajiva.cache.DatabaseConnection;
+import io.github.kinsleykajiva.utils.SdkUtils;
 import org.bson.Document;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -37,10 +34,10 @@ public class MongoConnection implements DatabaseConnection {
 	@Override
 	public void connect() {
 		log.info("Loading collection at runtime ");
-		try  {
+		try {
 			MongoClient mongoClient = MongoClients.create("mongodb://" + configuration.host() + ":" + configuration.port());
 			database = mongoClient.getDatabase(configuration.database());
-		
+			
 			//mongoClient.listDatabaseNames().forEach(System.out::println);
 			// get collection if exists if not create it
 			database.listCollectionNames().forEach(collectionNames::add);
@@ -86,7 +83,7 @@ public class MongoConnection implements DatabaseConnection {
 			}
 			
 			//database.getCollection("janus_sessions").
-		}catch (Exception e) {
+		} catch (Exception e) {
 			log.log(Level.SEVERE, "Error connecting to Mongo Database", e);
 		}
 		
@@ -106,27 +103,39 @@ public class MongoConnection implements DatabaseConnection {
 		}
 		executorService.execute(() -> {
 			try {
-			
-				if(!new JSONObject(document).has("insert")){
-					System.out.println("Not found");
+				
+				if (!SdkUtils.isJson(document)) {
+					
+					log.log(Level.SEVERE, "Invalid JSON format: " + document);
 					return;
 				}
-				var collectionName  =  new JSONObject(document).getString("insert");
-				JSONArray  documents = new JSONObject(document).getJSONArray("documents");
+				if (!new JSONObject(document).has("insert")) {
+					
+					log.log(Level.SEVERE, "Not found or Invalid JSON format: " + document);
+					return;
+				}
+				var       collectionName = new JSONObject(document).getString("insert");
+				JSONArray documents      = new JSONObject(document).getJSONArray("documents");
+				
 				// Get the collection
 				MongoCollection<Document> collection = database.getCollection(collectionName);
 				
-			
-				for (int i = 0; i < documents.length(); i++) {
-					
-					// Parse the query string into a Document object
-					Document queryDocument = Document.parse(documents.getJSONObject(i).toString());
-				
-					// Insert the document into the collection
-					collection.insertOne(queryDocument);
+				try {
+					List<Document> queryDocuments = documents.toList().stream()
+							.map(obj -> Document.parse(obj.toString()))
+							.collect(Collectors.toList());
+					collection.insertMany(queryDocuments);
+				} catch (Exception e) {
+					for (int i = 0; i < documents.length(); i++) {
+						
+						// Parse the query string into a Document object
+						Document queryDocument = Document.parse(documents.getJSONObject(i).toString());
+						
+						// Insert the document into the collection
+						collection.insertOne(queryDocument);
+					}
 				}
-				System.out.println("Documents inserted successfully.");
-				
+				log.info("Documents inserted successfully.");
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Failed to execute MongoDB command: " + document, e);
 			}

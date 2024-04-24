@@ -138,8 +138,21 @@ public class JanusEvent {
 					.append(streamsJ.toString(2)).append("', '")
 					.append(timestamp).append("' );");
 			
-			docList.add(String.format(
+			/*docList.add(String.format(
 					"{collection: 'janus_videoroom_plugin_event', documents: [{session: %d, handle: %d, data_id: %d, data_private_id: %d, display: '%s', room: '%s', opaque_id: '%s', streams_array: %s, timestamp: '%s'}]}",
+					this.getSession_id(),
+					this.getHandle_id(),
+					((VideoRoomPluginEventData) event).getId(),
+					((VideoRoomPluginEventData) event).getPrivate_id(),
+					((VideoRoomPluginEventData) event).getDisplay(),
+					((VideoRoomPluginEventData) event).getRoom(),
+					((VideoRoomPluginEventData) event).getOpaque_id(),
+					streamsJ.toString(),
+					timestamp
+			));*/
+			
+			docList.add(String.format(
+					"{\"collection\": \"janus_videoroom_plugin_event\", \"documents\": [{\"session\": %d, \"handle\": %d, \"data_id\": %d, \"data_private_id\": %d, \"display\": \"%s\", \"room\": \"%s\", \"opaque_id\": \"%s\", \"streams_array\": %s, \"timestamp\": \"%s\"}]}",
 					this.getSession_id(),
 					this.getHandle_id(),
 					((VideoRoomPluginEventData) event).getId(),
