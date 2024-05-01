@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
+
 /**
  * Represents a Janus handle event, containing information about the emitter, event type, timestamp,
  * session ID, handle ID, opaque ID, and the nested event details.
@@ -72,17 +74,7 @@ public class JanusHandleEvent {
             root.event().name(),
             root.event().plugin(),
             timestamp);
-
-    Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
-        .forEach(
-            databaseConnection -> {
-              if (databaseConnection instanceof MySqlConnection) {
-                map.put(databaseConnection, List.of(sql));
-              }
-              if (databaseConnection instanceof MongoConnection) {
-                map.put(databaseConnection, List.of(doc));
-              }
-            });
-    return map;
+    
+    return getDatabaseConnectionListMap(map, sql, doc);
   }
 }

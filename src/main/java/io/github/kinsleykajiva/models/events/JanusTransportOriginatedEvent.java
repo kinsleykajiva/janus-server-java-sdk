@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
+
 /**
  * Represents a Janus transport-originated event. This class contains records for the root event,
  * the event itself, and the associated data.
@@ -101,16 +103,6 @@ public class JanusTransportOriginatedEvent {
         String.format(
             "{\"insert\": \"janus_transports\", \"documents\": [{\"emitter\": \"%s\", \"type\": %d, \"timestamp\": \"%s\", \"transport\": \"%s\", \"event_id\": \"%s\", \"event\": \"%s\", \"admin_api\": \"%s\", \"ip\": \"%s\", \"port\": %d}]}",
             emitter, type, timestamp, transport, id, eventName, adminApi, ip, port);
-    Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
-        .forEach(
-            databaseConnection -> {
-              if (databaseConnection instanceof MySqlConnection) {
-                map.put(databaseConnection, List.of(sql));
-              }
-              if (databaseConnection instanceof MongoConnection) {
-                map.put(databaseConnection, List.of(docTransports));
-              }
-            });
-    return map;
+    return getDatabaseConnectionListMap(map, sql, docTransports);
   }
 }

@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
+
 /**
  * The JanusSessionEvent class represents a Janus session event, including information about the
  * emitter, event type, timestamp, session ID, and the nested event details.
@@ -67,16 +69,6 @@ public class JanusSessionEvent {
         String.format(
             "{\"insert\": \"janus_sessions\", \"documents\": [{\"session\": %d, \"event\": \"%s\", \"timestamp\": \"%s\"}]}",
             root.session_id(), root.event().name(), timestamp);
-    Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
-        .forEach(
-            databaseConnection -> {
-              if (databaseConnection instanceof MySqlConnection) {
-                map.put(databaseConnection, List.of(sql));
-              }
-              if (databaseConnection instanceof MongoConnection) {
-                map.put(databaseConnection, List.of(docSessions));
-              }
-            });
-    return map;
+    return getDatabaseConnectionListMap(map, sql, docSessions);
   }
 }

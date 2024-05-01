@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
+import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
+
 /**
  * Represents a Janus media event, containing information about the emitter, event type, subtype,
  * timestamp, session ID, handle ID, opaque ID, and the nested event details.
@@ -212,18 +214,7 @@ public class JanusMediaEvent {
             root.handle_id(),
             receiving,
             timestamp);
-
-    Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
-        .forEach(
-            databaseConnection -> {
-              if (databaseConnection instanceof MySqlConnection) {
-                map.put(databaseConnection, List.of(sql));
-              }
-              if (databaseConnection instanceof MongoConnection) {
-                map.put(databaseConnection, List.of(doc));
-              }
-            });
-
-    return map;
+    
+    return getDatabaseConnectionListMap(map, sql, doc);
   }
 }

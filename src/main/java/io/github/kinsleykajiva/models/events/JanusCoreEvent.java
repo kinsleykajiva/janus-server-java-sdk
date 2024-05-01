@@ -60,17 +60,21 @@ public class JanusCoreEvent {
         String.format(
             "{\"insert\": \"janus_core\", \"documents\": [{\"name\": \"%s\", \"value\": \"%s\", \"timestamp\": \"%s\"}]}",
             root.emitter(), root.event().status(), timestamp);
-
-    Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
-        .forEach(
-            databaseConnection -> {
-              if (databaseConnection instanceof MySqlConnection) {
-                map.put(databaseConnection, List.of(sql));
-              }
-              if (databaseConnection instanceof MongoConnection) {
-                map.put(databaseConnection, List.of(docCore));
-              }
-            });
-    return map;
+      
+      return getDatabaseConnectionListMap(map, sql, docCore);
   }
+    
+    static Map<DatabaseConnection, List<String>> getDatabaseConnectionListMap( Map<DatabaseConnection, List<String>> map, String sql, String docCore ) {
+        Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
+            .forEach(
+                databaseConnection -> {
+                  if (databaseConnection instanceof MySqlConnection) {
+                    map.put(databaseConnection, List.of(sql));
+                  }
+                  if (databaseConnection instanceof MongoConnection) {
+                    map.put(databaseConnection, List.of(docCore));
+                  }
+                });
+        return map;
+    }
 }

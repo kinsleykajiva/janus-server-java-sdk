@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
+
 public class JanusWebRTCStateEvent {
 
   /**
@@ -109,16 +111,6 @@ public class JanusWebRTCStateEvent {
             root.event().remote_candidate() == null
                 ? null
                 : root.event().remote_candidate().trim());
-    Arrays.asList(Janus.DB_ACCESS.getDatabaseConnections())
-        .forEach(
-            databaseConnection -> {
-              if (databaseConnection instanceof MySqlConnection) {
-                map.put(databaseConnection, List.of(sql));
-              }
-              if (databaseConnection instanceof MongoConnection) {
-                map.put(databaseConnection, List.of(doc));
-              }
-            });
-    return map;
+    return getDatabaseConnectionListMap(map, sql, doc);
   }
 }
