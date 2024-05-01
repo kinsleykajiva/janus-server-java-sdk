@@ -13,7 +13,7 @@ public class MySqlConnection implements DatabaseConnection {
 	static        Logger             log       = Logger.getLogger(MySqlConnection.class.getName());
 	private       Connection         connect   = null;
 	private       Statement          statement = null;
-	private       MySqlConfiguration mySqlConfiguration;
+	private final MySqlConfiguration mySqlConfiguration;
 	private final Object             lock      = new Object(); // For synchronization
 	
 	public MySqlConnection( MySqlConfiguration mySqlConfiguration ) {
@@ -28,7 +28,6 @@ public class MySqlConnection implements DatabaseConnection {
 			connect = DriverManager.getConnection("jdbc:mysql://" + mySqlConfiguration.host() + ":" + mySqlConfiguration.port() + "/" + mySqlConfiguration.database(), mySqlConfiguration.username(), mySqlConfiguration.password());
 			statement = connect.createStatement();
 			createJanusTables();
-			//SQLBatchExec(table);
 		} catch (SQLException | ClassNotFoundException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 		}

@@ -34,11 +34,11 @@ public class JanusMediaEvent {
    */
   public record Root(
       @NotNull String emitter,
-      @NotNull int type,
-      @NotNull int subtype,
-      @NotNull long timestamp,
-      @NotNull long session_id,
-      @NotNull long handle_id,
+      @NotNull Integer type,
+      @NotNull Integer subtype,
+      @NotNull Long timestamp,
+      @NotNull Long session_id,
+      @NotNull Long handle_id,
       @NotNull String opaque_id,
       @NotNull JanusMediaEvent.Event event) {}
 
