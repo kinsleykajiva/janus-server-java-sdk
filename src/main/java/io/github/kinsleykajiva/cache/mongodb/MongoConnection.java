@@ -36,8 +36,7 @@ public class MongoConnection implements DatabaseConnection {
   public void connect() {
     log.info("Loading collection at runtime ");
     try {
-      MongoClient mongoClient =
-          MongoClients.create("mongodb://" + configuration.host() + ":" + configuration.port());
+      mongoClient = MongoClients.create("mongodb://" + configuration.host() + ":" + configuration.port());
       database = mongoClient.getDatabase(configuration.database());
 
       // mongoClient.listDatabaseNames().forEach(System.out::println);
