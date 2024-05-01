@@ -5,5 +5,4 @@ package io.github.kinsleykajiva.models;
  *
  * @param id The ID of the Janus session.
  */
-public record JanusSession(long id) {
-}
+public record JanusSession(long id) {}

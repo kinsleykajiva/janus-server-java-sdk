@@ -1,14 +1,13 @@
 package io.github.kinsleykajiva.cache.mysql;
 
 import io.github.kinsleykajiva.cache.DatabaseConnection;
-import org.jetbrains.annotations.Blocking;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jetbrains.annotations.Blocking;
 
 public class MySqlConnection implements DatabaseConnection {
 	static        Logger             log       = Logger.getLogger(MySqlConnection.class.getName());
@@ -131,7 +130,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				    INDEX janus_idx_timestamp (timestamp)
 				);
 """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_handles (
 				    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				    session BIGINT(30) NOT NULL,
@@ -144,7 +143,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				    INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_core (
 				                                          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                          name VARCHAR(30) NOT NULL,
@@ -154,7 +153,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                          INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_sdps (
 				                                          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                          session BIGINT(30) NOT NULL,
@@ -168,7 +167,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                          INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_ice (
 				                                         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                         session BIGINT(30) NOT NULL,
@@ -185,7 +184,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                         INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_selectedpairs (
 				                                                   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                                   session BIGINT(30) NOT NULL,
@@ -199,7 +198,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                                   INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_dtls (
 				                                          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                          session BIGINT(30) NOT NULL,
@@ -214,7 +213,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                          INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_connections (
 				                                                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                                 session BIGINT(30) NOT NULL,
@@ -226,7 +225,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                                 INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_media (
 				                                           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                           session BIGINT(30) NOT NULL,
@@ -235,12 +234,12 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                           receiving VARCHAR(30) DEFAULT NULL,
 				                                           timestamp DATETIME NOT NULL,
 				                                           INDEX janus_idx_session_handle (session, handle),
-				    
+
 				                                           INDEX janus_idx_receiving (receiving),
 				                                           INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_stats (
 				                                           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                           session BIGINT(30) NOT NULL,
@@ -264,7 +263,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                           INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_plugins (
 				                                             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                             session BIGINT(30) NOT NULL,
@@ -277,11 +276,11 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                             INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   -- We are not going to link	janus_plugins_id to this because of threading issues
 	CREATE TABLE IF NOT EXISTS janus_videoroom_plugin_event (
 	                                                            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	                                                           
+
 	                                                            session BIGINT(30) NOT NULL,
 	                                                            handle BIGINT(30) NOT NULL,
 	                                                            data_id BIGINT(30) DEFAULT 0,
@@ -293,7 +292,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 	                                                            timestamp DATETIME NOT NULL /*This can act as a timestamp for the event, or a timestamp for the event and the plugin but wil need to work*/
 	);
   """,
-				"""
+      """
 						  CREATE TABLE IF NOT EXISTS janus_transports (
 						        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 						        type INT NOT NULL,
@@ -313,17 +312,15 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 						        INDEX janus_idx_timestamp (timestamp)
 										);
   """,
-		};
-		for (final String sql : table) {
-			try (Statement batchStatement = connect.createStatement()) {
-				if (!sql.trim().isEmpty()) {
-					batchStatement.execute(sql);
-				}
-			} catch (SQLException e) {
-				log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
-			}
-		}
-		
-	}
-	
+    };
+    for (final String sql : table) {
+      try (Statement batchStatement = connect.createStatement()) {
+        if (!sql.trim().isEmpty()) {
+          batchStatement.execute(sql);
+        }
+      } catch (SQLException e) {
+        log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+      }
+    }
+  }
 }
