@@ -52,7 +52,8 @@ public class JanusSessionEvent {
    * Generates an SQL INSERT statement for inserting a Janus session event into the database.
    *
    * @param root The root record of the Janus session event.
-   * @return The SQL INSERT statement.
+   * @return The SQL/MongoDB JSON INSERT statements in Map format.
+   * @see  io.github.kinsleykajiva.models.events.JanusCoreEvent#getDatabaseConnectionListMap(Map, String, String)
    */
   public Map<DatabaseConnection, List<String>> trackInsert(Root root) {
     Map<DatabaseConnection, List<String>> map = new HashMap<>();
@@ -61,10 +62,6 @@ public class JanusSessionEvent {
         String.format(
             "INSERT INTO janus_sessions (session, event, timestamp) VALUES (%d, '%s', '%s');",
             root.session_id(), root.event().name(), timestamp);
-    /*var docSessions = String.format(
-    		"{'insert': 'janus_sessions', 'documents': [{'session': %d, 'event': '%s', 'timestamp': '%s'}]}",
-    		root.session_id(), root.event().name(), timestamp
-    );*/
     var docSessions =
         String.format(
             "{\"insert\": \"janus_sessions\", \"documents\": [{\"session\": %d, \"event\": \"%s\", \"timestamp\": \"%s\"}]}",

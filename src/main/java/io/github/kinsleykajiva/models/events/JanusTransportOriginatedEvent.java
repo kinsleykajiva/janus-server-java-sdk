@@ -94,10 +94,7 @@ public class JanusTransportOriginatedEvent {
             + "', "
             + port
             + ")";
-    /*	var docTransports = String.format(
-    		"{'insert': 'janus_transports', 'documents': [{'emitter': '%s', 'type': %d, 'timestamp': '%s', 'transport': '%s', 'event_id': '%s', 'event': '%s', 'admin_api': '%s', 'ip': '%s', 'port': %d}]}",
-    		emitter, type, timestamp, transport, id, eventName, adminApi, ip, port
-    );*/
+    
 
     var docTransports =
         String.format(

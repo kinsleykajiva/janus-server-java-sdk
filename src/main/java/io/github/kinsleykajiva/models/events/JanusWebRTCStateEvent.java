@@ -1,16 +1,12 @@
 package io.github.kinsleykajiva.models.events;
 
-import io.github.kinsleykajiva.Janus;
+import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
+
 import io.github.kinsleykajiva.cache.DatabaseConnection;
-import io.github.kinsleykajiva.cache.mongodb.MongoConnection;
-import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static io.github.kinsleykajiva.models.events.JanusCoreEvent.getDatabaseConnectionListMap;
 
 public class JanusWebRTCStateEvent {
 
@@ -59,7 +55,9 @@ public class JanusWebRTCStateEvent {
    * table.
    *
    * @param root the JanusWebRTCStateEvent.Root object containing the data to be inserted
-   * @return the SQL INSERT statement
+   * @return the SQL/Mongo DB JSON INSERT statement in Map format
+   * @see io.github.kinsleykajiva.models.events.JanusCoreEvent#getDatabaseConnectionListMap(Map,
+   *     String, String)
    */
   public Map<DatabaseConnection, List<String>> trackInsert(Root root) {
     Map<DatabaseConnection, List<String>> map = new HashMap<>();
@@ -85,18 +83,6 @@ public class JanusWebRTCStateEvent {
             + root.event().remote_candidate()
             + "'); ";
 
-    /*var doc = String.format(
-    		"{'insert': '%s', 'documents': [{'session': %d, 'handle': %d, 'stream': %d, 'component': %d, 'state': '%s', 'timestamp': '%s', 'local_candidate': '%s', 'remote_candidate': '%s'}]}",
-    		"janus_ice",
-    		root.session_id(),
-    		root.handle_id(),
-    		root.event().stream_id(),
-    		root.event().component_id(),
-    		root.event().ice(),
-    		timestamp,
-    		root.event().local_candidate(),
-    		root.event().remote_candidate()
-    );*/
     var doc =
         String.format(
             "{\"insert\": \"%s\", \"documents\": [{\"session\": %d, \"handle\": %d, \"stream\": %d, \"component\": %d, \"state\": \"%s\", \"timestamp\": \"%s\", \"local_candidate\": \"%s\", \"remote_candidate\": \"%s\"}]}",
