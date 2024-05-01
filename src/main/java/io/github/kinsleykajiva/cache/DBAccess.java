@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class represents a database access object for interacting with the MySQL database. It
@@ -49,7 +50,12 @@ public class DBAccess {
     return instance;
   }
 
-  public void addDatabaseConnection(String connectionName, DatabaseConfig config) {
+  public void addDatabaseConnection( @NotNull String connectionName, DatabaseConfig config) {
+   if(connectionName.isEmpty()){
+     throw new IllegalArgumentException("Connection name cannot be empty");
+    
+   }
+   
     if (config instanceof MySqlConfiguration) {
       DBAccess.MYSQL_CONNECTION_NAME = connectionName;
       databaseConnections.put(connectionName, new MySqlConnection((MySqlConfiguration) config));
