@@ -63,8 +63,8 @@ public class JanusEventsFactory {
     }
   }
 
-  private void saveToCache(Map<DatabaseConnection, List<String>> insertSEL) {
-    for (Map.Entry<DatabaseConnection, List<String>> entry : insertSEL.entrySet()) {
+  private void saveToCache(Map<DatabaseConnection, List<String>> inserts) {
+    for (Map.Entry<DatabaseConnection, List<String>> entry : inserts.entrySet()) {
       DatabaseConnection connection = entry.getKey();
       List<String> command = entry.getValue();
       if (connection instanceof MySqlConnection) {
