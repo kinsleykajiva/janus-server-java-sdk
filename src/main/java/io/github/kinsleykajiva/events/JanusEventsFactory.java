@@ -58,8 +58,8 @@ public class JanusEventsFactory {
             jsonEvent.optString("opaque_id", null),
             jevent);
     if (Janus.DB_ACCESS != null) {
-      var insertSEL = new JanusWebRTCStateEvent().trackInsert(janusEvent);
-      saveToCache(insertSEL);
+      var insert = new JanusWebRTCStateEvent().trackInsert(janusEvent);
+      saveToCache(insert);
     }
   }
 
@@ -109,8 +109,8 @@ public class JanusEventsFactory {
             jsonEvent.optString("opaque_id", null),
             jevent);
     if (Janus.DB_ACCESS != null) {
-      var insertSEL = new JanusHandleEvent().trackInsert(janusEvent);
-      saveToCache(insertSEL);
+      var insert = new JanusHandleEvent().trackInsert(janusEvent);
+      saveToCache(insert);
     }
   }
 
@@ -272,8 +272,8 @@ public class JanusEventsFactory {
                     : null));
     System.out.println("1bbbbbb1");
     if (Janus.DB_ACCESS != null) {
-      var insertSEL = new JanusSessionEvent().trackInsert(janusEvent);
-      saveToCache(insertSEL);
+      var insert = new JanusSessionEvent().trackInsert(janusEvent);
+      saveToCache(insert);
     }
   }
 
@@ -345,9 +345,9 @@ public class JanusEventsFactory {
       janusEvent.setEvent(roomPluginEventData);
       System.out.println("ggggg11");
       if (Janus.DB_ACCESS != null) {
-        var insertSEL = janusEvent.trackInsert();
+        var insert = janusEvent.trackInsert();
 
-        saveToCache(insertSEL);
+        saveToCache(insert);
       }
     }
   }

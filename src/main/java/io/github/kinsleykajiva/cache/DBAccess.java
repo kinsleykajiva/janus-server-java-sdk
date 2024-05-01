@@ -6,8 +6,6 @@ import io.github.kinsleykajiva.cache.mysql.MySqlConfiguration;
 import io.github.kinsleykajiva.cache.mysql.MySqlConnection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -17,17 +15,14 @@ import org.jetbrains.annotations.NotNull;
  * provides methods for executing SQL queries and managing database connections.
  */
 @ApiStatus.NonExtendable
-public class DBAccess {
+public final class DBAccess {
   static Logger log = Logger.getLogger(DBAccess.class.getName());
-  // !	private final  ExecutorService executorService =
-  // Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());// this is for java
-  // jdk 20 and less versions
-  private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+  
   private final Map<String, DatabaseConnection> databaseConnections = new ConcurrentHashMap<>();
   private static DBAccess instance;
   private static String MYSQL_CONNECTION_NAME = "mysql";
   private static String MONGO_DB_CONNECTION_NAME = "mongo";
-  // private final MySqlConfiguration mySqlConfiguration;
+  
   private final Object lock = new Object(); // For synchronization
   
   
