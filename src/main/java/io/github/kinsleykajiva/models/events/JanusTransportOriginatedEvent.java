@@ -27,7 +27,7 @@ public class JanusTransportOriginatedEvent {
    * @param timestamp The timestamp of the Janus transport-originated event.
    * @param event The nested event details of the Janus transport-originated event.
    */
-  public record Root(String emitter, int type, long timestamp, Event event) {}
+  public record Root(String emitter, Integer type, Long timestamp, Event event) {}
 
   /**
    * The record representing an event originated from Janus transport, including details about the
@@ -48,7 +48,7 @@ public class JanusTransportOriginatedEvent {
    * @param ip The IP address.
    * @param port The port.
    */
-  public record Data(String event, boolean admin_api, String ip, int port) {}
+  public record Data(String event, Boolean admin_api, String ip, Integer port) {}
 
   /**
    * Inserts the Janus transport-originated event into the database.

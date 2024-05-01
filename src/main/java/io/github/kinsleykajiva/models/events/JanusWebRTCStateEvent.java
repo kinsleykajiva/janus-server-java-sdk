@@ -25,11 +25,11 @@ public class JanusWebRTCStateEvent {
    */
   public record Root(
       String emitter,
-      int type,
-      int subtype,
-      long timestamp,
-      long session_id,
-      long handle_id,
+      Integer type,
+      Integer subtype,
+      Long timestamp,
+      Long session_id,
+      Long handle_id,
       String opaque_id,
       Event event) {}
 
@@ -45,8 +45,8 @@ public class JanusWebRTCStateEvent {
    */
   public record Event(
       String ice,
-      int stream_id,
-      int component_id,
+      Integer stream_id,
+      Integer component_id,
       String local_candidate,
       String remote_candidate) {}
 

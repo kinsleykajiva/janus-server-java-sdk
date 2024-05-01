@@ -28,7 +28,7 @@ public class JanusSessionEvent {
    * @param session_id The session ID of the Janus session event.
    * @param event The nested event details of the Janus session event.
    */
-  public record Root(String emitter, int type, long timestamp, long session_id, Event event) {}
+  public record Root(String emitter, Integer type, Long timestamp, Long session_id, Event event) {}
 
   /**
    * The record representing an event within a Janus session, including the event name and the
@@ -46,7 +46,7 @@ public class JanusSessionEvent {
    * @param transport The transport type of the Janus session event.
    * @param id The transport ID of the Janus session event.
    */
-  public record Transport(String transport, long id) {}
+  public record Transport(String transport, Long id) {}
 
   /**
    * Generates an SQL INSERT statement for inserting a Janus session event into the database.
