@@ -29,9 +29,7 @@ public class Playground {
   }
 
   public static void main(String[] args) {
-    // io.github.kinsleykajiva.cache.mongodb.DBAccess dbAccess =
-    // io.github.kinsleykajiva.cache.mongodb.DBAccess.getInstance(new
-    // MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser"));
+    
     DBAccess dbAccess = DBAccess.getInstance();
     DatabaseConfig mySqlConfig =
         new MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser");

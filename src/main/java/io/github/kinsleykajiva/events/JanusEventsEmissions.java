@@ -2,6 +2,8 @@ package io.github.kinsleykajiva.events;
 
 import io.github.kinsleykajiva.models.events.EventType;
 import io.github.kinsleykajiva.utils.SdkUtils;
+
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
@@ -13,8 +15,7 @@ public interface JanusEventsEmissions {
   // !	ExecutorService executorService =
   // Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());// this is for java
   // jdk 20 and less versons
-  ExecutorService executorService =
-      Executors.newVirtualThreadPerTaskExecutor(); // ! this is for java jdk 21 and  above
+  ExecutorService executorService =  Executors.newVirtualThreadPerTaskExecutor(); // ! this is for java jdk 21 and  above
 
   /**
    * Callback method called when a participant joins a room.
@@ -49,51 +50,51 @@ public interface JanusEventsEmissions {
    * @param roomId The ID of the room that ended the session.
    */
   void onRoomSessionEnded(String roomId);
-
+  
   /**
    * Event fired when a new event is received from Janus.
    *
-   * @param event The event JSON dump.
+   * @param event The event JSON dump. If the event is null or not a valid JSON, an error message will be printed.
+   *              If an exception occurs during processing, it will be printed to the console.
    */
   default void consumeEventAsync(String event) {
+    if (Objects.isNull(event)) {
+      System.err.println("Event is not a valid JSON");
+      return;
+    }
     if (!SdkUtils.isJson(event)) {
       System.err.println("Event is not a valid JSON");
       return;
     }
-
-    JSONArray jsonArray =
-        SdkUtils.isJsonArray(event)
-            ? new JSONArray(event)
-            : new JSONArray().put(new JSONObject(event));
+    
+    try {
+    JSONArray jsonArray = SdkUtils.isJsonArray(event) ? new JSONArray(event) : new JSONArray().put(new JSONObject(event));
 
     IntStream.range(0, jsonArray.length())
-        //	.parallel()
+        .parallel()
         .mapToObj(jsonArray::getJSONObject)
         .forEach(jsonEvent -> executorService.submit(() -> processEvent(jsonEvent)));
-    //				.forEach(this::processEvent);
+    
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   private void processEvent(JSONObject jsonEvent) {
-    System.out.println("");
-    JanusEventsFactory janusEventsFactory = new JanusEventsFactory(jsonEvent, this);
-    System.out.println("");
-    EventType eventType = EventType.fromTypeValue(jsonEvent.getInt("type"));
+    
+    var janusEventsFactory = new JanusEventsFactory(jsonEvent, this);
+    EventType eventType    = EventType.fromTypeValue(jsonEvent.getInt("type"));
 
-    System.out.println("1zzzzz--xx--" + jsonEvent.getInt("type"));
-    // System.out.println("1zzzzz----1" + eventType);
     switch (eventType) {
-      case CORE -> janusEventsFactory.processEvent256();
-      case TRANSPORT -> janusEventsFactory.processEvent128();
-      case WEBRTC_STATE -> janusEventsFactory.processEvent16();
-      case HANDLE -> janusEventsFactory.processEvent2();
-      case MEDIA -> janusEventsFactory.processEvent32();
-      case JSEP -> janusEventsFactory.processEvent8();
-      case SESSION -> janusEventsFactory.processEvent1();
-      case PLUGIN -> janusEventsFactory.processVideoRoomEvent(jsonEvent);
-      case null -> {}
-      default -> {
-        // Handle the case where no other cases match, if necessary
-      }
+      case CORE          -> janusEventsFactory.processEvent256();
+      case TRANSPORT     -> janusEventsFactory.processEvent128();
+      case WEBRTC_STATE  -> janusEventsFactory.processEvent16();
+      case HANDLE        -> janusEventsFactory.processEvent2();
+      case MEDIA         -> janusEventsFactory.processEvent32();
+      case JSEP          -> janusEventsFactory.processEvent8();
+      case SESSION       -> janusEventsFactory.processEvent1();
+      case PLUGIN        -> janusEventsFactory.processVideoRoomEvent(jsonEvent);
+	  case null, default -> {}
     }
   }
 }
