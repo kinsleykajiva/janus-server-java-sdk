@@ -19,8 +19,7 @@ public class JanusEventsFactory {
 
   private final JSONObject jsonEvent;
   private final JanusEventsEmissions emissions;
-  private static final Map<String, List<ParticipantPojo>> VIDEO_ROOM_MAP =
-      new ConcurrentHashMap<>();
+  private static final Map<String, List<ParticipantPojo>> VIDEO_ROOM_MAP =    new ConcurrentHashMap<>();
 
   /**
    * Constructs a JanusEventsFactory object with the specified JSON event and emissions.
@@ -35,7 +34,7 @@ public class JanusEventsFactory {
 
   /**
    * Processes the event with ID 16. This method extracts the necessary information from the JSON
-   * event object and creates a JanusWebRTCStateEvent object to represent the event. If
+   * event object and creates a {@link io.github.kinsleykajiva.models.events.JanusWebRTCStateEvent.Root} object to represent the event. If
    * Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
    */
   public void processEvent16() {
@@ -89,7 +88,7 @@ public class JanusEventsFactory {
 
   /**
    * This method processes the given event. It extracts the necessary information from the JSON
-   * event object and creates a JanusHandleEvent.Root object to represent the event. If
+   * event object and creates a {@link io.github.kinsleykajiva.models.events.JanusHandleEvent.Root} object to represent the event. If
    * Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
    */
   public void processEvent2() {
@@ -113,15 +112,16 @@ public class JanusEventsFactory {
       saveToCache(insert);
     }
   }
-
+  
   /**
    * Processes the event with ID 128. This method extracts the necessary information from the JSON
-   * event object and creates a JanusTransportOriginatedEvent object to represent the event. If
+   * event object and creates a {@link io.github.kinsleykajiva.models.events.JanusTransportOriginatedEvent.Event} object and
+   * {@link io.github.kinsleykajiva.models.events.JanusTransportOriginatedEvent.Root} object to represent the event. If
    * Janus.DB_ACCESS is not null, it inserts the event into the database using SQLBatchExec.
    */
   public void processEvent128() {
     var jsonEventObj = jsonEvent.getJSONObject("event");
-    System.out.println(jsonEvent);
+    
     var jevent =
         new JanusTransportOriginatedEvent.Event(
             jsonEventObj.optString("transport", null),
@@ -131,7 +131,7 @@ public class JanusEventsFactory {
                 jsonEventObj.optBoolean("admin_api", false),
                 jsonEventObj.optString("ip", null),
                 jsonEventObj.optInt("port", 0)));
-    System.out.println("23333222");
+    
     var janusEvent =
         new JanusTransportOriginatedEvent.Root(
             jsonEvent.optString("emitter", null),
@@ -147,7 +147,7 @@ public class JanusEventsFactory {
 
   /**
    * This method processes the event with ID 32. It extracts the necessary information from the JSON
-   * event object and creates a JanusMediaEvent object to represent the event. If Janus.DB_ACCESS is
+   * event object and creates a  {@link io.github.kinsleykajiva.models.events.JanusMediaEvent.Root} object to represent the event. If Janus.DB_ACCESS is
    * not null, it inserts the event into the database using SQLBatchExec.
    */
   public void processEvent32() {
@@ -202,7 +202,7 @@ public class JanusEventsFactory {
    * Processes the event with ID 8.
    *
    * <p>This method extracts the necessary information from the JSON event object and creates a
-   * JanusJSEPEvent.Root object to represent the event. If Janus.DB_ACCESS is not null, it inserts
+   * {@link io.github.kinsleykajiva.models.events.JanusJSEPEvent.Root} object to represent the event. If Janus.DB_ACCESS is not null, it inserts
    * the event into the database using SQLBatchExec.
    */
   public void processEvent8() {
@@ -244,7 +244,7 @@ public class JanusEventsFactory {
    * Processes the event with ID 1.
    *
    * <p>This method extracts the necessary information from the JSON event object and creates a
-   * JanusSessionEvent.Root object to represent the event. If Janus.DB_ACCESS is not null, it
+   * {@link io.github.kinsleykajiva.models.events.JanusSessionEvent.Root} object to represent the event. If Janus.DB_ACCESS is not null, it
    * inserts the event into the database using SQLBatchExec.
    */
   public void processEvent1() {
@@ -281,7 +281,7 @@ public class JanusEventsFactory {
    * Processes the event with ID 256.
    *
    * <p>This method extracts the necessary information from the JSON event object and creates a
-   * JanusCoreEvent.Root object to represent the event. If Janus.DB_ACCESS is not null, it inserts
+   * {@link io.github.kinsleykajiva.models.events.JanusCoreEvent.Root} object to represent the event. If Janus.DB_ACCESS is not null, it inserts
    * the event into the database using SQLBatchExec.
    *
    * <p>This method does not return any value.
@@ -317,14 +317,12 @@ public class JanusEventsFactory {
    */
   public void processVideoRoomEvent(JSONObject jsonEvent) {
 
-    if (jsonEvent.has("event")
-        && jsonEvent.getJSONObject("event").has("plugin")
-        && jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
+    if (jsonEvent.has("event") && jsonEvent.getJSONObject("event").has("plugin") && jsonEvent.getJSONObject("event").getString("plugin").equals("janus.plugin.videoroom")) {
 
-      JSONObject dataJSON = jsonEvent.getJSONObject("event").getJSONObject("data");
-      VideoRoomPluginEventData roomPluginEventData = createVideoRoomPluginEventData(dataJSON);
+      var dataJSON        = jsonEvent.getJSONObject("event").getJSONObject("data");
+      var roomPluginEventData = createVideoRoomPluginEventData(dataJSON);
 
-      String room = String.valueOf(dataJSON.getInt("room"));
+      var room = String.valueOf(dataJSON.getInt("room"));
       List<ParticipantPojo> roomParticipantsList = VIDEO_ROOM_MAP.get(room);
 
       if (dataJSON.getString("event").equals("leaving")) {
@@ -346,15 +344,13 @@ public class JanusEventsFactory {
       System.out.println("ggggg11");
       if (Janus.DB_ACCESS != null) {
         var insert = janusEvent.trackInsert();
-
         saveToCache(insert);
       }
     }
   }
 
   private VideoRoomPluginEventData createVideoRoomPluginEventData(JSONObject dataJSON) {
-    VideoRoomPluginEventData roomPluginEventData =
-        new VideoRoomPluginEventData("janus.plugin.videoroom");
+    var roomPluginEventData =  new VideoRoomPluginEventData("janus.plugin.videoroom");
     roomPluginEventData.setRoom(dataJSON.optString("room"));
     roomPluginEventData.setDisplay(dataJSON.optString("display"));
     roomPluginEventData.setBitrate(dataJSON.optLong("bitrate"));
@@ -380,8 +376,7 @@ public class JanusEventsFactory {
   }
 
   private VideoRoomPluginEventDataStream createVideoRoomPluginEventDataStream(JSONObject stream) {
-    VideoRoomPluginEventDataStream videoRoomPluginEventDataStream =
-        new VideoRoomPluginEventDataStream();
+    var videoRoomPluginEventDataStream = new VideoRoomPluginEventDataStream();
     videoRoomPluginEventDataStream.setMid(stream.optInt("mid"));
     videoRoomPluginEventDataStream.setMindex(stream.optInt("mindex"));
     videoRoomPluginEventDataStream.setCodec(stream.optString("codec"));
@@ -425,8 +420,8 @@ public class JanusEventsFactory {
 
   private void handleJoinedEvent(
       JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room) {
-    var id = dataJSON.getLong("id");
-    var display = dataJSON.getString("display");
+    var id         = dataJSON.getLong("id");
+    var display  = dataJSON.getString("display");
     var private_id = dataJSON.getLong("private_id");
     if (roomParticipantsList == null) {
       List<ParticipantPojo> participants = new ArrayList<>();
