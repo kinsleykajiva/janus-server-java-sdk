@@ -18,8 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MongoConnection implements DatabaseConnection {
-  private MongoConfiguration configuration;
-  private final List<String> collectionNames = new ArrayList<>();
+  private final MongoConfiguration configuration;
+  private final List<String>       collectionNames = new ArrayList<>();
   private MongoDatabase database;
   private MongoClient mongoClient;
   // !	private final  ExecutorService executorService =
