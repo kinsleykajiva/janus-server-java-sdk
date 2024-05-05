@@ -72,30 +72,13 @@ public class JanusTransportOriginatedEvent {
     boolean adminApi = data.admin_api();
     String ip = data.ip();
     int port = data.port();
-
-    var sql =
-        "INSERT INTO janus_transports (emitter, type, timestamp, transport, event_id, event, admin_api, ip, port) "
-            + "VALUES ('"
-            + emitter
-            + "', "
-            + type
-            + ", '"
-            + timestamp
-            + "', '"
-            + transport
-            + "', '"
-            + id
-            + "', '"
-            + eventName
-            + "', '"
-            + adminApi
-            + "', '"
-            + ip
-            + "', "
-            + port
-            + ")";
     
-
+    var sql = String.format(
+            "INSERT INTO janus_transports (emitter, type, timestamp, transport, event_id, event, admin_api, ip, port) " +  "VALUES ('%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+            emitter, type, timestamp, transport, id, eventName, adminApi, ip, port);
+    
+    
+    
     var docTransports =
         String.format(
             "{\"insert\": \"janus_transports\", \"documents\": [{\"emitter\": \"%s\", \"type\": %d, \"timestamp\": \"%s\", \"transport\": \"%s\", \"event_id\": \"%s\", \"event\": \"%s\", \"admin_api\": \"%s\", \"ip\": \"%s\", \"port\": %d}]}",

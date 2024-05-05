@@ -63,26 +63,15 @@ public class JanusWebRTCStateEvent {
     Map<DatabaseConnection, List<String>> map = new HashMap<>();
     var timestamp = new Timestamp(root.timestamp() / 1000);
     //
-
-    var sql =
-        "INSERT INTO janus_ice (session, handle, stream, component, state, timestamp,local_candidate,remote_candidate) VALUES ("
-            + root.session_id()
-            + ", "
-            + root.handle_id()
-            + ", "
-            + root.event().stream_id()
-            + ", "
-            + root.event().component_id()
-            + ", '"
-            + root.event().ice()
-            + "', '"
-            + timestamp
-            + "' , '"
-            + root.event().local_candidate()
-            + "','"
-            + root.event().remote_candidate()
-            + "'); ";
-
+    
+    var sql = String.format(
+            "INSERT INTO janus_ice (session, handle, stream, component, state, timestamp, local_candidate, remote_candidate) " +
+                    "VALUES (%d, %d, %d, %d, '%s', '%s', '%s', '%s')",
+            root.session_id(), root.handle_id(), root.event().stream_id(),
+            root.event().component_id(), root.event().ice(), timestamp,
+            root.event().local_candidate(), root.event().remote_candidate());
+    
+    
     var doc =
         String.format(
             "{\"insert\": \"%s\", \"documents\": [{\"session\": %d, \"handle\": %d, \"stream\": %d, \"component\": %d, \"state\": \"%s\", \"timestamp\": \"%s\", \"local_candidate\": \"%s\", \"remote_candidate\": \"%s\"}]}",
@@ -97,6 +86,7 @@ public class JanusWebRTCStateEvent {
             root.event().remote_candidate() == null
                 ? null
                 : root.event().remote_candidate().trim());
+    
     return getDatabaseConnectionListMap(map, sql, doc);
   }
 }
