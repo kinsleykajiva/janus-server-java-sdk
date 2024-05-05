@@ -58,7 +58,7 @@ public class Janus implements JanusEventHandler {
       try {
         webSocketClient = new JanusWebSocketClient(finalUrl, this);
       } catch (Exception e) {
-        log.severe("Failed to initialize JanusWebSocketClient: " + e.getMessage());
+        log.severe("Failed to initialize Janus Web Socket Client: " + e.getMessage());
       }
       SdkUtils.runAfter(5,() -> webSocketClient.initializeWebSocket());
     }
