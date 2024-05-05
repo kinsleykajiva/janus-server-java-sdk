@@ -18,10 +18,10 @@ import org.json.JSONObject;
 
 /** The Janus class represents a Janus instance that communicates with the Janus server. */
 public class Janus implements JanusEventHandler {
-  static Logger log = Logger.getLogger(Janus.class.getName());
-  private final ScheduledExecutorService keppAliveExecutorService =
+  static Logger                            log                      = Logger.getLogger(Janus.class.getName());
+  private final ScheduledExecutorService   keepAliveExecutorService =
       new ScheduledThreadPoolExecutor(1);
-  private final CopyOnWriteArrayList<Long> PluginHandles = new CopyOnWriteArrayList<>();
+  private final CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
 
   public static DBAccess DB_ACCESS = null;
   private String sessionTransactionId;
@@ -54,26 +54,20 @@ public class Janus implements JanusEventHandler {
       janusRestApiClient = new JanusRestApiClient(janusConfiguration);
     } else {
       String finalUrl = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
-      janusConfiguration =
-          new JanusConfiguration(
-              config.url(), config.apiSecret(), config.adminKey(), config.adminSecret());
+      janusConfiguration = new JanusConfiguration(config.url(), config.apiSecret(), config.adminKey(), config.adminSecret());
       try {
         webSocketClient = new JanusWebSocketClient(finalUrl, this);
       } catch (Exception e) {
         log.severe("Failed to initialize JanusWebSocketClient: " + e.getMessage());
       }
-      SdkUtils.runAfter(
-          5,
-          () -> {
-            webSocketClient.initializeWebSocket();
-          });
+      SdkUtils.runAfter(5,() -> webSocketClient.initializeWebSocket());
     }
   }
 
   @NonBlocking
   private void keepAlive() {
 
-    keppAliveExecutorService.scheduleAtFixedRate(
+    keepAliveExecutorService.scheduleAtFixedRate(
         () -> {
           JSONObject message = new JSONObject();
           message.put("janus", "keepalive");
@@ -156,18 +150,17 @@ public class Janus implements JanusEventHandler {
           }
         }
         case "keepalive" -> {}
-        case "event" -> {}
-        case "ack" -> {}
-        case "hangup" -> {}
-        case "detached" -> {}
-        case "webrtcup" -> {}
-
-        case "trickle" -> {}
-        case "media" -> {}
-        case "slowlink" -> {}
-        case "error" -> {}
-        case "timeout" -> {}
-        default -> {}
+        case "event"     -> {}
+        case "ack"       -> {}
+        case "hangup"    -> {}
+        case "detached"  -> {}
+        case "webrtcup"  -> {}
+        case "trickle"   -> {}
+        case "media"     -> {}
+        case "slowlink"  -> {}
+        case "error"     -> {}
+        case "timeout"   -> {}
+        default          -> {}
       }
     }
   }
