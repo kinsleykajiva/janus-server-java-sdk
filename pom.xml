@@ -6,13 +6,26 @@
 
     <groupId>io.github.kinsleykajiva</groupId>
     <artifactId>janus-server-java-sdk</artifactId>
-    <version>0.8</version>
+    <version>0.8.0</version>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <developers>
+        <developer>
+            <name>Kinsley Kajiva</name>
+            <email>kajivakinsley@gmail.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <dependencies>
         <dependency>
