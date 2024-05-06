@@ -71,7 +71,6 @@
     </dependencies>
     <build>
         <plugins>
-            <!-- Maven Shade Plugin for creating fat JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
