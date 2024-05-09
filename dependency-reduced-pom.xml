@@ -3,7 +3,26 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.kinsleykajiva</groupId>
   <artifactId>janus-server-java-sdk</artifactId>
-  <version>0.7</version>
+  <name>${project.artifactId}</name>
+  <version>0.8.0</version>
+  <description>Java Janus WebRTC sever SDK</description>
+  <developers>
+    <developer>
+      <name>Kinsley Kajiva</name>
+      <email>kajivakinsley@gmail.com</email>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git@github.com:kinsleykajiva/janus-server-java-sdk.git</connection>
+    <developerConnection>scm:git@github.com:kinsleykajiva/janus-server-java-sdk.git</developerConnection>
+    <url>https://github.com/kinsleykajiva/janus-server-java-sdk.git</url>
+  </scm>
   <build>
     <plugins>
       <plugin>
