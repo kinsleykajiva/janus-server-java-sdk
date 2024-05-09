@@ -1,63 +1,57 @@
 package io.github.kinsleykajiva.cache.mysql;
 
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Blocking;
-
+import io.github.kinsleykajiva.cache.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jetbrains.annotations.Blocking;
 
-/**
- * This class represents a database access object for interacting with the MySQL database.
- * It provides methods for executing SQL queries and managing database connections.
- */
-@ApiStatus.NonExtendable
-public class DBAccess {
-	static         Logger          log             = Logger.getLogger(DBAccess.class.getName());
-//!	private final  ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());// this is for java jdk 20 and less versons
-	private final  ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
-	private static DBAccess        instance;
-	private        Connection         connect         = null;
-	private       Statement          statement       = null;
+public class MySqlConnection implements DatabaseConnection {
+	static        Logger             log       = Logger.getLogger(MySqlConnection.class.getName());
+	private       Connection         connect   = null;
+	private       Statement          statement = null;
 	private final MySqlConfiguration mySqlConfiguration;
-	private final Object             lock            = new Object(); // For synchronization
+	private final Object             lock      = new Object(); // For synchronization
 	
-	public DBAccess( MySqlConfiguration mySqlConfiguration ) {
+	public MySqlConnection( MySqlConfiguration mySqlConfiguration ) {
 		this.mySqlConfiguration = mySqlConfiguration;
-		connection();
 	}
 	
-	public static DBAccess getInstance( MySqlConfiguration mySqlConfiguration ) {
-		
-		if (instance == null) {
-			instance = new DBAccess(mySqlConfiguration);
-			
-		}
-		return instance;
-	}
-	
-	private void connection() {
+	@Blocking
+	@Override
+	public void connect() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			connect = DriverManager.getConnection("jdbc:mysql://" + mySqlConfiguration.host() + ":" + mySqlConfiguration.port() + "/" + mySqlConfiguration.database(), mySqlConfiguration.username(), mySqlConfiguration.password());
 			statement = connect.createStatement();
 			createJanusTables();
-			//SQLBatchExec(table);
 		} catch (SQLException | ClassNotFoundException e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	
-	public void SQLExec(String sql) {
+	@Override
+	public void disconnect() {
+	
+	}
+	
+	@Override
+	public void executeDBActionCommand( String sql ) {
+		if(sql == null) {
+			return;
+		}
+		
+			SQLBatchExec((String) sql);
+		
+	}
+	
+	public void SQLExec( String sql ) {
 		synchronized (lock) {
 			if (connect == null) {
-				connection();
+				connect();
 			}
 			
 			if (connect == null) {
@@ -89,10 +83,10 @@ public class DBAccess {
 	 *
 	 * @param sql the SQL statement to be executed
 	 */
-	public void SQLBatchExec(String sql) {
+	public void SQLBatchExec( String sql ) {
 		synchronized (lock) {
 			if (connect == null) {
-				connection();
+				connect();
 			}
 			
 			if (connect == null) {
@@ -105,17 +99,17 @@ public class DBAccess {
 			
 			// Execute each SQL statement separately
 			for (String statement : sqlStatements) {
-				executorService.submit(() -> {
-					try (Statement batchStatement = connect.createStatement()) {
-						if (!statement.trim().isEmpty()) { // Skip empty statements
-							log.info("SQL-" + statement);
-							batchStatement.addBatch(statement);
-							batchStatement.executeBatch();
-						}
-					} catch (SQLException e) {
-						log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+				
+				try (Statement batchStatement = connect.createStatement()) {
+					if (!statement.trim().isEmpty()) { // Skip empty statements
+						log.info("SQL-" + statement);
+						batchStatement.addBatch(statement);
+						batchStatement.executeBatch();
 					}
-				});
+				} catch (SQLException e) {
+					log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+				}
+				
 			}
 		}
 	}
@@ -135,7 +129,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				    INDEX janus_idx_timestamp (timestamp)
 				);
 """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_handles (
 				    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				    session BIGINT(30) NOT NULL,
@@ -148,7 +142,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				    INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_core (
 				                                          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                          name VARCHAR(30) NOT NULL,
@@ -158,7 +152,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                          INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_sdps (
 				                                          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                          session BIGINT(30) NOT NULL,
@@ -172,7 +166,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                          INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_ice (
 				                                         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                         session BIGINT(30) NOT NULL,
@@ -189,7 +183,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                         INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_selectedpairs (
 				                                                   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                                   session BIGINT(30) NOT NULL,
@@ -203,7 +197,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                                   INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_dtls (
 				                                          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                          session BIGINT(30) NOT NULL,
@@ -218,7 +212,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                          INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_connections (
 				                                                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                                 session BIGINT(30) NOT NULL,
@@ -230,7 +224,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                                 INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_media (
 				                                           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                           session BIGINT(30) NOT NULL,
@@ -239,12 +233,12 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                           receiving VARCHAR(30) DEFAULT NULL,
 				                                           timestamp DATETIME NOT NULL,
 				                                           INDEX janus_idx_session_handle (session, handle),
-				    
+
 				                                           INDEX janus_idx_receiving (receiving),
 				                                           INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_stats (
 				                                           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                           session BIGINT(30) NOT NULL,
@@ -268,7 +262,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                           INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   CREATE TABLE IF NOT EXISTS janus_plugins (
 				                                             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				                                             session BIGINT(30) NOT NULL,
@@ -281,11 +275,11 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 				                                             INDEX janus_idx_timestamp (timestamp)
 				);
   """,
-				"""
+      """
   -- We are not going to link	janus_plugins_id to this because of threading issues
 	CREATE TABLE IF NOT EXISTS janus_videoroom_plugin_event (
 	                                                            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	                                                           
+
 	                                                            session BIGINT(30) NOT NULL,
 	                                                            handle BIGINT(30) NOT NULL,
 	                                                            data_id BIGINT(30) DEFAULT 0,
@@ -297,7 +291,7 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 	                                                            timestamp DATETIME NOT NULL /*This can act as a timestamp for the event, or a timestamp for the event and the plugin but wil need to work*/
 	);
   """,
-				"""
+      """
 						  CREATE TABLE IF NOT EXISTS janus_transports (
 						        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 						        type INT NOT NULL,
@@ -317,17 +311,15 @@ CREATE TABLE IF NOT EXISTS janus_sessions (
 						        INDEX janus_idx_timestamp (timestamp)
 										);
   """,
-		};
-		for (final String sql : table) {
-			try (Statement batchStatement = connect.createStatement()) {
-				if (!sql.trim().isEmpty()) {
-					batchStatement.execute(sql);
-				}
-			} catch (SQLException e) {
-				log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
-			}
-		}
-		
-	}
-	
+    };
+    for (final String sql : table) {
+      try (Statement batchStatement = connect.createStatement()) {
+        if (!sql.trim().isEmpty()) {
+          batchStatement.execute(sql);
+        }
+      } catch (SQLException e) {
+        log.log(Level.SEVERE, "SQL Batch Execution Failed with sql = " + statement, e);
+      }
+    }
+  }
 }

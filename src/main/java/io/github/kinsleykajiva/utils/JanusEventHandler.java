@@ -5,8 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public interface JanusEventHandler {
-@NonBlocking
-void handleEvent( @NotNull JSONObject event);
+  @NonBlocking
+  void handleEvent(@NotNull JSONObject event);
 
-@NonBlocking void onConnected();
+  @NonBlocking
+  void onConnected();
 }

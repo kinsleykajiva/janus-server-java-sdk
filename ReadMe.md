@@ -1,10 +1,10 @@
 # Janus WebRTC Server SDK for Java (Desktop & Web-Backend)
 
-![version](https://img.shields.io/badge/version-0.5-blue)
+![version](https://img.shields.io/badge/version-0.8.0-blue)
 
 Welcome to the Java implementation of the Janus WebRTC server APIs. This SDK is designed to facilitate interaction with the Janus WebRTC server using both REST API and WebSockets. It is suitable for use in Java applications that require communication with the Janus WebRTC server.
 
-The APIs methods are documented very much so its easy to use you would understand how the code works as much no surprises there in behaviour also with respect to the Janus WebRTC server Documentation.
+The APIs methods are documented very much so it's easy to use you would understand how the code works as much no surprises there in behaviour also with respect to the Janus WebRTC server Documentation.
 
 
 The SDK is divided into two parts:
@@ -235,15 +235,24 @@ Here are the methods that will be called when an event is received from Janus se
 
 ## Events Database Caching 
 
-This SDK provides a way to cache the events received from Janus server in a database.Currently only MySQL is supported but other databases can be added easily(PRs are welcome).
+This SDK provides a way to cache the events received from Janus server in a database.Currently, MySQL & Mongo are supported but other databases can be added easily(PRs are welcome).
 To save the events to an existing database consider the following example :
-    
+
+Make sure the user provided in all the databases or cases have enough privileges to create tables and insert data.
 ```java
 
-Janus.DB_ACCESS =new MySqlConfiguration("localhost", 3308, "janus_db","root","rootuser");
-DBAccess.getInstance(Janus.DB_ACCESS);
+DBAccess dbAccess = DBAccess.getInstance();
+DatabaseConfig mySqlConfig = new MySqlConfiguration("localhost", 3306, "mydatabase", "username", "password");
+dbAccess.addDatabaseConnection("mysql", mySqlConfig);
 
 ````
+```java
+DBAccess dbAccess = DBAccess.getInstance();
+DatabaseConfig mySqlConfig = new MongoConfiguration("localhost", 27017, "janus_database", "root", "rootuser");
+dbAccess.addDatabaseConnection("mongodb", mySqlConfig);
+
+```
+
 This SDK will start to cache the events in the database if `Janus.DB_ACCESS` is not null.If the details to access the database are incorrect ,the app wil throw an exception and stop.
 
 So far this SDK cache supports the [following Janus Events](https://janus.conf.meetecho.com/docs/eventhandlers.html) :
