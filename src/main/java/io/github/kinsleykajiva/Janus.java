@@ -18,19 +18,17 @@ import org.json.JSONObject;
 
 /** The Janus class represents a Janus instance that communicates with the Janus server. */
 public class Janus implements JanusEventHandler {
-  static Logger                            log                      = Logger.getLogger(Janus.class.getName());
-  private final ScheduledExecutorService   keepAliveExecutorService =
-      new ScheduledThreadPoolExecutor(1);
+  private final Logger                            log               = Logger.getLogger(Janus.class.getName());
+  private final ScheduledExecutorService   keepAliveExecutorService = new ScheduledThreadPoolExecutor(1);
   private final CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
-
-  public static DBAccess DB_ACCESS = null;
-  private String sessionTransactionId;
-
-  private JanusWebSocketClient webSocketClient;
-  private JanusSession janusSession;
-  private boolean isAPIAccessOnly = false;
-  private JanusConfiguration janusConfiguration;
-  public JanusRestApiClient janusRestApiClient;
+  
+  public static DBAccess             DB_ACCESS            = null;
+  private       String               sessionTransactionId = null;
+  private       JanusWebSocketClient webSocketClient      = null;
+  private       JanusSession         janusSession         = null;
+  private       boolean              isAPIAccessOnly      = false;
+  private       JanusConfiguration   janusConfiguration   = null;
+  public        JanusRestApiClient   janusRestApiClient   = null;
 
   /**
    * Constructs a Janus instance based on the provided configuration.
@@ -41,16 +39,16 @@ public class Janus implements JanusEventHandler {
    *     include the URL, API secret, admin key, and admin secret.
    * @throws IllegalArgumentException If the provided configuration object is null.
    */
-  public Janus(boolean isAPIAccessOnly, @NotNull JanusConfiguration config) {
+  public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
     if (isAPIAccessOnly) {
       this.isAPIAccessOnly = true;
       log.info("Janus is running in API Access Only mode");
       janusConfiguration =
-          new JanusConfiguration(
-              SdkUtils.convertFromWebSocketUrl(config.url()),
-              config.apiSecret(),
-              config.adminKey(),
-              config.adminSecret());
+              new JanusConfiguration(
+                      SdkUtils.convertFromWebSocketUrl(config.url()),
+                      config.apiSecret(),
+                      config.adminKey(),
+                      config.adminSecret());
       janusRestApiClient = new JanusRestApiClient(janusConfiguration);
     } else {
       String finalUrl = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
@@ -60,7 +58,7 @@ public class Janus implements JanusEventHandler {
       } catch (Exception e) {
         log.severe("Failed to initialize Janus Web Socket Client: " + e.getMessage());
       }
-      SdkUtils.runAfter(5,() -> webSocketClient.initializeWebSocket());
+      SdkUtils.runAfter(5, () -> webSocketClient.initializeWebSocket());
     }
   }
 
