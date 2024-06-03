@@ -150,7 +150,7 @@ public class Janus implements JanusEventHandler {
           }
         }
         case Protocol.JANUS.REQUEST.KEEPALIVE -> {}
-        case Protocol.JANUS.EVENT.EVENT       ->{}
+        case Protocol.JANUS.EVENT.EVENT       -> {}
         case Protocol.JANUS.ACK               -> {}
         case Protocol.JANUS.EVENT.HANGUP      -> {}
         case Protocol.JANUS.EVENT.DETACHED    -> {}
