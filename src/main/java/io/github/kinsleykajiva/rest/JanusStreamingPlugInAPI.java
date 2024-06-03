@@ -12,8 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class JanusStreamingPlugInAPI {
-  static Logger log = Logger.getLogger(JanusStreamingPlugInAPI.class.getName());
-  private JanusRestApiClient janusRestApiClient;
+  static        Logger             log = Logger.getLogger(JanusStreamingPlugInAPI.class.getName());
+  private final JanusRestApiClient janusRestApiClient;
 
   public JanusStreamingPlugInAPI(@NotNull JanusRestApiClient janusRestApiClient) {
     this.janusRestApiClient = janusRestApiClient;
@@ -119,15 +119,15 @@ public class JanusStreamingPlugInAPI {
    */
   public JSONObject editMountingPoint(
       @NotNull String id,
-      boolean edited_event,
+      Boolean edited_event,
       @Nullable String description,
       @Nullable String metadata,
       @Nullable String secret,
       @Nullable String pin,
-      boolean isPrivate,
-      boolean permanent) {
-    final long sessionId = janusRestApiClient.setupJanusSession();
-    final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
+      Boolean isPrivate,
+      Boolean permanent) {
+    final var sessionId = janusRestApiClient.setupJanusSession();
+    final var handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
     json.put(Protocol.JANUS.JANUS, "message");
@@ -175,8 +175,8 @@ public class JanusStreamingPlugInAPI {
    */
   public JSONObject deleteMountingPoint(
       @NotNull String id, @Nullable String secret, boolean permanent) {
-    final long sessionId = janusRestApiClient.setupJanusSession();
-    final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
+    final var sessionId = janusRestApiClient.setupJanusSession();
+    final var handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
     json.put(Protocol.JANUS.JANUS, "message");

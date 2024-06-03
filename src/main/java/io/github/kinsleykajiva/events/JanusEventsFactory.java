@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
+import io.github.kinsleykajiva.utils.JanusPlugins;
 import io.github.kinsleykajiva.utils.Protocol;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -352,7 +353,7 @@ public class JanusEventsFactory {
   }
 
   private VideoRoomPluginEventData createVideoRoomPluginEventData(JSONObject dataJSON) {
-    var roomPluginEventData =  new VideoRoomPluginEventData("janus.plugin.videoroom");
+    var roomPluginEventData =  new VideoRoomPluginEventData(JanusPlugins.JANUS_VIDEO_ROOM.toString());
     roomPluginEventData.setRoom(dataJSON.optString("room"));
     roomPluginEventData.setDisplay(dataJSON.optString("display"));
     roomPluginEventData.setBitrate(dataJSON.optLong("bitrate"));
