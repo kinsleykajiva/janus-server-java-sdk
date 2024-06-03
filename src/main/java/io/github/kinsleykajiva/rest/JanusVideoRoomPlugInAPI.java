@@ -10,8 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class JanusVideoRoomPlugInAPI {
-  static Logger log = Logger.getLogger(JanusVideoRoomPlugInAPI.class.getName());
-  private JanusRestApiClient janusRestApiClient;
+  static        Logger             log = Logger.getLogger(JanusVideoRoomPlugInAPI.class.getName());
+  private final JanusRestApiClient janusRestApiClient;
+  private final String [] idType= new String[] {"integer", "string"};
 
   public JanusVideoRoomPlugInAPI(@NotNull JanusRestApiClient janusRestApiClient) {
     this.janusRestApiClient = janusRestApiClient;
@@ -46,7 +47,7 @@ public class JanusVideoRoomPlugInAPI {
     json.put(Protocol.JANUS.HANDLE_ID, handleId);
     json.put(Protocol.JANUS.SESSION_ID, sessionId);
 
-    for (String idType : new String[] {"integer", "string"}) {
+    for (String idType : idType) {
       try {
         json.put(
             "body",
@@ -104,7 +105,7 @@ public class JanusVideoRoomPlugInAPI {
    * @param permanent Indicates whether the room should be permanent or temporary.
    * @param record Indicates whether the room should record the sessions.
    * @param rec_dir The directory path for storing recorded sessions (nullable).
-   * @return A JSONObject containing the response from the Janus server after attempting to create
+   * @return A {@link org.json.JSONObject} containing the response from the Janus server after attempting to create
    *     the room. The response will have the structure: &lt;p&gt; &lt;code&gt; { "janus": "success"
    *     or "error", "transaction": "&lt;transaction_id&gt;", "session_id": &lt;session_id&gt;,
    *     "handle_id": &lt;handle_id&gt;, "sender": &lt;sender_id&gt;, "plugindata": { "plugin":
@@ -144,7 +145,7 @@ public class JanusVideoRoomPlugInAPI {
       // We have a problem here we don't know if Video room is configured to use string room id or
       // integer value only .
 
-      for (String idType : new String[] {"integer", "string"}) {
+      for (String idType : idType) {
         json.put(
             "body",
             new JSONObject()
@@ -181,7 +182,7 @@ public class JanusVideoRoomPlugInAPI {
    * Checks if a video room exists in the Janus WebRTC server.
    *
    * @param roomId The identifier of the room to check for existence (string or integer).
-   * @return A JSONObject containing the response from the Janus server after attempting to check
+   * @return A {@link org.json.JSONObject} containing the response from the Janus server after attempting to check
    *     the room's existence. The response will have the structure: &lt;p&gt; &lt;code&gt; {
    *     "janus": "success" or "error", "transaction": "&lt;transaction_id&gt;", "session_id":
    *     &lt;session_id&gt;, "handle_id": &lt;handle_id&gt;, "sender": &lt;sender_id&gt;,
@@ -207,7 +208,7 @@ public class JanusVideoRoomPlugInAPI {
     // the plugin.
     // so we have to make two attempts one with string and/or the other with integer.
 
-    for (String idType : new String[] {"integer", "string"}) {
+    for (String idType : idType) {
       try {
         json.put(
             "body",
@@ -235,7 +236,7 @@ public class JanusVideoRoomPlugInAPI {
   /**
    * Retrieves the list of existing video rooms from the Janus WebRTC server.
    *
-   * @return A JSONObject containing the response from the Janus server after attempting to retrieve
+   * @return A {@link org.json.JSONObject} containing the response from the Janus server after attempting to retrieve
    *     the list of video rooms. The response will have the structure: &lt;p&gt; &lt;code&gt; {
    *     "janus": "success" or "error", "transaction": "&lt;transaction_id&gt;", "session_id":
    *     &lt;session_id&gt;, "handle_id": &lt;handle_id&gt;, "sender": &lt;sender_id&gt;,
@@ -284,7 +285,7 @@ public class JanusVideoRoomPlugInAPI {
    *
    * @param roomId The identifier of the room for which to retrieve the list of participants (string
    *     or integer).
-   * @return A JSONObject containing the response from the Janus server after attempting to retrieve
+   * @return A {@link org.json.JSONObject} containing the response from the Janus server after attempting to retrieve
    *     the list of room participants. The response will have the structure: &lt;p&gt; &lt;code&gt;
    *     { "janus": "success" or "error", "transaction": "&lt;transaction_id&gt;", "session_id":
    *     &lt;session_id&gt;, "handle_id": &lt;handle_id&gt;, "sender": &lt;sender_id&gt;,
@@ -307,7 +308,7 @@ public class JanusVideoRoomPlugInAPI {
     json.put(Protocol.JANUS.HANDLE_ID, handleId);
     json.put(Protocol.JANUS.SESSION_ID, sessionId);
 
-    for (String idType : new String[] {"integer", "string"}) {
+    for (String idType : idType) {
       try {
         json.put(
             "body",

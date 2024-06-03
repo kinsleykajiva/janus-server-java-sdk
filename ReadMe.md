@@ -253,7 +253,7 @@ dbAccess.addDatabaseConnection("mongodb", mySqlConfig);
 
 ```
 
-This SDK will start to cache the events in the database if `Janus.DB_ACCESS` is not null.If the details to access the database are incorrect ,the app wil throw an exception and stop.
+This SDK will start to cache the events in the database if `io.github.kinsleykajiva.cache.DBAccess` is not null.If the details to access the database are incorrect ,the app wil throw an exception and stop.
 
 So far this SDK cache supports the [following Janus Events](https://janus.conf.meetecho.com/docs/eventhandlers.html) :
 * **Type 1** Session related event

@@ -125,8 +125,8 @@ public class Janus implements JanusEventHandler {
   @Override
   @NonBlocking
   public void handleEvent(@NotNull JSONObject event) {
-    if (event.has( Protocol.JANUS.JANUS)) {
-      String janus = event.getString( Protocol.JANUS.JANUS);
+    if (event.has(Protocol.JANUS.JANUS)) {
+      String janus = event.getString(Protocol.JANUS.JANUS);
       switch (janus) {
 	      case Protocol.JANUS.RESPONSE.SUCCESS -> {
           var transaction = event.getString(Protocol.JANUS.TRANSACTION);
