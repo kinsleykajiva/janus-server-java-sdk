@@ -123,8 +123,7 @@ public class MediaFactory {
 	 * @param participantsFullStreams The list of participant stream files.
 	 */
 	private void createVideoRoomFinalVideo( List<ParticipantStreamMediaFile> participantsFullStreams ) {
-		participantsFullStreams.forEach(
-				file -> filesToCleanup.add(file.file().getAbsolutePath()));
+		participantsFullStreams.forEach(file -> filesToCleanup.add(file.file().getAbsolutePath()));
 		if (mediaOutputTarget == MediaOutputTarget.VIDEO_ROOM_PLUGIN) {
 			
 			String output =	SdkUtils.cleanFilePath(	outputFolder + File.separator + "final-videoroom-" + roomId + ".webm");
