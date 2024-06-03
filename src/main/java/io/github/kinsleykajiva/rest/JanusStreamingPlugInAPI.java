@@ -1,6 +1,7 @@
 package io.github.kinsleykajiva.rest;
 
 import io.github.kinsleykajiva.utils.JanusPlugins;
+import io.github.kinsleykajiva.utils.Protocol;
 import io.github.kinsleykajiva.utils.SdkUtils;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -65,9 +66,9 @@ public class JanusStreamingPlugInAPI {
     }
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -129,9 +130,9 @@ public class JanusStreamingPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -178,9 +179,9 @@ public class JanusStreamingPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -220,9 +221,9 @@ public class JanusStreamingPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -262,9 +263,9 @@ public class JanusStreamingPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -307,9 +308,9 @@ public class JanusStreamingPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -354,9 +355,9 @@ public class JanusStreamingPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_STREAMING);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()
@@ -405,9 +406,9 @@ public class JanusStreamingPlugInAPI {
 
     // Constructing the JSON message for the information retrieval request.
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put(
         "body",
         new JSONObject()

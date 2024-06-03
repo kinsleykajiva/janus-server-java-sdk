@@ -3,6 +3,8 @@ package io.github.kinsleykajiva.rest;
 import io.github.kinsleykajiva.utils.JanusPlugins;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.github.kinsleykajiva.utils.Protocol;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -40,9 +42,9 @@ public class JanusVideoRoomPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
 
     for (String idType : new String[] {"integer", "string"}) {
       try {
@@ -79,7 +81,7 @@ public class JanusVideoRoomPlugInAPI {
       return false;
     }
 
-    return responseObject.getString("janus").equals("success")
+    return responseObject.getString(Protocol.JANUS.JANUS).equals("success")
         && responseObject.has("plugindata")
         && responseObject.getJSONObject("plugindata").getJSONObject("data").has("videoroom")
         && responseObject
@@ -118,9 +120,9 @@ public class JanusVideoRoomPlugInAPI {
       @Nullable String description,
       @Nullable String pin,
       @Nullable String secret,
-      int publishers,
-      boolean permanent,
-      boolean record,
+      Integer publishers,
+      Boolean permanent,
+      Boolean record,
       @Nullable String rec_dir) {
     if (checkIfVideoRoomExistsBoolCheck(roomId)) {
       return null;
@@ -134,9 +136,9 @@ public class JanusVideoRoomPlugInAPI {
     final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
 
     try {
       // We have a problem here we don't know if Video room is configured to use string room id or
@@ -160,7 +162,7 @@ public class JanusVideoRoomPlugInAPI {
         System.out.println("xxxx=&gt; " + response);
         JSONObject responseObject = new JSONObject(response);
 
-        if (responseObject.getString("janus").equals("success")) {
+        if (responseObject.getString(Protocol.JANUS.JANUS).equals("success")) {
           JSONObject plugindata = responseObject.getJSONObject("plugindata");
           JSONObject data = plugindata.getJSONObject("data");
           if (data.has("videoroom") && data.getString("videoroom").equals("created")) {
@@ -191,13 +193,13 @@ public class JanusVideoRoomPlugInAPI {
    * @see #checkIfVideoRoomExistsBoolCheck(String)
    */
   public JSONObject checkIfVideoRoomExists(String roomId) {
-    final long sessionId = janusRestApiClient.setupJanusSession();
-    final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+    final Long sessionId = janusRestApiClient.setupJanusSession();
+    final Long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
 
     // We have a problem here we don't know if Video room is configured to use string room id or
     // integer value only .
@@ -216,7 +218,7 @@ public class JanusVideoRoomPlugInAPI {
         String response = janusRestApiClient.makePostRequest(json);
         JSONObject responseObject = new JSONObject(response);
 
-        if (responseObject.getString("janus").equals("success")
+        if (responseObject.getString(Protocol.JANUS.JANUS).equals("success")
             && responseObject.has("plugindata")
             && responseObject.getJSONObject("plugindata").getJSONObject("data").has("error_code")) {
           return new JSONObject();
@@ -260,9 +262,9 @@ public class JanusVideoRoomPlugInAPI {
 
     // Constructing the JSON message for the list retrieval request.
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
     json.put("body", new JSONObject().put("request", "list"));
 
     try {
@@ -296,14 +298,14 @@ public class JanusVideoRoomPlugInAPI {
    */
   public JSONObject listRoomParticipants(@NotNull final String roomId) {
     // Setting up Janus session and attaching video room plugin.
-    final long sessionId = janusRestApiClient.setupJanusSession();
-    final long handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
+    final var sessionId = janusRestApiClient.setupJanusSession();
+    final var handleId = janusRestApiClient.attachPlugin(sessionId, JanusPlugins.JANUS_VIDEO_ROOM);
 
     // Constructing the JSON message for the list retrieval request.
     JSONObject json = new JSONObject();
-    json.put("janus", "message");
-    json.put("handle_id", handleId);
-    json.put("session_id", sessionId);
+    json.put(Protocol.JANUS.JANUS, "message");
+    json.put(Protocol.JANUS.HANDLE_ID, handleId);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
 
     for (String idType : new String[] {"integer", "string"}) {
       try {

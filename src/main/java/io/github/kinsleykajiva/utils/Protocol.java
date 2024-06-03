@@ -20,10 +20,14 @@ public class Protocol {
 	 * Janus protocol constants
 	 */
 	public static class JANUS {
-		public static final String JANUS       = "janus";
-		public static final String SESSION_ID  = "session_id";
-		public static final String TRANSACTION = "transaction";
-		public static final String PLUG_IN     = "plugin";
+		public static final String JANUS        = "janus";
+		public static final String SESSION_ID   = "session_id";
+		public static final String TRANSACTION  = "transaction";
+		public static final String HANDLE_ID    = "handle_id";
+		public static final String PLUG_IN      = "plugin";
+		public static final String ADMIN_KEY    = "admin_key";
+		public static final String API_SECRET   = "apisecret";
+		public static final String ADMIN_SECRET = "admin_secret";
 		/**
 		 * Janus API requests
 		 */

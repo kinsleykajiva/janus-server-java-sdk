@@ -112,10 +112,10 @@ public class Janus implements JanusEventHandler {
   private void attachePlugin() {
     JSONObject plugin = new JSONObject();
     sessionTransactionId = SdkUtils.uniqueIDGenerator(Protocol.JANUS.TRANSACTION, 18);
-    plugin.put( Protocol.JANUS.TRANSACTION, sessionTransactionId);
-    plugin.put(  Protocol.JANUS.JANUS,  Protocol.JANUS.REQUEST.ATTACH_PLUGIN);
-    plugin.put(  Protocol.JANUS.SESSION_ID, janusSession.id());
-    plugin.put( Protocol.JANUS.PLUG_IN, JanusPlugins.JANUS_VIDEO_ROOM);
+    plugin.put(Protocol.JANUS.TRANSACTION, sessionTransactionId);
+    plugin.put(Protocol.JANUS.JANUS,  Protocol.JANUS.REQUEST.ATTACH_PLUGIN);
+    plugin.put(Protocol.JANUS.SESSION_ID, janusSession.id());
+    plugin.put(Protocol.JANUS.PLUG_IN, JanusPlugins.JANUS_VIDEO_ROOM);
     sendMessage(plugin);
   }
 

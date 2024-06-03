@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
+
+import io.github.kinsleykajiva.utils.Protocol;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -52,8 +54,8 @@ public class JanusEventsFactory {
             jsonEvent.optInt("type", 0),
             jsonEvent.optInt("subtype", 0),
             jsonEvent.optLong("timestamp", 0),
-            jsonEvent.optLong("session_id", 0),
-            jsonEvent.optLong("handle_id", 0),
+            jsonEvent.optLong(Protocol.JANUS.SESSION_ID, 0),
+            jsonEvent.optLong(Protocol.JANUS.HANDLE_ID, 0),
             jsonEvent.optString("opaque_id", null),
             jevent);
     if (Janus.DB_ACCESS != null) {
@@ -103,8 +105,8 @@ public class JanusEventsFactory {
             jsonEvent.optString("emitter", null),
             jsonEvent.optInt("type", 0),
             jsonEvent.optLong("timestamp", 0),
-            jsonEvent.optLong("session_id", 0),
-            jsonEvent.optLong("handle_id", 0),
+            jsonEvent.optLong(Protocol.JANUS.SESSION_ID, 0),
+            jsonEvent.optLong(Protocol.JANUS.HANDLE_ID, 0),
             jsonEvent.optString("opaque_id", null),
             jevent);
     if (Janus.DB_ACCESS != null) {
@@ -186,8 +188,8 @@ public class JanusEventsFactory {
             jsonEvent.getInt("type"),
             jsonEvent.getInt("subtype"),
             jsonEvent.getLong("timestamp"),
-            jsonEvent.getLong("session_id"),
-            jsonEvent.getLong("handle_id"),
+            jsonEvent.getLong(Protocol.JANUS.SESSION_ID),
+            jsonEvent.getLong(Protocol.JANUS.HANDLE_ID),
             jsonEvent.getString("opaque_id"),
             jevent);
     System.out.println("qqqqq11");
@@ -229,8 +231,8 @@ public class JanusEventsFactory {
             jsonEvent.optString("emitter", null),
             jsonEvent.optInt("type", 0),
             jsonEvent.optLong("timestamp", 0),
-            jsonEvent.optLong("session_id", 0),
-            jsonEvent.optLong("handle_id", 0),
+            jsonEvent.optLong(Protocol.JANUS.SESSION_ID, 0),
+            jsonEvent.optLong(Protocol.JANUS.HANDLE_ID, 0),
             jsonEvent.optString("opaque_id", null),
             janusJSEPEventEvent);
 
@@ -256,7 +258,7 @@ public class JanusEventsFactory {
             jsonEvent.optString("emitter", null),
             jsonEvent.optInt("type", 0),
             jsonEvent.optLong("timestamp", 0),
-            jsonEvent.optLong("session_id", 0),
+            jsonEvent.optLong(Protocol.JANUS.SESSION_ID, 0),
             new JanusSessionEvent.Event(
                 jsonEvent.getJSONObject("event").getString("name"),
                 jsonEvent.getJSONObject("event").has("transport")
@@ -337,8 +339,8 @@ public class JanusEventsFactory {
       janusEvent.setSubtype(0);
       janusEvent.setTimestamp(jsonEvent.optLong("timestamp"));
       janusEvent.setType(jsonEvent.optInt("type"));
-      janusEvent.setHandle_id(jsonEvent.optLong("handle_id"));
-      janusEvent.setSession_id(jsonEvent.optLong("session_id"));
+      janusEvent.setHandle_id(jsonEvent.optLong(Protocol.JANUS.HANDLE_ID));
+      janusEvent.setSession_id(jsonEvent.optLong(Protocol.JANUS.SESSION_ID));
       janusEvent.setOpaque_id(jsonEvent.optString("opaque_id"));
       janusEvent.setEvent(roomPluginEventData);
       System.out.println("ggggg11");
