@@ -19,9 +19,9 @@ import org.json.JSONObject;
 
 public class SdkUtils {
 
-  static Logger log = Logger.getLogger(SdkUtils.class.getName());
+  static Logger log                                       = Logger.getLogger(SdkUtils.class.getName());
   private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-  public static boolean IS_LINUX = true;
+  public static boolean IS_LINUX                          = true;
 
   static {
     String os = System.getProperty("os.name").toLowerCase();
@@ -35,10 +35,9 @@ public class SdkUtils {
     scheduler.schedule(runnable, delay, TimeUnit.SECONDS);
   }
 
-  private static final String ALPHABET =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static final String ALPHABET   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static final int ALPHABET_SIZE = ALPHABET.length();
-  private static final Random RANDOM = new Random();
+  private static final Random RANDOM     = new Random();
 
   public static String IdGenerator() {
     UUID uuid = UUID.randomUUID();
@@ -256,9 +255,6 @@ public class SdkUtils {
   public static boolean folderExists(String recordingFolder) {
 
     File file = new File(recordingFolder);
-    if (file.exists() && file.isDirectory()) {
-      return true;
-    }
-    return false;
+	  return file.exists() && file.isDirectory();
   }
 }

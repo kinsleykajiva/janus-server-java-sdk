@@ -53,8 +53,8 @@ public class Janus implements JanusEventHandler {
                       config.adminSecret());
       janusRestApiClient = new JanusRestApiClient(janusConfiguration);
     } else {
-      String finalUrl = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
-      janusConfiguration = new JanusConfiguration(config.url(), config.apiSecret(), config.adminKey(), config.adminSecret());
+      String finalUrl    = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
+      janusConfiguration = new JanusConfiguration(config.url()                      , config.apiSecret(), config.adminKey(), config.adminSecret());
       try {
         webSocketClient = new JanusWebSocketClient(finalUrl, this);
       } catch (Exception e) {
@@ -81,10 +81,10 @@ public class Janus implements JanusEventHandler {
 
   @NonBlocking
   private void createSession() {
-    JSONObject message = new JSONObject();
+    JSONObject message   = new JSONObject();
     sessionTransactionId = SdkUtils.uniqueIDGenerator(Protocol.JANUS.TRANSACTION, 18);
     message.put(Protocol.JANUS.TRANSACTION, sessionTransactionId);
-    message.put( Protocol.JANUS.JANUS, "create");
+    message.put( Protocol.JANUS.JANUS,Protocol.JANUS.REQUEST.CREATE_SESSION);
     sendMessage(message);
   }
 
@@ -150,17 +150,17 @@ public class Janus implements JanusEventHandler {
           }
         }
         case Protocol.JANUS.REQUEST.KEEPALIVE -> {}
-        case Protocol.JANUS.EVENT.EVENT ->{}
-        case Protocol.JANUS.ACK -> {}
-        case Protocol.JANUS.EVENT.HANGUP  -> {}
-        case Protocol.JANUS.EVENT.DETACHED -> {}
-        case Protocol.JANUS.EVENT.WEBRTCUP  -> {}
-        case Protocol.JANUS.EVENT.TRICKLE   -> {}
-        case Protocol.JANUS.EVENT.MEDIA     -> {}
-        case Protocol.JANUS.EVENT.SLOWLINK  -> {}
-        case Protocol.JANUS.RESPONSE.ERROR     -> {}
-        case Protocol.JANUS.EVENT.TIMEOUT   -> {}
-        default          -> {}
+        case Protocol.JANUS.EVENT.EVENT       ->{}
+        case Protocol.JANUS.ACK               -> {}
+        case Protocol.JANUS.EVENT.HANGUP      -> {}
+        case Protocol.JANUS.EVENT.DETACHED    -> {}
+        case Protocol.JANUS.EVENT.WEBRTCUP    -> {}
+        case Protocol.JANUS.EVENT.TRICKLE     -> {}
+        case Protocol.JANUS.EVENT.MEDIA       -> {}
+        case Protocol.JANUS.EVENT.SLOWLINK    -> {}
+        case Protocol.JANUS.RESPONSE.ERROR    -> {}
+        case Protocol.JANUS.EVENT.TIMEOUT     -> {}
+        default                               -> {}
       }
     }
   }
