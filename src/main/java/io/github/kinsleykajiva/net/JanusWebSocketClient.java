@@ -14,7 +14,7 @@ public class JanusWebSocketClient implements WebSocketClient {
   static Logger log = Logger.getLogger(JanusWebSocketClient.class.getName());
   private WebSocket webSocket;
   private final String url;
-  private Thread thread;
+  
   private final JanusEventHandler eventHandler;
 
   public JanusWebSocketClient(String url, JanusEventHandler eventHandler) {
@@ -36,7 +36,7 @@ public class JanusWebSocketClient implements WebSocketClient {
 
   @Override
   public void send(String message) {
-    log.info("xxxSending message: " + message);
+    log.info("Sending message: " + message);
     webSocket.sendText(message, true);
   }
 
@@ -73,7 +73,7 @@ public class JanusWebSocketClient implements WebSocketClient {
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-      error.printStackTrace();
+     
       log.severe("WebSocket error: " + error.getMessage());
       WebSocket.Listener.super.onError(webSocket, error);
     }

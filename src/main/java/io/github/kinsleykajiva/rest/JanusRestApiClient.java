@@ -2,6 +2,7 @@ package io.github.kinsleykajiva.rest;
 
 import io.github.kinsleykajiva.models.JanusConfiguration;
 import io.github.kinsleykajiva.utils.JanusPlugins;
+import io.github.kinsleykajiva.utils.Protocol;
 import io.github.kinsleykajiva.utils.SdkUtils;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,12 +13,12 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class JanusRestApiClient {
-  static Logger log = Logger.getLogger(JanusRestApiClient.class.getName());
-  private HttpClient httpClient = HttpClient.newBuilder().build();
-
-  private final JanusConfiguration janusConfiguration;
-  public final JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI;
-  public final JanusStreamingPlugInAPI janusStreamingPlugInAPI;
+  private final Logger                  log                     = Logger.getLogger(JanusRestApiClient.class.getName());
+  private final HttpClient              httpClient              = HttpClient.newBuilder().build();
+  
+  private       JanusConfiguration      janusConfiguration      = null;
+  public        JanusVideoRoomPlugInAPI janusVideoRoomPlugInAPI = null;
+  public        JanusStreamingPlugInAPI janusStreamingPlugInAPI = null;
 
   public JanusConfiguration getJanusConfiguration() {
     return janusConfiguration;
@@ -31,10 +32,10 @@ public class JanusRestApiClient {
   }
 
   protected String makePostRequest(JSONObject json) throws Exception {
-    json.put("admin_key", janusConfiguration.adminKey());
-    json.put("apisecret", janusConfiguration.apiSecret());
-    json.put("admin_secret", janusConfiguration.adminSecret());
-    json.put("transaction", SdkUtils.uniqueIDGenerator("transaction", 18));
+    json.put(Protocol.JANUS.ADMIN_KEY, janusConfiguration.adminKey());
+    json.put(Protocol.JANUS.API_SECRET, janusConfiguration.apiSecret());
+    json.put( Protocol.JANUS .ADMIN_SECRET, janusConfiguration.adminSecret());
+    json.put(Protocol.JANUS.TRANSACTION, SdkUtils.uniqueIDGenerator("transaction", 18));
     HttpRequest request =
         HttpRequest.newBuilder()
             .uri(new URI(janusConfiguration.url()))
@@ -51,41 +52,41 @@ public class JanusRestApiClient {
     }
   }
 
-  protected long attachPlugin(final long sessionId, JanusPlugins plugin) {
+  protected Long attachPlugin(final long sessionId, JanusPlugins plugin) {
     if (sessionId == 0) {
       log.severe("Failed to attach plugin: session id is 0");
-      return 0;
+      return null;
     }
     if (plugin == null) {
       log.severe("Failed to attach plugin: plugin is null");
-      return 0;
+      return null;
     }
     JSONObject json = new JSONObject();
-    json.put("janus", "attach");
-    json.put("session_id", sessionId);
-    json.put("plugin", plugin.toString());
+    json.put( Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.ATTACH_PLUGIN);
+    json.put(Protocol.JANUS.SESSION_ID, sessionId);
+    json.put(Protocol.JANUS.PLUG_IN, plugin.toString());
     return makeRequestAndHandleResponse(json, "Failed to setup Janus handle");
   }
 
-  protected long setupJanusSession() {
+  protected Long setupJanusSession() {
     JSONObject json = new JSONObject();
-    json.put("janus", "create");
+    json.put(Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.CREATE_SESSION);
     return makeRequestAndHandleResponse(json, "Failed to setup Janus session");
   }
 
-  protected long makeRequestAndHandleResponse(JSONObject json, String errorMessage) {
+  protected Long makeRequestAndHandleResponse(JSONObject json, String errorMessage) {
     try {
-      String response = makePostRequest(json);
-      JSONObject jsonObject = new JSONObject(response);
-      if (jsonObject.has("janus") && jsonObject.getString("janus").equals("success")  && jsonObject.has("data")) {
+        String response = makePostRequest(json);
+        JSONObject jsonObject = new JSONObject(response);
+      if (jsonObject.has(Protocol.JANUS.JANUS) && jsonObject.getString(Protocol.JANUS.JANUS).equals(Protocol.JANUS.RESPONSE.SUCCESS)  && jsonObject.has("data")) {
         return jsonObject.getJSONObject("data").getLong("id");
       } else {
         log.severe(errorMessage + ": " + response);
-        return 0;
+        return null;
       }
     } catch (Exception e) {
       log.severe(errorMessage + ": " + e.getMessage());
-      return 0;
+      return null;
     }
   }
 }

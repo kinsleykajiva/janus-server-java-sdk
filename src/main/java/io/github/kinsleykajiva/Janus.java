@@ -6,6 +6,8 @@ import io.github.kinsleykajiva.models.JanusSession;
 import io.github.kinsleykajiva.net.JanusWebSocketClient;
 import io.github.kinsleykajiva.rest.JanusRestApiClient;
 import io.github.kinsleykajiva.utils.JanusEventHandler;
+import io.github.kinsleykajiva.utils.JanusPlugins;
+import io.github.kinsleykajiva.utils.Protocol;
 import io.github.kinsleykajiva.utils.SdkUtils;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,19 +20,17 @@ import org.json.JSONObject;
 
 /** The Janus class represents a Janus instance that communicates with the Janus server. */
 public class Janus implements JanusEventHandler {
-  static Logger                            log                      = Logger.getLogger(Janus.class.getName());
-  private final ScheduledExecutorService   keepAliveExecutorService =
-      new ScheduledThreadPoolExecutor(1);
+  private final Logger                            log               = Logger.getLogger(Janus.class.getName());
+  private final ScheduledExecutorService   keepAliveExecutorService = new ScheduledThreadPoolExecutor(1);
   private final CopyOnWriteArrayList<Long> PluginHandles            = new CopyOnWriteArrayList<>();
-
-  public static DBAccess DB_ACCESS = null;
-  private String sessionTransactionId;
-
-  private JanusWebSocketClient webSocketClient;
-  private JanusSession janusSession;
-  private boolean isAPIAccessOnly = false;
-  private JanusConfiguration janusConfiguration;
-  public JanusRestApiClient janusRestApiClient;
+  
+  public static DBAccess             DB_ACCESS            = null;
+  private       String               sessionTransactionId = null;
+  private       JanusWebSocketClient webSocketClient      = null;
+  private       JanusSession         janusSession         = null;
+  private       boolean              isAPIAccessOnly      = false;
+  private       JanusConfiguration   janusConfiguration   = null;
+  public        JanusRestApiClient   janusRestApiClient   = null;
 
   /**
    * Constructs a Janus instance based on the provided configuration.
@@ -41,26 +41,26 @@ public class Janus implements JanusEventHandler {
    *     include the URL, API secret, admin key, and admin secret.
    * @throws IllegalArgumentException If the provided configuration object is null.
    */
-  public Janus(boolean isAPIAccessOnly, @NotNull JanusConfiguration config) {
+  public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
     if (isAPIAccessOnly) {
       this.isAPIAccessOnly = true;
       log.info("Janus is running in API Access Only mode");
       janusConfiguration =
-          new JanusConfiguration(
-              SdkUtils.convertFromWebSocketUrl(config.url()),
-              config.apiSecret(),
-              config.adminKey(),
-              config.adminSecret());
+              new JanusConfiguration(
+                      SdkUtils.convertFromWebSocketUrl(config.url()),
+                      config.apiSecret(),
+                      config.adminKey(),
+                      config.adminSecret());
       janusRestApiClient = new JanusRestApiClient(janusConfiguration);
     } else {
-      String finalUrl = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
-      janusConfiguration = new JanusConfiguration(config.url(), config.apiSecret(), config.adminKey(), config.adminSecret());
+      String finalUrl    = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
+      janusConfiguration = new JanusConfiguration(config.url()                      , config.apiSecret(), config.adminKey(), config.adminSecret());
       try {
         webSocketClient = new JanusWebSocketClient(finalUrl, this);
       } catch (Exception e) {
         log.severe("Failed to initialize Janus Web Socket Client: " + e.getMessage());
       }
-      SdkUtils.runAfter(5,() -> webSocketClient.initializeWebSocket());
+      SdkUtils.runAfter(5, () -> webSocketClient.initializeWebSocket());
     }
   }
 
@@ -70,8 +70,8 @@ public class Janus implements JanusEventHandler {
     keepAliveExecutorService.scheduleAtFixedRate(
         () -> {
           JSONObject message = new JSONObject();
-          message.put("janus", "keepalive");
-          message.put("session_id", janusSession.id());
+          message.put( Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.KEEPALIVE);
+          message.put(Protocol.JANUS.SESSION_ID, janusSession.id());
           sendMessage(message);
         },
         0,
@@ -81,16 +81,16 @@ public class Janus implements JanusEventHandler {
 
   @NonBlocking
   private void createSession() {
-    JSONObject message = new JSONObject();
-    sessionTransactionId = SdkUtils.uniqueIDGenerator("transaction", 18);
-    message.put("transaction", sessionTransactionId);
-    message.put("janus", "create");
+    JSONObject message   = new JSONObject();
+    sessionTransactionId = SdkUtils.uniqueIDGenerator(Protocol.JANUS.TRANSACTION, 18);
+    message.put(Protocol.JANUS.TRANSACTION, sessionTransactionId);
+    message.put( Protocol.JANUS.JANUS,Protocol.JANUS.REQUEST.CREATE_SESSION);
     sendMessage(message);
   }
 
   public void sendMessage(final JSONObject message) {
-    if (!message.has("transaction")) {
-      message.put("transaction", SdkUtils.uniqueIDGenerator("transaction", 18));
+    if (!message.has(Protocol.JANUS.TRANSACTION)) {
+      message.put(Protocol.JANUS.TRANSACTION, SdkUtils.uniqueIDGenerator(Protocol.JANUS.TRANSACTION, 18));
     }
     log.info("Sending message: " + message);
     webSocketClient.send(message.toString());
@@ -111,11 +111,11 @@ public class Janus implements JanusEventHandler {
   @NonBlocking
   private void attachePlugin() {
     JSONObject plugin = new JSONObject();
-    sessionTransactionId = SdkUtils.uniqueIDGenerator("transaction", 18);
-    plugin.put("transaction", sessionTransactionId);
-    plugin.put("janus", "attach");
-    plugin.put("session_id", janusSession.id());
-    plugin.put("plugin", "janus.plugin.videoroom");
+    sessionTransactionId = SdkUtils.uniqueIDGenerator(Protocol.JANUS.TRANSACTION, 18);
+    plugin.put(Protocol.JANUS.TRANSACTION, sessionTransactionId);
+    plugin.put(Protocol.JANUS.JANUS,  Protocol.JANUS.REQUEST.ATTACH_PLUGIN);
+    plugin.put(Protocol.JANUS.SESSION_ID, janusSession.id());
+    plugin.put(Protocol.JANUS.PLUG_IN, JanusPlugins.JANUS_VIDEO_ROOM);
     sendMessage(plugin);
   }
 
@@ -125,11 +125,11 @@ public class Janus implements JanusEventHandler {
   @Override
   @NonBlocking
   public void handleEvent(@NotNull JSONObject event) {
-    if (event.has("janus")) {
-      String janus = event.getString("janus");
+    if (event.has(Protocol.JANUS.JANUS)) {
+      String janus = event.getString(Protocol.JANUS.JANUS);
       switch (janus) {
-        case "success" -> {
-          var transaction = event.getString("transaction");
+	      case Protocol.JANUS.RESPONSE.SUCCESS -> {
+          var transaction = event.getString(Protocol.JANUS.TRANSACTION);
           if (transaction.equals(sessionTransactionId)) {
             var data = event.getJSONObject("data");
             if (janusSession == null) {
@@ -149,18 +149,18 @@ public class Janus implements JanusEventHandler {
             }
           }
         }
-        case "keepalive" -> {}
-        case "event"     -> {}
-        case "ack"       -> {}
-        case "hangup"    -> {}
-        case "detached"  -> {}
-        case "webrtcup"  -> {}
-        case "trickle"   -> {}
-        case "media"     -> {}
-        case "slowlink"  -> {}
-        case "error"     -> {}
-        case "timeout"   -> {}
-        default          -> {}
+        case Protocol.JANUS.REQUEST.KEEPALIVE -> {}
+        case Protocol.JANUS.EVENT.EVENT       -> {}
+        case Protocol.JANUS.ACK               -> {}
+        case Protocol.JANUS.EVENT.HANGUP      -> {}
+        case Protocol.JANUS.EVENT.DETACHED    -> {}
+        case Protocol.JANUS.EVENT.WEBRTCUP    -> {}
+        case Protocol.JANUS.EVENT.TRICKLE     -> {}
+        case Protocol.JANUS.EVENT.MEDIA       -> {}
+        case Protocol.JANUS.EVENT.SLOWLINK    -> {}
+        case Protocol.JANUS.RESPONSE.ERROR    -> {}
+        case Protocol.JANUS.EVENT.TIMEOUT     -> {}
+        default                               -> {}
       }
     }
   }
