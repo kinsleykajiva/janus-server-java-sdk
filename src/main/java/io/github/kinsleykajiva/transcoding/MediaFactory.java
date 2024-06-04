@@ -51,8 +51,7 @@ public class MediaFactory {
 		// test if the recording folder exists
 		if (!SdkUtils.folderExists(recordingFolder)) {
 			if (postProcessingCallback != null) {
-				postProcessingCallback.onProcessingFailed(
-						roomId, System.currentTimeMillis(), "Recording folder does not exist");
+				postProcessingCallback.onProcessingFailed(roomId, System.currentTimeMillis(), "Recording folder does not exist");
 			} else {
 				throw new RuntimeException("Recording folder does not exist");
 			}
@@ -60,8 +59,7 @@ public class MediaFactory {
 		// test if the output folder exists
 		if (!SdkUtils.folderExists(outputFolder)) {
 			if (postProcessingCallback != null) {
-				postProcessingCallback.onProcessingFailed(
-						roomId, System.currentTimeMillis(), "Output folder does not exist");
+				postProcessingCallback.onProcessingFailed(roomId, System.currentTimeMillis(), "Output folder does not exist");
 			} else {
 				throw new RuntimeException("Output folder does not exist");
 			}
@@ -85,8 +83,7 @@ public class MediaFactory {
 					matchingFiles.add(fileName);
 				}
 			}
-			matchingFiles.forEach(
-					file -> {
+			matchingFiles.forEach(file -> {
 						var  fullFilePath = file;
 						Path filePath     = Paths.get(file);
 						
@@ -100,16 +97,13 @@ public class MediaFactory {
 			
 			fileInfoMJRs.removeIf(Objects::isNull); // stream to remove null values in fileInfoMJRs
 			if (postProcessing != null) {
-				postProcessing.onProcessingStarted(
-						roomId, System.currentTimeMillis(), fileInfoMJRs, Thread.currentThread());
+				postProcessing.onProcessingStarted(roomId, System.currentTimeMillis(), fileInfoMJRs, Thread.currentThread());
 			}
 			if (fileInfoMJRs.size() % 2 != 0) {
-				throw new RuntimeException(
-						"The files do not match . For each video mjr file there is a audio mjr file and vice versa");
+				throw new RuntimeException("The files do not match . For each video mjr file there is a audio mjr file and vice versa");
 			}
 			var participantStreamsList = processPairForUser();
-			List<ParticipantStreamMediaFile> participantsFullStreams =
-					createParticipantStreamMediaFile(participantStreamsList);
+			List<ParticipantStreamMediaFile> participantsFullStreams =createParticipantStreamMediaFile(participantStreamsList);
 			// now lets combine all participant streams into a single media file who where in the same room.
 			createVideoRoomFinalVideo(participantsFullStreams);
 		} catch (IOException e) {
@@ -282,21 +276,11 @@ public class MediaFactory {
 							+ "[3a];[0][1a][2a][3a]amix=inputs=4[a]\" "
 							+ "-map \"[v3]\" -map \"[a]\" "
 							+ output);
-					postProcessing.onProcessingEnded(
-							roomId,
-							System.currentTimeMillis(),
-							List.of(new File(output)),
-							Thread.currentThread());
+					postProcessing.onProcessingEnded(roomId,System.currentTimeMillis(),	List.of(new File(output)),Thread.currentThread());
 				} catch (IOException | InterruptedException e) {
-					log.log(
-							java.util.logging.Level.SEVERE,
-							"Error creating final video file" + e.getMessage(),
-							e);
+					log.log(java.util.logging.Level.SEVERE,"Error creating final video file" + e.getMessage(),	e);
 					if (postProcessing != null) {
-						postProcessing.onProcessingFailed(
-								roomId,
-								System.currentTimeMillis(),
-								"Error creating final video file " + e.getMessage());
+						postProcessing.onProcessingFailed(roomId,System.currentTimeMillis(),"Error creating final video file " + e.getMessage());
 					}
 				}
 			}

@@ -76,8 +76,8 @@ public class JanusRestApiClient {
 
   protected Long makeRequestAndHandleResponse(JSONObject json, String errorMessage) {
     try {
-      String response = makePostRequest(json);
-      JSONObject jsonObject = new JSONObject(response);
+        String response = makePostRequest(json);
+        JSONObject jsonObject = new JSONObject(response);
       if (jsonObject.has(Protocol.JANUS.JANUS) && jsonObject.getString(Protocol.JANUS.JANUS).equals(Protocol.JANUS.RESPONSE.SUCCESS)  && jsonObject.has("data")) {
         return jsonObject.getJSONObject("data").getLong("id");
       } else {
