@@ -30,21 +30,20 @@ public class JanusRestApiClient {
     janusVideoRoomPlugInAPI = new JanusVideoRoomPlugInAPI(this);
     janusStreamingPlugInAPI = new JanusStreamingPlugInAPI(this);
   }
-
-  protected String makePostRequest(JSONObject json) throws Exception {
+  
+  protected String makePostRequest( JSONObject json ) throws Exception {
     json.put(Protocol.JANUS.ADMIN_KEY, janusConfiguration.adminKey());
     json.put(Protocol.JANUS.API_SECRET, janusConfiguration.apiSecret());
-    json.put( Protocol.JANUS .ADMIN_SECRET, janusConfiguration.adminSecret());
+    json.put(Protocol.JANUS.ADMIN_SECRET, janusConfiguration.adminSecret());
     json.put(Protocol.JANUS.TRANSACTION, SdkUtils.uniqueIDGenerator("transaction", 18));
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(new URI(janusConfiguration.url()))
-            .POST(HttpRequest.BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8))
-            .header("Content-Type", "application/json")
-            .build();
-
+    HttpRequest request = HttpRequest.newBuilder()
+                          .uri(new URI(janusConfiguration.url()))
+                          .POST(HttpRequest.BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8))
+                          .header("Content-Type", "application/json")
+                          .build();
+    
     HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
+    
     if (response.statusCode() >= 200 && response.statusCode() < 300) {
       return response.body();
     } else {
