@@ -5,9 +5,16 @@ public enum JanusPlugins {
   JANUS_RECORD_PLAY("janus.plugin.recordplay"),
   JANUS_STREAMING("janus.plugin.streaming"),
   JANUS_SIP("janus.plugin.sip"),
+  JANUS_NO_SIP("janus.plugin.nosip"),
 
   JANUS_VIDEO_ROOM("janus.plugin.videoroom"),
-  JANUS_VOICE_MAIL("janus.plugin.voicemail");
+  JANUS_VIDEO_CALL("janus.plugin.videocall"),
+  JANUS_TEXT_ROOM("janus.plugin.textroom"),
+  JANUS_VOICE_MAIL("janus.plugin.voicemail"),
+  JANUS_ECHO_TEST("janus.plugin.echotest");
+ 
+ 
+ 
   private final String plugin_name;
 
   @Override

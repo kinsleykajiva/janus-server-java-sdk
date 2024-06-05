@@ -1,8 +1,11 @@
 package io.github.kinsleykajiva.rest.admin;
 
 import io.github.kinsleykajiva.models.JanusConfiguration;
+import io.github.kinsleykajiva.utils.JanusPlugins;
 import io.github.kinsleykajiva.utils.Protocol;
 import io.github.kinsleykajiva.utils.SdkUtils;
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -11,7 +14,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class JanusAdminRestApiClient {
@@ -115,8 +120,131 @@ public class JanusAdminRestApiClient {
 		}
 	}
 	
-	public static class TokenRelatedRequests {
-	
+	public class TokenRelatedRequests {
+		public List<String> addToken( @NotNull final String token, JanusPlugins[] plugins ) {
+			List<String> ret = new ArrayList<>();
+			try {
+				String response;
+				if (Objects.isNull(plugins)) {
+					response = makePostRequest(
+							new JSONObject()
+									.put("janus", "add_token")
+									.put("token", token)
+					);
+				} else {
+					var pluginsJsonArray = new JSONArray();
+					Arrays.asList(plugins).forEach(p -> pluginsJsonArray.put(p.toString()));
+					response = makePostRequest(
+							new JSONObject()
+									.put("janus", "add_token")
+									.put("token", token)
+									.put("plugins", pluginsJsonArray)
+					);
+				}
+				
+				if (new JSONObject(response).getString("janus").equals("error")) {
+					log.info("Janus Error, " + new JSONObject(response).getJSONObject("error").getString("reason"));
+					return ret;
+				}
+				var responseJ = new JSONObject(response).getJSONObject("data");
+				var plugins_  = responseJ.getJSONArray("plugins");
+				for (int i = 0; i < plugins_.length(); i++) {
+					var p = plugins_.getString(i);
+					ret.add(p);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return ret;
+		}
+		
+		public List<TokenRecord> listTokens() {
+			List<TokenRecord> tokensList = new ArrayList<>();
+			
+			try {
+				JSONObject requestPayload = new JSONObject().put("janus", "list_tokens");
+				String     response       = makePostRequest(requestPayload);
+				
+				JSONObject responseJson = new JSONObject(response).getJSONObject("data");
+				JSONArray  tokensArray  = responseJson.getJSONArray("tokens");
+				
+				for (int i = 0; i < tokensArray.length(); i++) {
+					JSONObject tokenObj = tokensArray.getJSONObject(i);
+					String     token    = tokenObj.getString("token");
+					
+					JSONArray      allowedPluginsArray = tokenObj.getJSONArray("allowed_plugins");
+					JanusPlugins[] plugins             = new JanusPlugins[allowedPluginsArray.length()];
+					
+					for (int j = 0; j < allowedPluginsArray.length(); j++) {
+						String pluginName = allowedPluginsArray.getString(j);
+						plugins[j] = JanusPlugins.valueOf(pluginName);
+					}
+					
+					tokensList.add(new TokenRecord(token, plugins));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return tokensList;
+		}
+		
+		public Boolean removeToken( String token ) {
+			
+			try {
+				var response = makePostRequest(
+						new JSONObject()
+								.put("janus", "remove_token")
+								.put("token", token)
+				
+				);
+				return new JSONObject(response).getString("janus").equals("success");
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return Boolean.FALSE;
+		}
+		
+		public Boolean allowToken( @NotNull String token, @NotNull JanusPlugins[] plugins ) {
+			
+			try {
+				var pluginsJsonArray = new JSONArray();
+				Arrays.asList(plugins).forEach(p -> pluginsJsonArray.put(p.toString()));
+				var response = makePostRequest(
+						new JSONObject()
+								.put("janus", "allow_token")
+								.put("token", token)
+								.put("plugins", pluginsJsonArray)
+				
+				);
+				return new JSONObject(response).getString("janus").equals("success");
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return Boolean.FALSE;
+		}
+		public Boolean disallowToken( @NotNull String token, @NotNull JanusPlugins[] plugins ) {
+			
+			try {
+				var pluginsJsonArray = new JSONArray();
+				Arrays.asList(plugins).forEach(p -> pluginsJsonArray.put(p.toString()));
+				var response = makePostRequest(
+						new JSONObject()
+								.put("janus", "disallow_token")
+								.put("token", token)
+								.put("plugins", pluginsJsonArray)
+				
+				);
+				return new JSONObject(response).getString("janus").equals("success");
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return Boolean.FALSE;
+		}
+		
 	}
 	
 	public static class SessionRelatedRequests {
