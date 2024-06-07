@@ -35,9 +35,9 @@ public class Janus implements JanusEventHandler {
   /**
    * Constructs a Janus instance based on the provided configuration.
    *
-   * @param isAPIAccessOnly Flag indicating whether Janus is running in API Access Only mode. If
-   *                        true, Janus will use REST API for communication. If false, Janus will use WebSocket.
-   * @param config          The JanusConfiguration object containing the server connection details. It should
+   * @param isAPIAccessOnly Flag indicating whether Janus SDK is running in API Access Only mode. If
+   *                        true, Janus will use REST API for communication. If false, Janus SDK will use WebSocket.
+   * @param config          The  {@link io.github.kinsleykajiva.models.JanusConfiguration} object containing the server connection details. It should
    *                        include the URL, API secret, admin key, and admin secret.
    * @throws IllegalArgumentException If the provided configuration object is null.
    */
