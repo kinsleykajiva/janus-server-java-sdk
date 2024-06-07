@@ -4,7 +4,7 @@
   <groupId>io.github.kinsleykajiva</groupId>
   <artifactId>janus-server-java-sdk</artifactId>
   <name>${project.artifactId}</name>
-  <version>0.8.0</version>
+  <version>0.9.0</version>
   <description>Java Janus WebRTC sever SDK</description>
   <developers>
     <developer>
