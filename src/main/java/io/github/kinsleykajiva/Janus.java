@@ -63,20 +63,19 @@ public class Janus implements JanusEventHandler {
       SdkUtils.runAfter(5, () -> webSocketClient.initializeWebSocket());
     }
   }
+  
+  
+  private final Runnable keepAlive = ()->{
+    JSONObject message = new JSONObject();
+    message.put( Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.KEEPALIVE);
+    message.put(Protocol.JANUS.SESSION_ID, janusSession.id());
+    sendMessage(message);
+  };
 
   @NonBlocking
   private void keepAlive() {
 
-    keepAliveExecutorService.scheduleAtFixedRate(
-        () -> {
-          JSONObject message = new JSONObject();
-          message.put( Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.KEEPALIVE);
-          message.put(Protocol.JANUS.SESSION_ID, janusSession.id());
-          sendMessage(message);
-        },
-        0,
-        25,
-        TimeUnit.SECONDS);
+    keepAliveExecutorService.scheduleAtFixedRate(keepAlive,0,25,TimeUnit.SECONDS);
   }
 
   @NonBlocking
