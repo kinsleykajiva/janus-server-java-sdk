@@ -31,14 +31,14 @@ public class Janus implements JanusEventHandler {
   private       boolean              isAPIAccessOnly      = false;
   private       JanusConfiguration   janusConfiguration   = null;
   public        JanusRestApiClient   janusRestApiClient   = null;
-
+  
   /**
    * Constructs a Janus instance based on the provided configuration.
    *
-   * @param isAPIAccessOnly Flag indicating whether Janus is running in API Access Only mode. If
-   *     true, Janus will use REST API for communication. If false, Janus will use WebSocket.
-   * @param config The JanusConfiguration object containing the server connection details. It should
-   *     include the URL, API secret, admin key, and admin secret.
+   * @param isAPIAccessOnly Flag indicating whether Janus SDK is running in API Access Only mode. If
+   *                        true, Janus will use REST API for communication. If false, Janus SDK will use WebSocket.
+   * @param config          The  {@link io.github.kinsleykajiva.models.JanusConfiguration} object containing the server connection details. It should
+   *                        include the URL, API secret, admin key, and admin secret.
    * @throws IllegalArgumentException If the provided configuration object is null.
    */
   public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
@@ -63,20 +63,19 @@ public class Janus implements JanusEventHandler {
       SdkUtils.runAfter(5, () -> webSocketClient.initializeWebSocket());
     }
   }
+  
+  
+  private final Runnable keepAlive = ()->{
+    JSONObject message = new JSONObject();
+    message.put( Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.KEEPALIVE);
+    message.put(Protocol.JANUS.SESSION_ID, janusSession.id());
+    sendMessage(message);
+  };
 
   @NonBlocking
   private void keepAlive() {
 
-    keepAliveExecutorService.scheduleAtFixedRate(
-        () -> {
-          JSONObject message = new JSONObject();
-          message.put( Protocol.JANUS.JANUS, Protocol.JANUS.REQUEST.KEEPALIVE);
-          message.put(Protocol.JANUS.SESSION_ID, janusSession.id());
-          sendMessage(message);
-        },
-        0,
-        25,
-        TimeUnit.SECONDS);
+    keepAliveExecutorService.scheduleAtFixedRate(keepAlive,0,25,TimeUnit.SECONDS);
   }
 
   @NonBlocking
