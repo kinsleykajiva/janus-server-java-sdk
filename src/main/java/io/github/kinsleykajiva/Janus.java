@@ -31,14 +31,14 @@ public class Janus implements JanusEventHandler {
   private       boolean              isAPIAccessOnly      = false;
   private       JanusConfiguration   janusConfiguration   = null;
   public        JanusRestApiClient   janusRestApiClient   = null;
-
+  
   /**
    * Constructs a Janus instance based on the provided configuration.
    *
    * @param isAPIAccessOnly Flag indicating whether Janus is running in API Access Only mode. If
-   *     true, Janus will use REST API for communication. If false, Janus will use WebSocket.
-   * @param config The JanusConfiguration object containing the server connection details. It should
-   *     include the URL, API secret, admin key, and admin secret.
+   *                        true, Janus will use REST API for communication. If false, Janus will use WebSocket.
+   * @param config          The JanusConfiguration object containing the server connection details. It should
+   *                        include the URL, API secret, admin key, and admin secret.
    * @throws IllegalArgumentException If the provided configuration object is null.
    */
   public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
