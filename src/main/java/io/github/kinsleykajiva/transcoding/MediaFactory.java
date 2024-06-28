@@ -36,12 +36,7 @@ public class MediaFactory {
 		}
 	}
 	
-	public MediaFactory(
-			@NotNull MediaOutputTarget mediaOutputTarget,
-			@NotNull String roomId,
-			@NotNull String recordingFolder,
-			@NotNull String outputFolder,
-			@Nullable PostProcessing postProcessingCallback ) {
+	public MediaFactory(@NotNull MediaOutputTarget mediaOutputTarget,@NotNull String roomId,@NotNull String recordingFolder,@NotNull String outputFolder,@Nullable PostProcessing postProcessingCallback ) {
 		this();
 		this.mediaOutputTarget = mediaOutputTarget;
 		this.roomId = roomId;
@@ -124,7 +119,6 @@ public class MediaFactory {
 			output = getIncrementedFileName(output);
 			// for one participant's streams.
 			if (participantsFullStreams.size() == 1) {
-				
 				// move file to output folder
 				try {
 					Files.move(participantsFullStreams.getFirst().file().toPath(),Paths.get(output),StandardCopyOption.REPLACE_EXISTING);
