@@ -210,21 +210,11 @@ public class MediaFactory {
 							+ "-map \"[v2]\" -map \"[a]\" "
 							+ output);
 					
-					postProcessing.onProcessingEnded(
-							roomId,
-							System.currentTimeMillis(),
-							List.of(new File(output)),
-							Thread.currentThread());
+					postProcessing.onProcessingEnded(roomId,System.currentTimeMillis(),	List.of(new File(output)),Thread.currentThread());
 				} catch (IOException | InterruptedException e) {
-					log.log(
-							java.util.logging.Level.SEVERE,
-							"Error creating final video file" + e.getMessage(),
-							e);
+					log.log(java.util.logging.Level.SEVERE,	"Error creating final video file" + e.getMessage(),e);
 					if (postProcessing != null) {
-						postProcessing.onProcessingFailed(
-								roomId,
-								System.currentTimeMillis(),
-								"Error creating final video file " + e.getMessage());
+						postProcessing.onProcessingFailed(roomId,System.currentTimeMillis(),"Error creating final video file " + e.getMessage());
 					}
 				}
 			}
@@ -345,21 +335,11 @@ public class MediaFactory {
 							+ "[4a];[0][1a][2a][3a][4a]amix=inputs=5[a]\" "
 							+ "-map \"[v4]\" -map \"[a]\" "
 							+ output);
-					postProcessing.onProcessingEnded(
-							roomId,
-							System.currentTimeMillis(),
-							List.of(new File(output)),
-							Thread.currentThread());
+					postProcessing.onProcessingEnded(roomId,System.currentTimeMillis(),	List.of(new File(output)),Thread.currentThread());
 				} catch (IOException | InterruptedException e) {
-					log.log(
-							java.util.logging.Level.SEVERE,
-							"Error creating final video file" + e.getMessage(),
-							e);
+					log.log(java.util.logging.Level.SEVERE,"Error creating final video file" + e.getMessage(),e);
 					if (postProcessing != null) {
-						postProcessing.onProcessingFailed(
-								roomId,
-								System.currentTimeMillis(),
-								"Error creating final video file " + e.getMessage());
+						postProcessing.onProcessingFailed(roomId,System.currentTimeMillis(),"Error creating final video file " + e.getMessage());
 					}
 				}
 			}
@@ -434,22 +414,12 @@ public class MediaFactory {
 							+ "[5a];[0][1a][2a][3a][4a][5a]amix=inputs=6[a]\" "
 							+ "-map \"[v5]\" -map \"[a]\" "
 							+ output);
-					postProcessing.onProcessingEnded(
-							roomId,
-							System.currentTimeMillis(),
-							List.of(new File(output)),
-							Thread.currentThread());
+					postProcessing.onProcessingEnded(roomId,System.currentTimeMillis(),	List.of(new File(output)),Thread.currentThread());
 					
 				} catch (IOException | InterruptedException e) {
-					log.log(
-							java.util.logging.Level.SEVERE,
-							"Error creating final video file" + e.getMessage(),
-							e);
+					log.log(java.util.logging.Level.SEVERE,"Error creating final video file" + e.getMessage(),e);
 					if (postProcessing != null) {
-						postProcessing.onProcessingFailed(
-								roomId,
-								System.currentTimeMillis(),
-								"Error creating final video file " + e.getMessage());
+						postProcessing.onProcessingFailed(roomId,System.currentTimeMillis(),"Error creating final video file " + e.getMessage());
 					}
 				}
 			}
@@ -541,9 +511,8 @@ public class MediaFactory {
 		List<ParticipantStreamMediaFile> streamMediaFiles = new ArrayList<>();
 		participantStreamsList.forEach(
 				participantStream -> {
-					String audioInput = participantStream.audio().file().getAbsolutePath();
-					String audioOutput =
-							participantStream.audio().file().getAbsolutePath().replace(".mjr", ".opus");
+					String audioInput  = participantStream.audio().file().getAbsolutePath();
+					String audioOutput = participantStream.audio().file().getAbsolutePath().replace(".mjr", ".opus");
 					filesToCleanup.add(audioOutput);
 					try {
 						SdkUtils.bashExecute("janus-pp-rec " + audioInput + " " + audioOutput);
@@ -551,8 +520,7 @@ public class MediaFactory {
 						audioOutput = "";
 						log.log(java.util.logging.Level.SEVERE, "exec error: " + e.getMessage(), e);
 						if (postProcessing != null) {
-							postProcessing.onProcessingFailed(
-									roomId, System.currentTimeMillis(), "exec error: audio file " + e.getMessage());
+							postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "exec error: audio file " + e.getMessage());
 						}
 					}
 					String videoInput = participantStream.video().file().getAbsolutePath();
@@ -564,8 +532,7 @@ public class MediaFactory {
 						videoOutput = "";
 						log.log(java.util.logging.Level.SEVERE, "exec error: " + e.getMessage(), e);
 						if (postProcessing != null) {
-							postProcessing.onProcessingFailed(
-									roomId, System.currentTimeMillis(), "exec error: video file " + e.getMessage());
+							postProcessing.onProcessingFailed(roomId, System.currentTimeMillis(), "exec error: video file " + e.getMessage());
 						}
 					}
 					// compare the start time of the video and audio files get the oldest one
@@ -591,21 +558,12 @@ public class MediaFactory {
 									+ " -c:v copy -c:a opus -strict experimental "
 									+ output);
 							filesToCleanup.add(output);
-							var mediaFile =
-									new ParticipantStreamMediaFile(
-											participantStream.video().videoRoom(),
-											participantStream.video().userId(),
-											officialStartTime,
-											new File(output));
+							var mediaFile =	new ParticipantStreamMediaFile(participantStream.video().videoRoom(),participantStream.video().userId(),officialStartTime,new File(output));
 							streamMediaFiles.add(mediaFile);
 						} catch (IOException | InterruptedException e) {
-							log.log(
-									java.util.logging.Level.SEVERE, "Error creating media file" + e.getMessage(), e);
+							log.log(java.util.logging.Level.SEVERE, "Error creating media file" + e.getMessage(), e);
 							if (postProcessing != null) {
-								postProcessing.onProcessingFailed(
-										roomId,
-										System.currentTimeMillis(),
-										"Error creating media file " + e.getMessage());
+								postProcessing.onProcessingFailed(roomId,System.currentTimeMillis(),"Error creating media file " + e.getMessage());
 							}
 						}
 					}
@@ -625,10 +583,9 @@ public class MediaFactory {
 		List<ParticipantStream> participantStreams = new ArrayList<>();
 		userIds.forEach(
 				user -> {
-					var pair =
-							fileInfoMJRs.stream()
-									.filter(fileInfoMJR -> fileInfoMJR.userId().equals(user))
-									.toArray(FileInfoMJR[]::new);
+					var pair =fileInfoMJRs.stream()
+															.filter(fileInfoMJR -> fileInfoMJR.userId().equals(user))
+															.toArray(FileInfoMJR[]::new);
 					// test if is audio or video
 					if (pair[0].fileTypeVideoAudio().equals("audio")) {
 						participantStreams.add(new ParticipantStream(user, pair[1], pair[0]));
@@ -665,12 +622,11 @@ public class MediaFactory {
 	}
 	
 	private String getIncrementedFileName( String filePathString ) {
-		Path   filePath = Paths.get(filePathString);
-		String base     = filePath.getFileName().toString().replaceFirst("[.][^.]+$", "");
-		String ext =filePath
-						.getFileName()
-						.toString()
-						.substring(filePath.getFileName().toString().lastIndexOf(".") + 1);
+		Path   filePath  = Paths.get(filePathString);
+		String base      = filePath.getFileName().toString().replaceFirst("[.][^.]+$", "");
+		String ext       = filePath.getFileName()
+									.toString()
+									.substring(filePath.getFileName().toString().lastIndexOf(".") + 1);
 		Path dir         = filePath.getParent();
 		int  index       = 1;
 		Path newFilePath = filePath;
