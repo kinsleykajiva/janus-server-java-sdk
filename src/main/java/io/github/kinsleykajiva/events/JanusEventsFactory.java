@@ -251,29 +251,25 @@ public class JanusEventsFactory {
    * inserts the event into the database using SQLBatchExec.
    */
   public void processEvent1() {
-    System.out.println("processEvent1   \n      " + jsonEvent);
-    // System.out.println(jsonEvent);
-    //	System.out.println(jsonEvent.getString("name"));
-    var janusEvent =
-        new JanusSessionEvent.Root(
-            jsonEvent.optString("emitter", null),
-            jsonEvent.optInt("type", 0),
-            jsonEvent.optLong("timestamp", 0),
-            jsonEvent.optLong(Protocol.JANUS.SESSION_ID, 0),
-            new JanusSessionEvent.Event(
-                jsonEvent.getJSONObject("event").getString("name"),
-                jsonEvent.getJSONObject("event").has("transport")
-                    ? new JanusSessionEvent.Transport(
-                        jsonEvent
-                            .getJSONObject("event")
-                            .getJSONObject("transport")
-                            .optString("transport", null),
-                        jsonEvent
-                            .getJSONObject("event")
-                            .getJSONObject("transport")
-                            .optLong("id", 0))
-                    : null));
-    System.out.println("1bbbbbb1");
+   
+    var janusEvent = new JanusSessionEvent.Root(
+                          jsonEvent.optString("emitter", null),
+                          jsonEvent.optInt("type", 0),
+                          jsonEvent.optLong("timestamp", 0),
+                          jsonEvent.optLong(Protocol.JANUS.SESSION_ID, 0),
+                          new JanusSessionEvent.Event(
+                              jsonEvent.getJSONObject("event").getString("name"),
+                              jsonEvent.getJSONObject("event").has("transport")
+                                  ? new JanusSessionEvent.Transport(
+                                      jsonEvent
+                                          .getJSONObject("event")
+                                          .getJSONObject("transport")
+                                          .optString("transport", null),
+                                      jsonEvent
+                                          .getJSONObject("event")
+                                          .getJSONObject("transport")
+                                          .optLong("id", 0))
+                                  : null));
     if (Janus.DB_ACCESS != null) {
       var insert = new JanusSessionEvent().trackInsert(janusEvent);
       saveToCache(insert);
@@ -292,21 +288,21 @@ public class JanusEventsFactory {
   public void processEvent256() {
     var jsonEventObj = jsonEvent.getJSONObject("event");
     var jevent =
-        new JanusCoreEvent.Event(
-            jsonEventObj.optString("status", null),
-            new JanusCoreEvent.Info(
-                jsonEventObj.optLong("sessions", 0),
-                jsonEventObj.optLong("handles", 0),
-                jsonEventObj.optLong("peerconnections", 0),
-                jsonEventObj.optLong("stats-period", 0)));
+                new JanusCoreEvent.Event(
+                    jsonEventObj.optString("status", null),
+                    new JanusCoreEvent.Info(
+                        jsonEventObj.optLong("sessions", 0),
+                        jsonEventObj.optLong("handles", 0),
+                        jsonEventObj.optLong("peerconnections", 0),
+                        jsonEventObj.optLong("stats-period", 0)));
     var janusEvent =
-        new JanusCoreEvent.Root(
-            jsonEvent.optString("emitter", null),
-            jsonEvent.optInt("type", 0),
-            jsonEvent.optInt("subtype", 0),
-            jsonEvent.optLong("timestamp", 0),
-            jevent);
-    System.out.println("qqqqqq11");
+                  new JanusCoreEvent.Root(
+                      jsonEvent.optString("emitter", null),
+                      jsonEvent.optInt("type", 0),
+                      jsonEvent.optInt("subtype", 0),
+                      jsonEvent.optLong("timestamp", 0),
+                      jevent);
+    
     if (Janus.DB_ACCESS != null) {
       var insertSEL = new JanusCoreEvent().trackInsert(janusEvent);
       saveToCache(insertSEL);
@@ -362,8 +358,7 @@ public class JanusEventsFactory {
 
     if (dataJSON.has("streams")) {
       JSONArray streams = dataJSON.getJSONArray("streams");
-      VideoRoomPluginEventDataStream[] videoRoomPluginEventDataStreams =
-          createVideoRoomEventDataStreams(streams);
+      VideoRoomPluginEventDataStream[] videoRoomPluginEventDataStreams = createVideoRoomEventDataStreams(streams);
       roomPluginEventData.setStream(videoRoomPluginEventDataStreams);
     }
 
@@ -373,9 +368,9 @@ public class JanusEventsFactory {
 
   private VideoRoomPluginEventDataStream[] createVideoRoomEventDataStreams(JSONArray streams) {
     return IntStream.range(0, streams.length())
-        .mapToObj(streams::getJSONObject)
-        .map(this::createVideoRoomPluginEventDataStream)
-        .toArray(VideoRoomPluginEventDataStream[]::new);
+                    .mapToObj(streams::getJSONObject)
+                    .map(this::createVideoRoomPluginEventDataStream)
+                    .toArray(VideoRoomPluginEventDataStream[]::new);
   }
 
   private VideoRoomPluginEventDataStream createVideoRoomPluginEventDataStream(JSONObject stream) {
@@ -387,15 +382,13 @@ public class JanusEventsFactory {
     return videoRoomPluginEventDataStream;
   }
 
-  private void handleLeavingEvent(
-      JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room) {
+  private void handleLeavingEvent(JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room) {
     if (roomParticipantsList == null) {
       return;
     }
 
     long participantId = dataJSON.optLong("id");
-    ParticipantPojo leavingParticipant =
-        findAndRemoveParticipant(roomParticipantsList, participantId);
+    ParticipantPojo leavingParticipant = findAndRemoveParticipant(roomParticipantsList, participantId);
 
     if (leavingParticipant != null) {
       emissions.onParticipantLeft(leavingParticipant.id(), leavingParticipant.display(), room);
@@ -406,13 +399,11 @@ public class JanusEventsFactory {
     }
   }
 
-  private ParticipantPojo findAndRemoveParticipant(
-      List<ParticipantPojo> roomParticipantsList, long participantId) {
-    ParticipantPojo participant =
-        roomParticipantsList.stream()
-            .filter(participantPojo -> participantPojo.id() == participantId)
-            .findFirst()
-            .orElse(null);
+  private ParticipantPojo findAndRemoveParticipant(List<ParticipantPojo> roomParticipantsList, long participantId) {
+    ParticipantPojo participant = roomParticipantsList.stream()
+                                                      .filter(participantPojo -> participantPojo.id() == participantId)
+                                                      .findFirst()
+                                                      .orElse(null);
 
     if (participant != null) {
       roomParticipantsList.remove(participant);
@@ -421,8 +412,7 @@ public class JanusEventsFactory {
     return participant;
   }
 
-  private void handleJoinedEvent(
-      JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room) {
+  private void handleJoinedEvent(JSONObject dataJSON, List<ParticipantPojo> roomParticipantsList, String room) {
     var id         = dataJSON.getLong("id");
     var display  = dataJSON.getString("display");
     var private_id = dataJSON.getLong("private_id");

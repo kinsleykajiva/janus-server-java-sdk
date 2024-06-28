@@ -28,33 +28,32 @@ public class Janus implements JanusEventHandler {
   private       String               sessionTransactionId = null;
   private       JanusWebSocketClient webSocketClient      = null;
   private       JanusSession         janusSession         = null;
-  private       boolean              isAPIAccessOnly      = false;
+  private       Boolean              isAPIAccessOnly      = Boolean.FALSE;
   private       JanusConfiguration   janusConfiguration   = null;
   public        JanusRestApiClient   janusRestApiClient   = null;
   
   /**
    * Constructs a Janus instance based on the provided configuration.
    *
-   * @param isAPIAccessOnly Flag indicating whether Janus SDK is running in API Access Only mode. If
-   *                        true, Janus will use REST API for communication. If false, Janus SDK will use WebSocket.
+   * @param isAPIAccessOnly Flag indicating whether Janus SDK is running in API Access Only mode. If {@link Boolean#TRUE} , Janus will use REST API
+   *                        for communication. If false, Janus SDK will use WebSocket.
    * @param config          The  {@link io.github.kinsleykajiva.models.JanusConfiguration} object containing the server connection details. It should
    *                        include the URL, API secret, admin key, and admin secret.
    * @throws IllegalArgumentException If the provided configuration object is null.
    */
-  public Janus( boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
+  public Janus( @NotNull Boolean isAPIAccessOnly, @NotNull JanusConfiguration config ) {
     if (isAPIAccessOnly) {
-      this.isAPIAccessOnly = true;
+      this.isAPIAccessOnly = Boolean.TRUE;
       log.info("Janus is running in API Access Only mode");
-      janusConfiguration =
-              new JanusConfiguration(
-                      SdkUtils.convertFromWebSocketUrl(config.url()),
-                      config.apiSecret(),
-                      config.adminKey(),
-                      config.adminSecret());
+      janusConfiguration = new JanusConfiguration(
+			                      SdkUtils.convertFromWebSocketUrl(config.url()),
+			                      config.apiSecret(),
+			                      config.adminKey(),
+			                      config.adminSecret());
       janusRestApiClient = new JanusRestApiClient(janusConfiguration);
     } else {
       String finalUrl    = SdkUtils.convertToWebSocketUrl(janusConfiguration.url());
-      janusConfiguration = new JanusConfiguration(config.url()                      , config.apiSecret(), config.adminKey(), config.adminSecret());
+      janusConfiguration = new JanusConfiguration(config.url(), config.apiSecret(), config.adminKey(), config.adminSecret());
       try {
         webSocketClient = new JanusWebSocketClient(finalUrl, this);
       } catch (Exception e) {
