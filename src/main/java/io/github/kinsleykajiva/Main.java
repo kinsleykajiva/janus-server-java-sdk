@@ -18,7 +18,7 @@ public class Main {
 		
 		// Configure the Janus client
 		JanusConfiguration config = new JanusConfiguration(
-				"154.92.25.80",
+				"",
 				8188,
 				"/janus",
 				false, // Use ws (non-secure) as per logs
