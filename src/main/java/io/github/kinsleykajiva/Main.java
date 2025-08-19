@@ -33,7 +33,11 @@ public class Main {
 			client.disconnect();
 		}));
 		try{
-			client.createSession().get();
+			var session=client.createSession().get();
+			System.out.println(session.getSessionId());
+			var handle=session.attachSipPlugin().get();
+			System.out.println("audio sip handle-"+handle.getHandleId());
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
