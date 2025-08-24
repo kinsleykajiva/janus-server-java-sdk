@@ -32,14 +32,17 @@ public class Main {
 			logger.info("Shutting down JanusClient...");
 			client.disconnect();
 		}));
-		try{
-			var session=client.createSession().get();
-			System.out.println(session.getSessionId());
-			var handle=session.attachSipPlugin().get();
-			System.out.println("audio sip handle-"+handle.getHandleId());
-			
-		}catch(Exception e){
-			e.printStackTrace();
+		for (int i = 0 ; i < 100 ; i++) {
+			try{
+				System.out.println("Creating session :"+i);
+				var session=client.createSession().get();
+				System.out.println(session.getSessionId());
+				var handle=session.attachSipPlugin().get();
+				System.out.println("audio sip handle-"+handle.getHandleId());
+				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		
 		/*try {
