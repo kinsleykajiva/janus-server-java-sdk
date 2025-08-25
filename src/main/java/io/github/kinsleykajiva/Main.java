@@ -97,6 +97,9 @@ public class Main {
                 }
             }
 			
+			
+			
+			
 
             @Override
             public void onPublisherAdded(PublisherAddedEvent event) {
@@ -133,7 +136,7 @@ public class Main {
         Thread.sleep(500); // Pause for clarity
 
         // 4. Join the room as a publisher
-        System.out.println("Joining room " + roomId + " as a publisher...");
+        System.out.println("Joining room " + roomId + " as a publisher......");
         JoinRoomRequest joinRequest = new JoinRoomRequest.Builder(roomId)
             .setDisplay("JavaSDKUser")
             .build();
