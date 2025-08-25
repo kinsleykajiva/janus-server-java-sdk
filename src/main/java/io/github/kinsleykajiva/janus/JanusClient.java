@@ -2,8 +2,8 @@ package io.github.kinsleykajiva.janus;
 
 import io.github.kinsleykajiva.janus.exception.JanusException;
 import io.github.kinsleykajiva.janus.internal.TransactionManager;
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

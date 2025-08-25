@@ -1,9 +1,10 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.models;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.json.JSONObject;
 
 /**
  * A helper class representing a publisher and their associated list of RTP forwarders.

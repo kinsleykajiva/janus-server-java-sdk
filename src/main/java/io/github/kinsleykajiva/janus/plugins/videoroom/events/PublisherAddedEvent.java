@@ -1,10 +1,11 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.events;
 
 import io.github.kinsleykajiva.janus.plugins.videoroom.models.Publisher;
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.json.JSONObject;
 
 /**
  * An event indicating that one or more new publishers have become active in the room.

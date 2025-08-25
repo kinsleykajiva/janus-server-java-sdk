@@ -1,7 +1,8 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.models;
 
-import java.util.List;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * A request to manage the token-based ACL of a video room.

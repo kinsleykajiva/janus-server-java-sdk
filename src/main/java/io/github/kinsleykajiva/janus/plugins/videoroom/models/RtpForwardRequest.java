@@ -1,8 +1,9 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.models;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import org.json.JSONObject;
 
 /**
  * A request to forward a publisher's media streams to a remote RTP listener.

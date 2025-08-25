@@ -1,7 +1,8 @@
 package io.github.kinsleykajiva.janus.plugins.audiobridge.models;
 
-import java.util.List;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Represents a request to create a new AudioBridge room. This class uses a builder pattern

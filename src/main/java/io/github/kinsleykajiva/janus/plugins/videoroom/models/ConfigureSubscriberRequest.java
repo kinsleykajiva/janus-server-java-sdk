@@ -1,8 +1,9 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.models;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import org.json.JSONObject;
 
 /**
  * A request to configure an active subscriber's session (e.g., change stream properties or trigger an ICE restart).

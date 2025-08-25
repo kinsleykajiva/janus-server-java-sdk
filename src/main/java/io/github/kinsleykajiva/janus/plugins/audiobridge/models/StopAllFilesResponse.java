@@ -1,8 +1,9 @@
 package io.github.kinsleykajiva.janus.plugins.audiobridge.models;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import org.json.JSONObject;
 
 /**
  * A response to a stop_all_files request.

@@ -1,7 +1,8 @@
 package io.github.kinsleykajiva.janus.plugins.audiobridge.models;
 
-import java.util.List;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * A request to manage the list of allowed users for a room.

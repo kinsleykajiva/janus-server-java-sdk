@@ -1,10 +1,11 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.models;
 
+import org.json.JSONObject;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.json.JSONObject;
 
 /**
  * Represents the successful response from an 'allowed' request.

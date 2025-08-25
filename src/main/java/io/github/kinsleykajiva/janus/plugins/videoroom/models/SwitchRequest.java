@@ -1,8 +1,9 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.models;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import org.json.JSONObject;
 
 /**
  * A request to "switch" a subscriber's media stream to a different publisher

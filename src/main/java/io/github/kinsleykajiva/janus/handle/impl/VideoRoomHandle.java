@@ -6,12 +6,11 @@ import io.github.kinsleykajiva.janus.handle.JanusHandle;
 import io.github.kinsleykajiva.janus.plugins.videoroom.events.*;
 import io.github.kinsleykajiva.janus.plugins.videoroom.listeners.JanusVideoRoomListener;
 import io.github.kinsleykajiva.janus.plugins.videoroom.models.*;
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.json.JSONObject;
 
 /**
  * A handle to interact with the Janus VideoRoom plugin. This class provides methods to send requests

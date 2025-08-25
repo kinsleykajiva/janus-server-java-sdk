@@ -1,9 +1,10 @@
 package io.github.kinsleykajiva.janus.plugins.videoroom.events;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.json.JSONObject;
 
 /**
  * An event indicating a subscriber's stream has been successfully switched to a new source.

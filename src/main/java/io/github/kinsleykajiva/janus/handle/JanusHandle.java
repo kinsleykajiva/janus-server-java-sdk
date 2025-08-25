@@ -1,15 +1,13 @@
 package io.github.kinsleykajiva.janus.handle;
 
 import io.github.kinsleykajiva.janus.JanusSession;
-import io.github.kinsleykajiva.janus.event.*;
+import io.github.kinsleykajiva.janus.event.JanusEventListener;
 import org.json.JSONObject;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import java.util.concurrent.CompletableFuture;
 
 public abstract class JanusHandle {
 	protected final JanusSession session;
