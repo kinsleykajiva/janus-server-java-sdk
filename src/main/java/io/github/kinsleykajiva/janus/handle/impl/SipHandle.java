@@ -27,7 +27,7 @@ public class SipHandle extends JanusHandle {
 					                    .optJSONObject("plugindata", new JSONObject())
 					                    .optJSONObject("data", new JSONObject())
 					                    .optJSONObject("result", new JSONObject());
-			System.out.println(event.toString());
+			//System.out.println(event.toString());
 			if ("registered".equals(result.optString("event"))) {
 				if(result.optString("event").equals( "registered")) {
 					JanusSipEvents.SuccessfulRegistration eventSip = new JanusSipEvents.SuccessfulRegistration(
