@@ -20,6 +20,14 @@ public interface JanusSipEventListener extends JanusEventListener {
 	
 	default void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
 	}
+	default void onMessageEvent(JanusSipEvents.MessageEvent event) {
+	}
+	default void onMessageDeliveryEvent(JanusSipEvents.MessageDeliveryEvent event) {
+	}
+	default void onInfoEvent(JanusSipEvents.InfoEvent event) {}
+	default void onTransferEvent(JanusSipEvents.TransferEvent event) {}
+	default void onNotifyEvent(JanusSipEvents.NotifyEvent event) {
+	}
 
 	/**
 	 * Fired when an 'incomingcall' event is received.
@@ -27,6 +35,8 @@ public interface JanusSipEventListener extends JanusEventListener {
 	 * @param event The specific event object containing details about the incoming call.
 	 */
 	default void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
+	}
+	default void onMissedCallEvent(JanusSipEvents.MissedCallEvent event) {
 	}
 
 	/**

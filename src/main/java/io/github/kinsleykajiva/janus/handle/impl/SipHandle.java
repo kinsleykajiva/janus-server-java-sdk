@@ -16,11 +16,11 @@ import static io.github.kinsleykajiva.janus.JanusUtils.validateIpOrDomain;
 public class SipHandle extends JanusHandle {
 	private String sipServer = "";
 	private final List<JanusSipEventListener> sipListeners = new CopyOnWriteArrayList<>();
-
+	
 	public SipHandle(JanusSession session, long handleId, @NonNull HandleType handleType) {
 		super(session, handleId, handleType);
 	}
-
+	
 	@Override
 	public void addListener(JanusEventListener listener) {
 		if (listener instanceof JanusSipEventListener sipListener) {
@@ -29,24 +29,24 @@ public class SipHandle extends JanusHandle {
 			throw new IllegalArgumentException("SipHandle only accepts JanusSipEventListener");
 		}
 	}
-
+	
 	@Override
 	public void removeListener(JanusEventListener listener) {
 		if (listener instanceof JanusSipEventListener sipListener) {
 			this.sipListeners.remove(sipListener);
 		}
 	}
-
-
+	
+	
 	@Override
 	public void fireEvent(JSONObject event) {
 		JSONObject jsep = event.optJSONObject("jsep");
 		JanusJsep janusJsep = jsep != null ? new JanusJsep(jsep.optString("type"), jsep.optString("sdp")) : null;
 		JanusEvent janusEvent = new JanusEvent(event, janusJsep);
-
+		
 		for (JanusSipEventListener listener : sipListeners) {
 			listener.onEvent(janusEvent); // Generic event
-
+			
 			// Dispatch to more specific SIP event methods
 			JSONObject plugindata = event.optJSONObject("plugindata");
 			if (plugindata != null) {
@@ -54,7 +54,7 @@ public class SipHandle extends JanusHandle {
 				if (data != null && data.has("result")) {
 					JSONObject result = data.getJSONObject("result");
 					String eventType = result.optString("event");
-
+					
 					switch (eventType) {
 						case "registration_failed":
 							listener.onFailedRegistrationEvent(new JanusSipEvents.ErrorRegistration(
@@ -63,7 +63,7 @@ public class SipHandle extends JanusHandle {
 									result.optString("reason")
 							));
 							break;
-							
+						
 						case "registered":
 							listener.onRegisteredEvent(new JanusSipEvents.SuccessfulRegistration(
 									result.optString("event"),
@@ -78,6 +78,62 @@ public class SipHandle extends JanusHandle {
 									result.getString("displayname"),
 									result.getString("callee"),
 									janusJsep
+							));
+							
+						case "missed_call":
+							listener.onMissedCallEvent(new JanusSipEvents.MissedCallEvent(
+									result.getString("caller"),
+									result.getString("displayname"),
+									result.getString("callee")
+							
+							));
+							break;
+						case "message":
+							listener.onMessageEvent(new JanusSipEvents.MessageEvent(
+									result.getString("sender"),
+									result.getString("displayname"),
+									result.getString("content_type"),
+									result.getString("content"),
+									result.getJSONObject("headers")
+							
+							));
+							break;
+						case "info":
+							listener.onInfoEvent(new JanusSipEvents.InfoEvent(
+									result.getString("sender"),
+									result.getString("displayname"),
+									result.getString("type"),
+									result.getString("content"),
+									result.getJSONObject("headers")
+							
+							));
+							break;
+						case "notify":
+							listener.onNotifyEvent(new JanusSipEvents.NotifyEvent(
+									result.getString("notify"),
+									result.getString("substate"),
+									result.getString("content-type"),
+									result.getString("content"),
+									result.getJSONObject("headers")
+							
+							));
+							break;
+						case "transfer":
+							listener.onTransferEvent(new JanusSipEvents.TransferEvent(
+									result.getString("refer_id"),
+									result.getString("refer_to"),
+									result.getString("referred_by"),
+									result.getString("replaces"),
+									result.getJSONObject("headers")
+							
+							));
+							break;
+						case "messagedelivery":
+							listener.onMessageDeliveryEvent(new JanusSipEvents.MessageDeliveryEvent(
+									data.getString("call_id"),
+									result.getInt("code"),
+									result.getString("reason")
+							
 							));
 							break;
 						case "hangup":
@@ -110,7 +166,7 @@ public class SipHandle extends JanusHandle {
 		validateIpOrDomain(server);
 		this.sipServer = server;
 		var future = new CompletableFuture<JanusSipEvents.RegistrationEvent>();
-
+		
 		
 		JSONObject body = new JSONObject()
 				                  .put("request", "register")
@@ -124,7 +180,7 @@ public class SipHandle extends JanusHandle {
 			future.completeExceptionally(ex);
 			return null;
 		});
-
+		
 		return future;
 	}
 	
