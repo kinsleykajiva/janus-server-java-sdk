@@ -96,6 +96,7 @@ public class Main {
                             publisher.display(), publisher.id()));
                 }
             }
+			
 
             @Override
             public void onPublisherAdded(PublisherAddedEvent event) {
