@@ -87,21 +87,37 @@ public class JanusClient implements WebSocket.Listener {
 		logger.debug("Scheduled keep-alive task for session {}", sessionId);
 	}
 	public void disconnect() {
+		// 1. Stop keep-alive tasks and shut down the scheduler
+		logger.debug("Shutting down keep-alive scheduler...");
+		keepAliveTasks.values().forEach(task -> task.cancel(false));
+		keepAliveTasks.clear();
+		keepAliveScheduler.shutdown();
+
+		// 2. Close WebSocket connection
 		if (webSocket != null && !webSocket.isOutputClosed()) {
 			try {
 				webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "Client requested disconnect").get(5, TimeUnit.SECONDS);
 				logger.info("Disconnected from Janus Gateway at {}", config.getUri());
 			} catch (Exception e) {
-				logger.warn("Error during disconnect: {}", e.getMessage());
+				logger.warn("Error during graceful WebSocket disconnect: {}", e.getMessage());
 			}
 		}
+
+		// 3. Shut down the main executor
+		logger.debug("Shutting down main executor...");
 		executor.shutdown();
+
+		// 4. Await termination of both schedulers
 		try {
 			if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
 				executor.shutdownNow();
 			}
+			if (!keepAliveScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+				keepAliveScheduler.shutdownNow();
+			}
 		} catch (InterruptedException e) {
 			executor.shutdownNow();
+			keepAliveScheduler.shutdownNow();
 			Thread.currentThread().interrupt();
 		}
 	}

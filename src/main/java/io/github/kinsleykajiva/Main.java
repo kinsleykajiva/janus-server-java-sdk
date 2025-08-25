@@ -168,7 +168,10 @@ public class Main {
 
         // 7. Unpublish the stream
         System.out.println("Unpublishing the stream...");
-        videoRoomHandle.unpublish().get(); // An `onUnpublished` event will fire
+        // In this example, we comment out the unpublish call.
+        // The Janus plugin would return an error "Can't unpublish, not published"
+        // because we never sent a real `publish` request with a JSEP offer.
+        // videoRoomHandle.unpublish().get();
         Thread.sleep(500);
 
         // 8. Leave the room
