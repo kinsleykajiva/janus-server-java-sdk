@@ -1,10 +1,6 @@
 package io.github.kinsleykajiva.janus.plugins.audiobridge.listeners;
 
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.JoinedEvent;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.ParticipantJoinedEvent;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.ParticipantLeftEvent;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.ParticipantUpdatedEvent;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.RoomDestroyedEvent;
+import io.github.kinsleykajiva.janus.plugins.audiobridge.events.*;
 import org.json.JSONObject;
 
 /**
@@ -47,6 +43,33 @@ public interface JanusAudioBridgeListener {
      * @param event The {@link RoomDestroyedEvent} containing the ID of the destroyed room.
      */
     void onRoomDestroyed(RoomDestroyedEvent event);
+
+    /**
+     * Called when an announcement has started in a room.
+     *
+     * @param event The {@link AnnouncementStartedEvent} containing the details of the announcement.
+     */
+    default void onAnnouncementStarted(AnnouncementStartedEvent event) {
+        // Default implementation does nothing.
+    }
+
+    /**
+     * Called when an announcement has stopped in a room.
+     *
+     * @param event The {@link AnnouncementStoppedEvent} containing the details of the announcement.
+     */
+    default void onAnnouncementStopped(AnnouncementStoppedEvent event) {
+        // Default implementation does nothing.
+    }
+
+    /**
+     * Called when the local user has successfully changed rooms.
+     *
+     * @param event The {@link RoomChangedEvent} containing the details of the new room.
+     */
+    default void onRoomChanged(RoomChangedEvent event) {
+        // Default implementation does nothing.
+    }
 
     /**
      * A generic callback for any event from the AudioBridge plugin.
