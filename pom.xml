@@ -7,11 +7,24 @@
     <groupId>io.github.kinsleykajiva</groupId>
     <artifactId>janus-server-java-sdk</artifactId>
     <version>0.10.0</version>
+    <name>janus-server-java-sdk</name>
     <description>Java Janus WebRTC sever SDK</description>
+    <url>https://github.com/kinsleykajiva/janus-server-java-sdk</url>
     <packaging>jar</packaging>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <scm>
-        <connection>scm:git@github.com:kinsleykajiva/janus-server-java-sdk.git</connection>
+        <connection>scm:git:git@github.com:kinsleykajiva/janus-server-java-sdk.git</connection>
         <developerConnection>scm:git@github.com:kinsleykajiva/janus-server-java-sdk.git</developerConnection>
         <url>https://github.com/kinsleykajiva/janus-server-java-sdk.git</url>
     </scm>
@@ -56,5 +69,54 @@
             <version>1.0.0</version>
         </dependency>
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
