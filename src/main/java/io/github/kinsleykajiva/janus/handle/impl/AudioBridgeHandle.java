@@ -165,10 +165,12 @@ public class AudioBridgeHandle extends JanusHandle {
     public CompletableFuture<Void> joinRoom(JoinRoomRequest request) {
         // Asynchronous, completion is signaled by a `joined` event.
         return sendMessage(request.toJson()).thenAccept(response -> {
-             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
-             if (!"success".equals(pluginData.optString("audiobridge"))) {
-                  throw new RuntimeException("Failed to send join request: " + response.toString());
-             }
+            // The response to an async request can be a simple 'ack'.
+            // We just check that it's not an error. The substantive event (e.g., 'joined')
+            // will be delivered to the listener separately.
+            if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on join request: " + response.toString());
+            }
         });
     }
 
@@ -180,10 +182,10 @@ public class AudioBridgeHandle extends JanusHandle {
      */
     public CompletableFuture<Void> configure(ConfigureRequest request) {
         return sendMessage(request.toJson()).thenAccept(response -> {
-             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
-             if (!"ok".equals(pluginData.optString("result"))) {
-                  throw new RuntimeException("Failed to send configure request: " + response.toString());
-             }
+            // The response to an async request can be a simple 'ack'.
+            if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on configure request: " + response.toString());
+            }
         });
     }
 
@@ -196,10 +198,10 @@ public class AudioBridgeHandle extends JanusHandle {
     public CompletableFuture<Void> leave() {
         final var body = new JSONObject().put("request", "leave");
         return sendMessage(body).thenAccept(response -> {
-             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
-             if (!"left".equals(pluginData.optString("audiobridge"))) {
-                  throw new RuntimeException("Failed to send leave request: " + response.toString());
-             }
+            // The response to an async request can be a simple 'ack'.
+             if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on leave request: " + response.toString());
+            }
         });
     }
 
