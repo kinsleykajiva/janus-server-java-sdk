@@ -69,6 +69,13 @@ public abstract class JanusHandle {
 	}
 
 	public void detach() {
-		// Implementation for detaching the handle from Janus
+		JSONObject message = new JSONObject();
+		message.put("janus", "detach");
+		message.put("session_id", session.getSessionId());
+		message.put("handle_id", handleId);
+		String transactionId = session.getClient().getTransactionManager().createTransaction();
+		message.put("transaction", transactionId);
+	
+		session.getClient().sendMessage(message);
 	}
 }
