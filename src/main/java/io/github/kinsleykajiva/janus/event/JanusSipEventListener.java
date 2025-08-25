@@ -15,7 +15,10 @@ public interface JanusSipEventListener extends JanusEventListener {
 	 *
 	 * @param event The generic Janus event containing the full payload.
 	 */
-	default void onRegisteredEvent(JanusEvent event) {
+	default void onRegisteredEvent(JanusSipEvents.SuccessfulRegistration event) {
+	}
+	
+	default void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
 	}
 
 	/**
@@ -33,4 +36,5 @@ public interface JanusSipEventListener extends JanusEventListener {
 	 */
 	default void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
 	}
+	
 }

@@ -56,8 +56,20 @@ public class SipHandle extends JanusHandle {
 					String eventType = result.optString("event");
 
 					switch (eventType) {
+						case "registration_failed":
+							listener.onFailedRegistrationEvent(new JanusSipEvents.ErrorRegistration(
+									result.optString("event"),
+									result.optInt("code"),
+									result.optString("reason")
+							));
+							break;
+							
 						case "registered":
-							listener.onRegisteredEvent(janusEvent);
+							listener.onRegisteredEvent(new JanusSipEvents.SuccessfulRegistration(
+									result.optString("event"),
+									result.optLong("master_id"),
+									result.optString("username")
+							));
 							break;
 						case "incomingcall":
 							listener.onIncomingCallEvent(new JanusSipEvents.InComingCallEvent(
@@ -99,53 +111,6 @@ public class SipHandle extends JanusHandle {
 		this.sipServer = server;
 		var future = new CompletableFuture<JanusSipEvents.RegistrationEvent>();
 
-		// Create a temporary, self-removing listener to handle the registration result.
-		final JanusSipEventListener registrationListener = new JanusSipEventListener() {
-			@Override
-			public void onRegisteredEvent(JanusEvent event) {
-				// This is the event we are waiting for.
-				JSONObject result = event.eventData()
-						                    .optJSONObject("plugindata", new JSONObject())
-						                    .optJSONObject("data", new JSONObject())
-						                    .optJSONObject("result", new JSONObject());
-
-				// A successful registration contains a "username" field.
-				// An error contains "code" and "reason" fields.
-				if (result.has("username")) {
-					future.complete(new JanusSipEvents.SuccessfulRegistration(
-							result.optString("event"),
-							result.optLong("master_id"),
-							result.optString("username")
-					));
-				} else {
-					future.complete(new JanusSipEvents.ErrorRegistration(
-							result.optString("event"),
-							result.optInt("code"),
-							result.optString("reason")
-					));
-				}
-				
-				// IMPORTANT: Remove self after handling the event to prevent leaks.
-				removeListener(this);
-			}
-
-			@Override
-			public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
-				// Not used for this one-time listener
-			}
-
-			@Override
-			public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
-				// Not used for this one-time listener
-			}
-
-			@Override
-			public void onEvent(JanusEvent event) {
-				// The generic onEvent is not specific enough, we rely on onRegisteredEvent
-			}
-		};
-
-		addListener(registrationListener);
 		
 		JSONObject body = new JSONObject()
 				                  .put("request", "register")
@@ -156,10 +121,7 @@ public class SipHandle extends JanusHandle {
 				                  .put("proxy", "sip:" + server + ";transport=udp");
 		
 		sendMessage(body).exceptionally(ex -> {
-			// If sending the message fails, complete the future exceptionally
-			// and remove the listener.
 			future.completeExceptionally(ex);
-			removeListener(registrationListener);
 			return null;
 		});
 

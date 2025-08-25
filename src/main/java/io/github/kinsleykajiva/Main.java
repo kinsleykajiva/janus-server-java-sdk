@@ -22,7 +22,7 @@ public class Main {
 		
 		// Configure the Janus client
 		JanusConfiguration config = new JanusConfiguration(
-				"your-janus-server-ip", // Replace with your Janus server IP
+				"***.**.**.**", // Replace with your Janus server IP
 				8188,
 				"/janus",
 				false,
@@ -60,14 +60,26 @@ public class Main {
 			sipHandle.addListener(new JanusSipEventListener() {
 				@Override
 				public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
-					logger.info("Incoming call from: {} (Call-ID: {})", event.displayName(), event.callId());
+					logger.info("xxxxxIncoming call from: {} (Call-ID: {})", event.displayName(), event.callId());
 					// Here you would typically handle the call, e.g., by answering it.
 					// sipHandle.answerCallAsync(event.jsep());
 				}
-
+				
+				@Override
+				public void onRegisteredEvent(JanusSipEvents.SuccessfulRegistration event) {
+					JanusSipEventListener.super.onRegisteredEvent(event);
+					logger.info("xxxxxxSIP registration successful for: {}", event.username());
+				}
+				
+				@Override
+				public void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
+					JanusSipEventListener.super.onFailedRegistrationEvent(event);
+					logger.error("xxxxSIP registration failed: {} ({})", event.reason(), event.code());
+				}
+				
 				@Override
 				public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
-					logger.info("Call hung up: {} (Reason: {})", event.callId(), event.reason());
+					logger.info("xxxxCall hung up: {} (Reason: {})", event.callId(), event.reason());
 				}
 
 				@Override
@@ -80,18 +92,14 @@ public class Main {
 
 			// 6. Register a SIP user (a one-time action)
 			logger.info("Registering SIP user...");
-			var registrationResult = sipHandle.registerAsync(
-					"your-sip-user",    // Replace with your SIP username
-					"your-sip-password",// Replace with your SIP password
-					"your-sip-server"   // Replace with your SIP server
-			).get();
+			var registrationResult = sipHandle.registerAsync("********","***.**","***.**.**.**").get();
 
-			if (registrationResult instanceof JanusSipEvents.SuccessfulRegistration success) {
+			/*if (registrationResult instanceof JanusSipEvents.SuccessfulRegistration success) {
 				logger.info("SIP registration successful for: {}", success.username());
 			} else if (registrationResult instanceof JanusSipEvents.ErrorRegistration error) {
 				logger.error("SIP registration failed: {} ({})", error.reason(), error.code());
 			}
-			
+			*/
 			// 7. Keep the application running to listen for events
 			logger.info("Setup complete. Listening for SIP events. Press Ctrl+C to exit.");
 			Thread.currentThread().join(); // Block forever

@@ -143,7 +143,7 @@ public class JanusClient implements WebSocket.Listener {
 			}
 			
 			JSONObject json = new JSONObject(message);
-			logger.info("Processing JSON: {}", json.toString(2));
+		//	logger.info("Processing JSON: {}", json.toString(2));
 			
 			String transactionId = json.optString("transaction", null);
 			if (transactionId != null && !transactionId.isEmpty()) {
