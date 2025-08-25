@@ -50,8 +50,7 @@ public class JanusSession {
 
 	// Convenience methods for specific plugins
 	public CompletableFuture<AudioBridgeHandle> attachAudioBridgePlugin() {
-		return attachPlugin("janus.plugin.audiobridge",
-			(session, id) -> new AudioBridgeHandle(session, id, HandleType.AUDIO_BRIDGE));
+		return attachPlugin("janus.plugin.audiobridge", AudioBridgeHandle::new);
 	}
 
 	public CompletableFuture<SipHandle> attachSipPlugin() {

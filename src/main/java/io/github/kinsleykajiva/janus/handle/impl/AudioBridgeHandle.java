@@ -18,7 +18,7 @@ import org.json.JSONObject;
  * and manages listeners for asynchronous events, abstracting the underlying JSON-based communication.
  * It is thread-safe.
  */
-public class JanusAudioBridgePlugin extends JanusHandle {
+public class AudioBridgeHandle extends JanusHandle {
 
     private final List<JanusAudioBridgeListener> audioBridgeListeners = new CopyOnWriteArrayList<>();
 
@@ -28,7 +28,7 @@ public class JanusAudioBridgePlugin extends JanusHandle {
      * @param session  The Janus session this handle is associated with.
      * @param handleId The unique ID of this handle.
      */
-    public JanusAudioBridgePlugin(JanusSession session, long handleId) {
+    public AudioBridgeHandle(JanusSession session, long handleId) {
         super(session, handleId, HandleType.AUDIO_BRIDGE);
     }
 
