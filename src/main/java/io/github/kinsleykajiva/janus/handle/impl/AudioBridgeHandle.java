@@ -97,7 +97,18 @@ public class AudioBridgeHandle extends JanusHandle {
                     }
                 }
                 break;
-            // Other event types like 'roomchanged', 'announcement-started' can be added here in the future.
+            case "announcement-started":
+                final var announcementStartedEvent = AnnouncementStartedEvent.fromJson(data);
+                audioBridgeListeners.forEach(listener -> listener.onAnnouncementStarted(announcementStartedEvent));
+                break;
+            case "announcement-stopped":
+                final var announcementStoppedEvent = AnnouncementStoppedEvent.fromJson(data);
+                audioBridgeListeners.forEach(listener -> listener.onAnnouncementStopped(announcementStoppedEvent));
+                break;
+            case "roomchanged":
+                final var roomChangedEvent = RoomChangedEvent.fromJson(data);
+                audioBridgeListeners.forEach(listener -> listener.onRoomChanged(roomChangedEvent));
+                break;
         }
     }
 
@@ -126,15 +137,11 @@ public class AudioBridgeHandle extends JanusHandle {
      * @param secret The secret required to manage the room, if any.
      * @return A {@link CompletableFuture} that completes when the room has been successfully destroyed.
      */
-    public CompletableFuture<Void> destroyRoom(long roomId, String secret) {
-        final var body = new JSONObject()
-            .put("request", "destroy")
-            .put("room", roomId)
-            .put("secret", secret);
-        return sendMessage(body).thenAccept(response -> {
+    public CompletableFuture<Void> destroyRoom(DestroyRoomRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
             if (!"destroyed".equals(pluginData.optString("audiobridge"))) {
-                 throw new RuntimeException("Failed to destroy room: " + response.toString());
+                throw new RuntimeException("Failed to destroy room: " + response.toString());
             }
         });
     }
@@ -224,6 +231,221 @@ public class AudioBridgeHandle extends JanusHandle {
                 .mapToObj(participantsJson::getJSONObject)
                 .map(AudioBridgeParticipant::fromJson)
                 .collect(Collectors.toList());
+        });
+    }
+
+    public CompletableFuture<Void> editRoom(EditRoomRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"edited".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to edit room: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<ExistsResponse> exists(ExistsRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to check if room exists: " + response.toString());
+            }
+            return ExistsResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<AllowedResponse> allowed(AllowedRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to manage allowed list: " + response.toString());
+            }
+            return AllowedResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<Void> kick(KickRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to kick participant: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> kickAll(KickAllRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to kick all participants: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> suspend(SuspendParticipantRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to suspend participant: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> resume(ResumeParticipantRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to resume participant: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> mute(MuteParticipantRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to mute participant: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> unmute(UnmuteParticipantRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to unmute participant: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> muteRoom(MuteRoomRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to mute room: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> unmuteRoom(UnmuteRoomRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to unmute room: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<ListAnnouncementsResponse> listAnnouncements(ListAnnouncementsRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"announcements".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to list announcements: " + response.toString());
+            }
+            return ListAnnouncementsResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<Void> resetDecoder() {
+        return sendMessage(new ResetDecoderRequest().toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to reset decoder: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<RtpForwardResponse> rtpForward(RtpForwardRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to forward rtp: " + response.toString());
+            }
+            return RtpForwardResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<Void> stopRtpForward(StopRtpForwardRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to stop rtp forward: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<ListForwardersResponse> listForwarders(ListForwardersRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"forwarders".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to list forwarders: " + response.toString());
+            }
+            return ListForwardersResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<PlayFileResponse> playFile(PlayFileRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to play file: " + response.toString());
+            }
+            return PlayFileResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<IsPlayingResponse> isPlaying(IsPlayingRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to check if file is playing: " + response.toString());
+            }
+            return IsPlayingResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<StopFileResponse> stopFile(StopFileRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to stop file: " + response.toString());
+            }
+            return StopFileResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<StopAllFilesResponse> stopAllFiles(StopAllFilesRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to stop all files: " + response.toString());
+            }
+            return StopAllFilesResponse.fromJson(pluginData);
+        });
+    }
+
+    public CompletableFuture<Void> changeRoom(ChangeRoomRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on change room request: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> enableRecording(EnableRecordingRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to enable recording: " + response.toString());
+            }
+        });
+    }
+
+    public CompletableFuture<Void> enableMjrs(EnableMjrsRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("audiobridge"))) {
+                throw new RuntimeException("Failed to enable mjrs: " + response.toString());
+            }
         });
     }
 }

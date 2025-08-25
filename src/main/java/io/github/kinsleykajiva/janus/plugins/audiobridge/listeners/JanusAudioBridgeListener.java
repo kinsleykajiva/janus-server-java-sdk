@@ -49,6 +49,33 @@ public interface JanusAudioBridgeListener {
     void onRoomDestroyed(RoomDestroyedEvent event);
 
     /**
+     * Called when an announcement has started in a room.
+     *
+     * @param event The {@link AnnouncementStartedEvent} containing the details of the announcement.
+     */
+    default void onAnnouncementStarted(AnnouncementStartedEvent event) {
+        // Default implementation does nothing.
+    }
+
+    /**
+     * Called when an announcement has stopped in a room.
+     *
+     * @param event The {@link AnnouncementStoppedEvent} containing the details of the announcement.
+     */
+    default void onAnnouncementStopped(AnnouncementStoppedEvent event) {
+        // Default implementation does nothing.
+    }
+
+    /**
+     * Called when the local user has successfully changed rooms.
+     *
+     * @param event The {@link RoomChangedEvent} containing the details of the new room.
+     */
+    default void onRoomChanged(RoomChangedEvent event) {
+        // Default implementation does nothing.
+    }
+
+    /**
      * A generic callback for any event from the AudioBridge plugin.
      * This can be used for debugging or handling events not explicitly covered by other methods.
      *
