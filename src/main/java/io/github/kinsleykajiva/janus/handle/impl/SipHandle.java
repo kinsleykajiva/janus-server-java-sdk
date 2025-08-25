@@ -1,6 +1,7 @@
 package io.github.kinsleykajiva.janus.handle.impl;
 
 import io.github.kinsleykajiva.janus.JanusSession;
+import io.github.kinsleykajiva.janus.event.JanusSipEvents;
 import io.github.kinsleykajiva.janus.handle.JanusHandle;
 import org.json.JSONObject;
 
@@ -19,24 +20,42 @@ public class SipHandle extends JanusHandle {
 	 * @param server The SIP server proxy (e.g., sip:sip.server.com).
 	 * @return A CompletableFuture that resolves on the 'registered' event.
 	 */
-	public CompletableFuture<JSONObject> registerAsync(String username, String secret, String server) {
-		var future = new CompletableFuture<JSONObject>();
+	public CompletableFuture<JanusSipEvents.RegistrationEvent> registerAsync(String username, String secret, String server) {
+		var future = new CompletableFuture<JanusSipEvents.RegistrationEvent>();
 		addListener(event -> {
 			JSONObject result = event.eventData()
 					                    .optJSONObject("plugindata", new JSONObject())
 					                    .optJSONObject("data", new JSONObject())
 					                    .optJSONObject("result", new JSONObject());
-			
+			System.out.println(event.toString());
 			if ("registered".equals(result.optString("event"))) {
-				future.complete(result);
+				if(result.optString("event").equals( "registered")) {
+					JanusSipEvents.SuccessfulRegistration eventSip = new JanusSipEvents.SuccessfulRegistration(
+							result.optString("event"),
+							result.optLong("master_id"),
+							result.optString("username")
+					);
+					future.complete(eventSip);
+				}else{
+					JanusSipEvents.ErrorRegistration eventSip = new JanusSipEvents.ErrorRegistration(
+							result.optString("event"),
+							result.optInt("code"),
+							result.optString("reason")
+					);
+					future.complete(eventSip);
+				}
+				
+				
 			}
 		});
 		
 		JSONObject body = new JSONObject()
 				                  .put("request", "register")
-				                  .put("username", username)
+				                  .put("username", "sip:" + username + "@" + server)
+				                  .put("display_name", username)
+				                  .put("server", server)
 				                  .put("secret", secret)
-				                  .put("proxy", server);
+				                  .put("proxy", "sip:" + server + ";transport=udp");
 		
 		sendMessage(body);
 		return future;
