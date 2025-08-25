@@ -4,6 +4,7 @@ import io.github.kinsleykajiva.janus.handle.HandleType;
 import io.github.kinsleykajiva.janus.handle.JanusHandle;
 import io.github.kinsleykajiva.janus.handle.impl.AudioBridgeHandle;
 import io.github.kinsleykajiva.janus.handle.impl.SipHandle;
+import io.github.kinsleykajiva.janus.handle.impl.VideoRoomHandle;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -51,6 +52,10 @@ public class JanusSession {
 	// Convenience methods for specific plugins
 	public CompletableFuture<AudioBridgeHandle> attachAudioBridgePlugin() {
 		return attachPlugin("janus.plugin.audiobridge", AudioBridgeHandle::new);
+	}
+
+	public CompletableFuture<VideoRoomHandle> attachToVideoRoom() {
+		return attachPlugin("janus.plugin.videoroom", VideoRoomHandle::new);
 	}
 
 	public CompletableFuture<SipHandle> attachSipPlugin() {
