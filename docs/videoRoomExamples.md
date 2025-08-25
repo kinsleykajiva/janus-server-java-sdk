@@ -238,7 +238,63 @@ SwitchRequest switchRequest = new SwitchRequest(List.of(switchStream));
 subscriberHandle.switchRequest(switchRequest).join();
 ```
 
-## 8. Complete `Main.java` Example
+### Pausing and Resuming a Subscription
+
+You can temporarily pause and resume media flow for an entire subscription without a renegotiation.
+
+```java
+// On a subscriber handle that is receiving media
+System.out.println("Pausing subscription...");
+subscriberHandle.pause().join();
+
+// ... some time later ...
+
+System.out.println("Resuming subscription...");
+subscriberHandle.start().join(); // The parameterless start() resumes a paused subscription
+```
+
+## 8. Room Cascading (Remote Publishers)
+
+The SDK also supports the advanced Room Cascading feature, allowing you to relay publishers from one Janus instance to another. This is useful for building large-scale or geo-distributed services.
+
+The workflow involves two Janus instances (e.g., Janus A and Janus B).
+
+**On Janus B (the target instance):**
+First, you add a "placeholder" for the remote publisher.
+
+```java
+// Handle connected to Janus B
+AddRemotePublisherRequest addRequest = new AddRemotePublisherRequest.Builder(roomOnJanusB)
+    .setDisplay("RemoteUserFromA")
+    .setStreams(List.of(
+        new RemoteStream.Builder("audio", "0", "0").setCodec("opus").build(),
+        new RemoteStream.Builder("video", "1", "1").setCodec("vp8").build()
+    ))
+    .build();
+
+// The response contains the IP and port Janus B will listen on for media
+AddRemotePublisherResponse addResponse = handleOnJanusB.addRemotePublisher(addRequest).join();
+System.out.println("Remote publisher added. Listening on " + addResponse.ip() + ":" + addResponse.port());
+```
+
+**On Janus A (the source instance):**
+Next, you instruct Janus A to start forwarding the local publisher's media to the IP/port provided by Janus B.
+
+```java
+// Handle connected to Janus A
+PublishRemotelyRequest pubRequest = new PublishRemotelyRequest.Builder(
+    roomOnJanusA,
+    localPublisherId,
+    "remotization-123", // A unique ID for this specific forward
+    addResponse.ip(),
+    addResponse.port()
+).build();
+
+PublishRemotelyResponse pubResponse = handleOnJanusA.publishRemotely(pubRequest).join();
+System.out.println("Successfully started forwarding publisher " + pubResponse.id());
+```
+
+## 9. Complete `Main.java` Example
 
 Here is the full, runnable example from `Main.java` that demonstrates a typical publisher workflow. This code can be used as a starting point for building your own application.
 

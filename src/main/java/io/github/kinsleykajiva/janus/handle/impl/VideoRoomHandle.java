@@ -310,6 +310,18 @@ public class VideoRoomHandle extends JanusHandle {
     }
 
     /**
+     * Joins a room and configures a stream to be published in a single request.
+     * This is an asynchronous operation. The response will contain the JSEP answer.
+     *
+     * @param request A {@link JoinAndConfigureRequest} with the details for joining and publishing.
+     * @param jsep A {@link JSONObject} containing the JSEP offer (e.g., `{"type": "offer", "sdp": "..."}`).
+     * @return A {@link CompletableFuture} that completes with the full response from Janus, including the JSEP answer.
+     */
+    public CompletableFuture<JSONObject> joinAndConfigure(JoinAndConfigureRequest request, JSONObject jsep) {
+        return sendMessage(request.toJson(), jsep);
+    }
+
+    /**
      * Sends a request to publish a media stream. This is an asynchronous operation and must be
      * accompanied by a JSEP offer in the top-level message. A `configured` event will be sent
      * in response, followed by a `publisher-added` event to all participants.
@@ -426,6 +438,18 @@ public class VideoRoomHandle extends JanusHandle {
     }
 
     /**
+     * Resumes a paused subscription. This is an asynchronous operation.
+     * @return A {@link CompletableFuture} that completes when the request has been acknowledged.
+     */
+    public CompletableFuture<Void> start() {
+        return sendMessage(new StartSubscriptionRequest().toJson()).thenAccept(response -> {
+             if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on start/resume request: " + response);
+            }
+        });
+    }
+
+    /**
      * Updates a subscription by subscribing to new streams and/or unsubscribing from others.
      * This is an asynchronous operation that may trigger a renegotiation.
      * @param request An {@link UpdateSubscriptionRequest} with the streams to add/remove.
@@ -477,6 +501,98 @@ public class VideoRoomHandle extends JanusHandle {
         return sendMessage(new LeaveRequest().toJson()).thenAccept(response -> {
             if ("error".equals(response.optString("janus"))) {
                 throw new RuntimeException("Janus returned an error on leave request: " + response);
+            }
+        });
+    }
+
+    // --- Remote Publisher (Cascading) Methods ---
+
+    /**
+     * Adds a new remote publisher to a room on a remote Janus instance.
+     * @param request An {@link AddRemotePublisherRequest} with the remote publisher's details.
+     * @return A {@link CompletableFuture} that completes with an {@link AddRemotePublisherResponse}.
+     */
+    public CompletableFuture<AddRemotePublisherResponse> addRemotePublisher(AddRemotePublisherRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if ("success".equals(pluginData.optString("videoroom"))) {
+                return AddRemotePublisherResponse.fromJson(pluginData);
+            } else {
+                throw new RuntimeException("Failed to add remote publisher: " + response);
+            }
+        });
+    }
+
+    /**
+     * Updates an existing remote publisher.
+     * @param request An {@link UpdateRemotePublisherRequest} with the updated details.
+     * @return A {@link CompletableFuture} that completes when the request is successful.
+     */
+    public CompletableFuture<Void> updateRemotePublisher(UpdateRemotePublisherRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("videoroom"))) {
+                throw new RuntimeException("Failed to update remote publisher: " + response);
+            }
+        });
+    }
+
+    /**
+     * Removes a remote publisher from a room.
+     * @param request A {@link RemoveRemotePublisherRequest} specifying the publisher to remove.
+     * @return A {@link CompletableFuture} that completes when the request is successful.
+     */
+    public CompletableFuture<Void> removeRemotePublisher(RemoveRemotePublisherRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("videoroom"))) {
+                throw new RuntimeException("Failed to remove remote publisher: " + response);
+            }
+        });
+    }
+
+    /**
+     * Starts relaying a local publisher's stream to a remote Janus instance.
+     * @param request A {@link PublishRemotelyRequest} with the connection details.
+     * @return A {@link CompletableFuture} that completes with a {@link PublishRemotelyResponse}.
+     */
+    public CompletableFuture<PublishRemotelyResponse> publishRemotely(PublishRemotelyRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if ("success".equals(pluginData.optString("videoroom"))) {
+                return PublishRemotelyResponse.fromJson(pluginData);
+            } else {
+                throw new RuntimeException("Failed to publish remotely: " + response);
+            }
+        });
+    }
+
+    /**
+     * Stops a specific remotization of a local publisher.
+     * @param request An {@link UnpublishRemotelyRequest} specifying the remotization to stop.
+     * @return A {@link CompletableFuture} that completes when the request is successful.
+     */
+    public CompletableFuture<Void> unpublishRemotely(UnpublishRemotelyRequest request) {
+        return sendMessage(request.toJson()).thenAccept(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if (!"success".equals(pluginData.optString("videoroom"))) {
+                throw new RuntimeException("Failed to unpublish remotely: " + response);
+            }
+        });
+    }
+
+    /**
+     * Lists all active remotizations for a local publisher.
+     * @param request A {@link ListRemotesRequest} specifying the publisher.
+     * @return A {@link CompletableFuture} that completes with a {@link ListRemotesResponse}.
+     */
+    public CompletableFuture<ListRemotesResponse> listRemotes(ListRemotesRequest request) {
+        return sendMessage(request.toJson()).thenApply(response -> {
+            final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
+            if ("success".equals(pluginData.optString("videoroom"))) {
+                return ListRemotesResponse.fromJson(pluginData);
+            } else {
+                throw new RuntimeException("Failed to list remotes: " + response);
             }
         });
     }
