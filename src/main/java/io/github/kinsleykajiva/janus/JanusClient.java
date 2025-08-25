@@ -120,6 +120,7 @@ public class JanusClient implements WebSocket.Listener {
 		if (last) {
 			String completeMessage = messageBuffer.toString();
 			logger.debug("Processing complete message: {}", completeMessage);
+			//System.out.println("message- " + completeMessage);
 			executor.submit(() -> processMessage(completeMessage));
 			messageBuffer.setLength(0); // Clear buffer after processing
 		} else {
@@ -142,11 +143,11 @@ public class JanusClient implements WebSocket.Listener {
 			}
 			
 			JSONObject json = new JSONObject(message);
-			logger.debug("Processing JSON: {}", json.toString(2));
+			logger.info("Processing JSON: {}", json.toString(2));
 			
 			String transactionId = json.optString("transaction", null);
 			if (transactionId != null && !transactionId.isEmpty()) {
-				logger.debug("Found transaction ID: {}", transactionId);
+				logger.info("Found transaction ID: {}", transactionId);
 				transactionManager.completeTransaction(transactionId, json);
 				return;
 			}
@@ -155,7 +156,7 @@ public class JanusClient implements WebSocket.Listener {
 			if (sessionId != -1) {
 				Optional.ofNullable(sessions.get(sessionId)).ifPresent(session -> session.handleEvent(json));
 			} else {
-				logger.warn("Received message with no transaction ID or session ID: {}", message);
+				logger.info("Received message with no transaction ID or session ID: {}", message);
 			}
 		} catch (JSONException e) {
 			logger.error("Error parsing JSON message: {}", e.getMessage(), e);

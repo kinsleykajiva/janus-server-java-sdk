@@ -1,6 +1,7 @@
 package io.github.kinsleykajiva.janus.handle.impl;
 
 import io.github.kinsleykajiva.janus.JanusSession;
+import io.github.kinsleykajiva.janus.handle.HandleType;
 import io.github.kinsleykajiva.janus.handle.JanusHandle;
 import org.json.JSONObject;
 
@@ -10,8 +11,8 @@ import java.util.concurrent.TimeoutException;
 
 public class AudioBridgeHandle extends JanusHandle {
 	
-	public AudioBridgeHandle(JanusSession session, long handleId) {
-		super(session, handleId);
+	public AudioBridgeHandle(JanusSession session, long handleId , HandleType handleType) {
+		super(session, handleId,handleType);
 	}
 	
 	/**

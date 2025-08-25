@@ -7,4 +7,4 @@ import org.json.JSONObject;
  * @param eventData The full JSON data of the event.
  * @param jsep Optional JSEP (SDP) data associated with the event.
  */
-public record JanusEvent(JSONObject eventData, JSONObject jsep) {}
+public record JanusEvent(JSONObject eventData, JanusJsep jsep) {}

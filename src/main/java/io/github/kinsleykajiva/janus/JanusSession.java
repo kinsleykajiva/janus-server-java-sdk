@@ -1,5 +1,6 @@
 package io.github.kinsleykajiva.janus;
 
+import io.github.kinsleykajiva.janus.handle.HandleType;
 import io.github.kinsleykajiva.janus.handle.JanusHandle;
 import io.github.kinsleykajiva.janus.handle.impl.AudioBridgeHandle;
 import io.github.kinsleykajiva.janus.handle.impl.SipHandle;
@@ -25,7 +26,7 @@ public class JanusSession {
 		return sessionId;
 	}
 	
-	public <T extends JanusHandle> CompletableFuture<T> attachPlugin(String pluginName, Function<JanusHandle, T> handleCreator) {
+	public <T extends JanusHandle> CompletableFuture<T> attachPlugin(String pluginName, Function<JanusHandle, T> handleCreator,HandleType handleType) {
 		String transactionId = client.getTransactionManager().createTransaction();
 		var future = client.getTransactionManager().registerTransaction(transactionId);
 		
@@ -39,7 +40,7 @@ public class JanusSession {
 		
 		return future.thenApply(response -> {
 			long handleId = response.getJSONObject("data").getLong("id");
-			JanusHandle basicHandle = new JanusHandle(this, handleId);
+			JanusHandle basicHandle = new JanusHandle(this, handleId,handleType);
 			T specificHandle = handleCreator.apply(basicHandle); // Create the specific handle type
 			handles.put(handleId, specificHandle);
 			return specificHandle;
@@ -49,17 +50,17 @@ public class JanusSession {
 	// Convenience methods for specific plugins
 	public CompletableFuture<AudioBridgeHandle> attachAudioBridgePlugin() {
 		return attachPlugin("janus.plugin.audiobridge",
-				handle -> new AudioBridgeHandle(handle.getSession(), handle.getHandleId()));
+				handle -> new AudioBridgeHandle(handle.getSession(), handle.getHandleId(), HandleType.AUDIO_BRIDGE),HandleType.AUDIO_BRIDGE);
 	}
 	
 	public CompletableFuture<SipHandle> attachSipPlugin() {
 		return attachPlugin("janus.plugin.sip",
-				handle -> new SipHandle(handle.getSession(), handle.getHandleId()));
+				handle -> new SipHandle(handle.getSession(), handle.getHandleId(), HandleType.SIP),HandleType.SIP);
 	}
 	
 	public void handleEvent(JSONObject event) {
 		long handleId = event.optLong("sender", -1);
-		Optional.ofNullable(handles.get(handleId)).ifPresent(handle -> handle.fireEvent(event));
+		Optional.ofNullable(handles.get(handleId)).ifPresent(handle -> handle.fireEvent(event,handle.getHandleType()));
 	}
 	
 	public void destroy() {

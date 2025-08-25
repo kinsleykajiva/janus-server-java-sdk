@@ -1,5 +1,8 @@
 package io.github.kinsleykajiva.janus.event;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 
 public class JanusSipEvents {
@@ -70,5 +73,7 @@ public class JanusSipEvents {
 		
 		
 	}
+	public record  HangupEvent(int code, @NonNull  String reason,@NonNull String callId ){}
+	public record InComingCallEvent(@NonNull String username, @NonNull  String callId, @NonNull  String displayName, @NonNull String callee, @Nullable JanusJsep jsep ){}
 	
 }

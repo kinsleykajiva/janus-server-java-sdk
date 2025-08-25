@@ -2,12 +2,11 @@ package io.github.kinsleykajiva;
 
 import io.github.kinsleykajiva.janus.JanusConfiguration;
 import io.github.kinsleykajiva.janus.JanusClient;
-import io.github.kinsleykajiva.janus.ServerInfo;
+import io.github.kinsleykajiva.janus.event.JanusEvent;
+import io.github.kinsleykajiva.janus.event.JanusSipEventListener;
+import io.github.kinsleykajiva.janus.event.JanusSipEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -18,7 +17,7 @@ public class Main {
 		
 		// Configure the Janus client
 		JanusConfiguration config = new JanusConfiguration(
-				"",
+				"***.**.**.**",
 				8188,
 				"/janus",
 				false, // Use ws (non-secure) as per logs
@@ -32,18 +31,43 @@ public class Main {
 			logger.info("Shutting down JanusClient...");
 			client.disconnect();
 		}));
-		for (int i = 0 ; i < 100 ; i++) {
+		/*for (int i = 0 ; i < 100 ; i++) {*/
 			try{
-				System.out.println("Creating session :"+i);
+				//System.out.println("Creating session :"+i);
 				var session=client.createSession().get();
 				System.out.println(session.getSessionId());
 				var handle=session.attachSipPlugin().get();
 				System.out.println("audio sip handle-"+handle.getHandleId());
+				System.out.println("Register sip account");
+				var registrattionResult=handle.registerAsync("**************","****************","*************").get();
+				System.out.println(registrattionResult.event());
+				handle.addListener(new JanusSipEventListener() {
+					@Override
+					public void onRegisteredEvent(JanusEvent event) {
+					
+					}
+					
+					@Override
+					public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
+					
+					}
+					
+					@Override
+					public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
+					
+					}
+					
+					@Override
+					public void onEvent(JanusEvent event) {
+						System.out.println(event.jsep().toString());
+						System.out.println(event.eventData().toString());
+					}
+				});
 				
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-		}
+		/*}*/
 		
 		/*try {
 			// Connect and wait for completion
