@@ -2,6 +2,28 @@ package io.github.kinsleykajiva.janus;
 
 public class JanusUtils {
 	
+	public enum SipHoldDirection {
+		// Indicates the SIP endpoint will only send media (RFC 3264, SDP "a=sendonly")
+		// See Janus docs: https://janus.conf.meetecho.com/docs.html#siphold
+		SENDONLY("sendonly"),
+		// Indicates the SIP endpoint will only receive media (RFC 3264, SDP "a=recvonly")
+		// See Janus docs: https://janus.conf.meetecho.com/docs.html#siphold
+		RECVONLY("recvonly"),
+		// Indicates the SIP endpoint will neither send nor receive media (RFC 3264, SDP "a=inactive")
+		// See Janus docs: https://janus.conf.meetecho.com/docs.html#siphold
+		INACTIVE("inactive");
+	
+		private final String value;
+	
+		SipHoldDirection(String value) {
+			this.value = value;
+		}
+	
+		public String getValue() {
+			return value;
+		}
+	}
+	
 	/**
 	 * Validates whether the given address is a valid IP address or domain name.
 	 * Removes any leading "http://" or "https://" before validation.

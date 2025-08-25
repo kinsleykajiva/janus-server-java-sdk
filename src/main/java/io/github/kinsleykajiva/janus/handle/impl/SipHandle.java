@@ -1,11 +1,13 @@
 package io.github.kinsleykajiva.janus.handle.impl;
 
 import io.github.kinsleykajiva.janus.JanusSession;
+import io.github.kinsleykajiva.janus.JanusUtils;
 import io.github.kinsleykajiva.janus.event.*;
 import io.github.kinsleykajiva.janus.handle.HandleType;
 import io.github.kinsleykajiva.janus.handle.JanusHandle;
 import org.json.JSONObject;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -280,7 +282,7 @@ public class SipHandle extends JanusHandle {
 	 * @param headers Custom headers to add to the SIP OK.
 	 * @return A {@link CompletableFuture} that resolves with the server's response.
 	 */
-	public CompletableFuture<JSONObject> accept(final JSONObject jsep, final String srtp, final JSONObject headers) {
+	public CompletableFuture<JSONObject> acceptInComingCall(final JSONObject jsep, @Nullable final String srtp,@Nullable final JSONObject headers) {
 		final var body = new JSONObject().put("request", "accept");
 		if (srtp != null && !srtp.isEmpty()) {
 			body.put("srtp", srtp);
@@ -297,11 +299,11 @@ public class SipHandle extends JanusHandle {
 	 * @param direction The media direction (e.g., "sendonly", "recvonly", "inactive").
 	 * @return A {@link CompletableFuture} that resolves with the server's response.
 	 */
-	public CompletableFuture<JSONObject> hold(final String direction) {
+	public CompletableFuture<JSONObject> hold(final JanusUtils.@NonNull SipHoldDirection direction) {
 		final var body = new JSONObject().put("request", "hold");
-		if (direction != null && !direction.isEmpty()) {
+		
 			body.put("direction", direction);
-		}
+		
 		return sendMessage(body);
 	}
 
@@ -372,7 +374,9 @@ public class SipHandle extends JanusHandle {
 	 * @return A {@link CompletableFuture} that resolves with the server's response.
 	 */
 	public CompletableFuture<JSONObject> message(final String content, final String contentType, final String uri, final JSONObject headers) {
-		final var body = new JSONObject().put("request", "message").put("content", content);
+		final var body = new JSONObject()
+				                 .put("request", "message")
+				                 .put("content", content);
 		if (contentType != null && !contentType.isEmpty()) {
 			body.put("content_type", contentType);
 		}
