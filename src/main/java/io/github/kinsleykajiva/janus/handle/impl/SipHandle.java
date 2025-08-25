@@ -14,11 +14,18 @@ public class SipHandle extends JanusHandle {
 	}
 	
 	/**
-	 * Registers with a SIP server. This is an async action.
+	 * Registers with a SIP server asynchronously.
+	 *
+	 * <p>This method sends a registration request to a SIP server and listens for the
+	 * 'registered' event. It uses a `CompletableFuture` to handle the asynchronous
+	 * nature of the operation. The future resolves with a `JanusSipEvents.RegistrationEvent`
+	 * when the registration is successful or encounters an error.</p>
+	 *
 	 * @param username The SIP URI to register (e.g., sip:user@domain).
 	 * @param secret The password for authentication.
 	 * @param server The SIP server proxy (e.g., sip:sip.server.com).
-	 * @return A CompletableFuture that resolves on the 'registered' event.
+	 * @return A `CompletableFuture` that resolves with a `JanusSipEvents.RegistrationEvent`
+	 *         when the registration process completes.
 	 */
 	public CompletableFuture<JanusSipEvents.RegistrationEvent> registerAsync(String username, String secret, String server) {
 		var future = new CompletableFuture<JanusSipEvents.RegistrationEvent>();
