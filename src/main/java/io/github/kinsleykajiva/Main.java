@@ -4,111 +4,131 @@ import io.github.kinsleykajiva.janus.JanusClient;
 import io.github.kinsleykajiva.janus.JanusConfiguration;
 import io.github.kinsleykajiva.janus.JanusSession;
 import io.github.kinsleykajiva.janus.ServerInfo;
-import io.github.kinsleykajiva.janus.event.JanusEvent;
-import io.github.kinsleykajiva.janus.event.JanusSipEventListener;
-import io.github.kinsleykajiva.janus.event.JanusSipEvents;
-import io.github.kinsleykajiva.janus.handle.impl.SipHandle;
+import io.github.kinsleykajiva.janus.handle.impl.AudioBridgeHandle;
+import io.github.kinsleykajiva.janus.plugins.audiobridge.events.*;
+import io.github.kinsleykajiva.janus.plugins.audiobridge.listeners.JanusAudioBridgeListener;
+import io.github.kinsleykajiva.janus.plugins.audiobridge.models.CreateRoomRequest;
+import io.github.kinsleykajiva.janus.plugins.audiobridge.models.JoinRoomRequest;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
-	
-	public static void main(String[] args) {
-		// Enable debug logging for more details
-		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "INFO");
-		
-		// Configure the Janus client
-		JanusConfiguration config = new JanusConfiguration(
-				"***.**.**.**", // Replace with your Janus server IP
-				8188,
-				"/janus",
-				false,
-				true
-		);
-		
-		JanusClient client = new JanusClient(config);
-		
-		// Add shutdown hook to ensure proper cleanup
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			logger.info("Shutting down JanusClient...");
-			client.disconnect();
-		}));
-		
-		try {
-			// 1. Connect to Janus
-			logger.info("Connecting to Janus server at {}...", config.getUri());
-			client.connect().get(10, TimeUnit.SECONDS);
-			
-			// 2. Get Server Info
-			ServerInfo serverInfo = client.getServerInfo().get();
-			logger.info("Server Info: Janus v{}", serverInfo.versionString());
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-			// 3. Create a Session
-			logger.info("Creating Janus session...");
-			JanusSession session = client.createSession().get();
-			logger.info("Session created with ID: {}", session.getSessionId());
+    public static void main(String[] args) {
+        // Enable debug logging for more details
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "INFO");
 
-			// 4. Attach to the SIP Plugin
-			logger.info("Attaching to SIP plugin...");
-			SipHandle sipHandle = session.attachSipPlugin().get();
-			logger.info("SIP handle attached with ID: {}", sipHandle.getHandleId());
+        // Configure the Janus client
+        JanusConfiguration config = new JanusConfiguration(
+		        "localhost", // Replace with your Janus server IP
+            8188,
+            "/janus",
+            false,
+            true
+        );
 
-			// 5. Add a persistent listener for SIP events like incoming calls
-			sipHandle.addListener(new JanusSipEventListener() {
-				@Override
-				public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
-					logger.info("xxxxxIncoming call from: {} (Call-ID: {})", event.displayName(), event.callId());
-					// Here you would typically handle the call, e.g., by answering it.
-					// sipHandle.answerCallAsync(event.jsep());
-				}
-				
-				@Override
-				public void onRegisteredEvent(JanusSipEvents.SuccessfulRegistration event) {
-					JanusSipEventListener.super.onRegisteredEvent(event);
-					logger.info("xxxxxxSIP registration successful for: {}", event.username());
-				}
-				
-				@Override
-				public void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
-					JanusSipEventListener.super.onFailedRegistrationEvent(event);
-					logger.error("xxxxSIP registration failed: {} ({})", event.reason(), event.code());
-				}
-				
-				@Override
-				public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
-					logger.info("xxxxCall hung up: {} (Reason: {})", event.callId(), event.reason());
-				}
+        JanusClient client = new JanusClient(config);
 
-				@Override
-				public void onEvent(JanusEvent event) {
-					// This is the generic event handler, still needs to be implemented.
-					// You can inspect the raw event data here if needed.
-					// logger.debug("Received generic SIP event: {}", event.eventData());
-				}
-			});
+        // Add shutdown hook to ensure proper cleanup
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting down JanusClient...");
+            client.disconnect();
+        }));
 
-			// 6. Register a SIP user (a one-time action)
-			logger.info("Registering SIP user...");
-			var registrationResult = sipHandle.registerAsync("********","***.**","***.**.**.**").get();
+        try {
+            // 1. Connect to Janus
+            logger.info("Connecting to Janus server at {}...", config.getUri());
+            client.connect().get(10, TimeUnit.SECONDS);
 
-			/*if (registrationResult instanceof JanusSipEvents.SuccessfulRegistration success) {
-				logger.info("SIP registration successful for: {}", success.username());
-			} else if (registrationResult instanceof JanusSipEvents.ErrorRegistration error) {
-				logger.error("SIP registration failed: {} ({})", error.reason(), error.code());
-			}
-			*/
-			// 7. Keep the application running to listen for events
-			logger.info("Setup complete. Listening for SIP events. Press Ctrl+C to exit.");
-			Thread.currentThread().join(); // Block forever
-			
-		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
-		} finally {
-			logger.info("Disconnecting client.");
-			client.disconnect();
-		}
-	}
+            // 2. Get Server Info
+            ServerInfo serverInfo = client.getServerInfo().get();
+            logger.info("Server Info: Janus v{}", serverInfo.versionString());
+
+            // 3. Create a Session
+            logger.info("Creating Janus session...");
+            JanusSession session = client.createSession().get();
+            logger.info("Session created with ID: {}", session.getSessionId());
+
+            // 4. Attach to the AudioBridge Plugin
+            logger.info("Attaching to AudioBridge plugin...");
+            AudioBridgeHandle audioBridgeHandle = session.attachAudioBridgePlugin().get();
+            logger.info("AudioBridge handle attached with ID: {}", audioBridgeHandle.getHandleId());
+
+            // 5. Add a listener for AudioBridge events
+            audioBridgeHandle.addAudioBridgeListener(new JanusAudioBridgeListener() {
+                @Override
+                public void onJoined(JoinedEvent event) {
+                    logger.info("Successfully joined room {}. My ID is {}. Participants: {}",
+                        event.roomId(), event.participantId(), event.participants());
+                }
+
+                @Override
+                public void onParticipantJoined(ParticipantJoinedEvent event) {
+                    logger.info("Participant {} joined room {}", event.participant().display(), event.roomId());
+                }
+
+                @Override
+                public void onParticipantLeft(ParticipantLeftEvent event) {
+                    logger.info("Participant {} left room {}", event.participantId(), event.roomId());
+                }
+
+                @Override
+                public void onParticipantUpdated(ParticipantUpdatedEvent event) {
+                     logger.info("Participant {} in room {} was updated. Muted: {}",
+                        event.participant().display(), event.roomId(), event.participant().muted());
+                }
+
+                @Override
+                public void onRoomDestroyed(RoomDestroyedEvent event) {
+                    logger.info("Room {} was destroyed.", event.roomId());
+                }
+
+                @Override
+                public void onEvent(JSONObject event) {
+                    // Raw event for debugging
+                    logger.debug("Received raw AudioBridge event: {}", event.toString(2));
+                }
+            });
+
+            // 6. Create a new room
+            logger.info("Creating a new audio room...");
+            var createRoomRequest = new CreateRoomRequest.Builder()
+                .setDescription("My awesome new room")
+                .setIsPrivate(false)
+                .build();
+            var room = audioBridgeHandle.createRoom(createRoomRequest).get();
+            logger.info("Room created with ID: {}", room.room());
+
+            // 7. Join the room
+            logger.info("Joining room {}...", room.room());
+            var joinRoomRequest = new JoinRoomRequest.Builder(room.room())
+                .setDisplay("Jules")
+                .setMuted(false)
+                .build();
+            audioBridgeHandle.joinRoom(joinRoomRequest).get();
+
+            // Give Janus a moment to process the join and send the event
+            Thread.sleep(1000);
+
+            // 8. List participants in the room
+            logger.info("Listing participants...");
+            var participants = audioBridgeHandle.listParticipants(room.room()).get();
+            logger.info("Participants in room {}: {}", room.room(), participants);
+
+
+            // 9. Keep the application running to listen for more events
+            logger.info("Setup complete. Listening for AudioBridge events. Press Ctrl+C to exit.");
+            Thread.currentThread().join(); // Block forever
+
+        } catch (Exception e) {
+            logger.error("An error occurred: {}", e.getMessage(), e);
+        } finally {
+            logger.info("Disconnecting client.");
+            client.disconnect();
+        }
+    }
 }
