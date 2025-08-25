@@ -326,6 +326,18 @@ public class VideoRoomHandle extends JanusHandle {
     }
 
     /**
+     * Sends a request to publish a media stream, including a JSEP offer.
+     * This is an asynchronous operation. The response will contain the JSEP answer.
+     *
+     * @param request A {@link PublishRequest} with the details of the stream to publish.
+     * @param jsep A {@link JSONObject} containing the JSEP offer (e.g., `{"type": "offer", "sdp": "..."}`).
+     * @return A {@link CompletableFuture} that completes with the full response from Janus, including the JSEP answer.
+     */
+    public CompletableFuture<JSONObject> publish(PublishRequest request, JSONObject jsep) {
+        return sendMessage(request.toJson(), jsep);
+    }
+
+    /**
      * Configures an active publisher session. This can be used to change bitrate, display name,
      * or tweak individual media streams. This is an asynchronous operation.
      *
@@ -380,6 +392,22 @@ public class VideoRoomHandle extends JanusHandle {
     public CompletableFuture<Void> start(StartSubscriptionRequest request) {
         return sendMessage(request.toJson()).thenAccept(response -> {
              if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on start request: " + response);
+            }
+        });
+    }
+
+    /**
+     * Sends a request to start receiving media for a subscription, including a JSEP answer.
+     * This is an asynchronous operation.
+     *
+     * @param request A {@link StartSubscriptionRequest}.
+     * @param jsep A {@link JSONObject} containing the JSEP answer (e.g., `{"type": "answer", "sdp": "..."}`).
+     * @return A {@link CompletableFuture} that completes when the request has been acknowledged.
+     */
+    public CompletableFuture<Void> start(StartSubscriptionRequest request, JSONObject jsep) {
+        return sendMessage(request.toJson(), jsep).thenAccept(response -> {
+            if ("error".equals(response.optString("janus"))) {
                 throw new RuntimeException("Janus returned an error on start request: " + response);
             }
         });
