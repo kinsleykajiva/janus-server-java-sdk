@@ -133,8 +133,6 @@ public class AudioBridgeHandle extends JanusHandle {
     /**
      * Destroys an existing AudioBridge room.
      *
-     * @param roomId The unique ID of the room to destroy.
-     * @param secret The secret required to manage the room, if any.
      * @return A {@link CompletableFuture} that completes when the room has been successfully destroyed.
      */
     public CompletableFuture<Void> destroyRoom(DestroyRoomRequest request) {
