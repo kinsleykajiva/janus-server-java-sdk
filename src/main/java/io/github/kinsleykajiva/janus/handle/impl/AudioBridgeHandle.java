@@ -9,10 +9,25 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.github.kinsleykajiva.janus.event.JanusEvent;
+import io.github.kinsleykajiva.janus.event.JanusJsep;
+
 public class AudioBridgeHandle extends JanusHandle {
 	
-	public AudioBridgeHandle(JanusSession session, long handleId , HandleType handleType) {
-		super(session, handleId,handleType);
+	public AudioBridgeHandle(JanusSession session, long handleId, HandleType handleType) {
+		super(session, handleId, handleType);
+	}
+
+	@Override
+	public void fireEvent(JSONObject event) {
+		// A basic fireEvent implementation for AudioBridge.
+		// It forwards the generic onEvent to all listeners.
+		// A more detailed implementation could parse audiobridge-specific events.
+		JSONObject jsep = event.optJSONObject("jsep");
+		JanusJsep janusJsep = jsep != null ? new JanusJsep(jsep.optString("type"), jsep.optString("sdp")) : null;
+		JanusEvent janusEvent = new JanusEvent(event, janusJsep);
+
+		listeners.forEach(listener -> listener.onEvent(janusEvent));
 	}
 	
 	/**
