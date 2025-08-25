@@ -24,8 +24,8 @@ public class Main {
 
         // Configure the Janus client
         JanusConfiguration config = new JanusConfiguration(
-            "localhost", // Replace with your Janus server IP
-            8088,
+		        "localhost", // Replace with your Janus server IP
+            8188,
             "/janus",
             false,
             true
