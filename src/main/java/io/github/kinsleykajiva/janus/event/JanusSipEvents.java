@@ -19,20 +19,13 @@ public class JanusSipEvents {
 	}
 	
 	public static final class SuccessfulRegistration extends RegistrationEvent {
-		private final String event;
 		private final Long masterId;
 		private final String username;
 		
 		public SuccessfulRegistration(String event, Long masterId, String username) {
 			super(event);
-			this.event = event;
 			this.masterId = masterId;
 			this.username = username;
-		}
-		
-		@Override
-		public String event() {
-			return event;
 		}
 		
 		public Long masterId() {
@@ -42,25 +35,16 @@ public class JanusSipEvents {
 		public String username() {
 			return username;
 		}
-		
-		
 	}
 	
 	public static final class ErrorRegistration extends RegistrationEvent {
-		private final String event;
 		private final int code;
 		private final String reason;
 		
 		public ErrorRegistration(String event, int code, String reason) {
 			super(event);
-			this.event = event;
 			this.code = code;
 			this.reason = reason;
-		}
-		
-		@Override
-		public String event() {
-			return event;
 		}
 		
 		public int code() {
@@ -70,8 +54,6 @@ public class JanusSipEvents {
 		public String reason() {
 			return reason;
 		}
-		
-		
 	}
 	public record  HangupEvent(int code, @NonNull  String reason,@NonNull String callId ){}
 	public record InComingCallEvent(@NonNull String username, @NonNull  String callId, @NonNull  String displayName, @NonNull String callee, @Nullable JanusJsep jsep ){}

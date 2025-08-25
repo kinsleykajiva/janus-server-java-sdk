@@ -1,27 +1,32 @@
 package io.github.kinsleykajiva;
 
-import io.github.kinsleykajiva.janus.JanusConfiguration;
 import io.github.kinsleykajiva.janus.JanusClient;
+import io.github.kinsleykajiva.janus.JanusConfiguration;
+import io.github.kinsleykajiva.janus.JanusSession;
+import io.github.kinsleykajiva.janus.ServerInfo;
 import io.github.kinsleykajiva.janus.event.JanusEvent;
 import io.github.kinsleykajiva.janus.event.JanusSipEventListener;
 import io.github.kinsleykajiva.janus.event.JanusSipEvents;
+import io.github.kinsleykajiva.janus.handle.impl.SipHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	
 	public static void main(String[] args) {
 		// Enable debug logging for more details
-		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
+		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "INFO");
 		
 		// Configure the Janus client
 		JanusConfiguration config = new JanusConfiguration(
-				"***.**.**.**",
+				"your-janus-server-ip", // Replace with your Janus server IP
 				8188,
 				"/janus",
-				false, // Use ws (non-secure) as per logs
-				true   // Logging is ON
+				false,
+				true
 		);
 		
 		JanusClient client = new JanusClient(config);
@@ -31,70 +36,71 @@ public class Main {
 			logger.info("Shutting down JanusClient...");
 			client.disconnect();
 		}));
-		/*for (int i = 0 ; i < 100 ; i++) {*/
-			try{
-				//System.out.println("Creating session :"+i);
-				var session=client.createSession().get();
-				System.out.println(session.getSessionId());
-				var handle=session.attachSipPlugin().get();
-				System.out.println("audio sip handle-"+handle.getHandleId());
-				System.out.println("Register sip account");
-				var registrattionResult=handle.registerAsync("**************","****************","*************").get();
-				System.out.println(registrattionResult.event());
-				handle.addListener(new JanusSipEventListener() {
-					@Override
-					public void onRegisteredEvent(JanusEvent event) {
-					
-					}
-					
-					@Override
-					public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
-					
-					}
-					
-					@Override
-					public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
-					
-					}
-					
-					@Override
-					public void onEvent(JanusEvent event) {
-						System.out.println(event.jsep().toString());
-						System.out.println(event.eventData().toString());
-					}
-				});
-				
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		/*}*/
 		
-		/*try {
-			// Connect and wait for completion
-			logger.info("Starting connection attempt...");
-			client.connect().get(15, TimeUnit.SECONDS);
-			logger.info("Connection established, retrieving server info...");
+		try {
+			// 1. Connect to Janus
+			logger.info("Connecting to Janus server at {}...", config.getUri());
+			client.connect().get(10, TimeUnit.SECONDS);
 			
-			// Get server info
+			// 2. Get Server Info
 			ServerInfo serverInfo = client.getServerInfo().get();
-			logger.info("Server Info: Janus={}, Version={}, Plugins={}",
-					serverInfo.janus(),
-					serverInfo.versionString(),
-					serverInfo.plugins().keySet());
+			logger.info("Server Info: Janus v{}", serverInfo.versionString());
+
+			// 3. Create a Session
+			logger.info("Creating Janus session...");
+			JanusSession session = client.createSession().get();
+			logger.info("Session created with ID: {}", session.getSessionId());
+
+			// 4. Attach to the SIP Plugin
+			logger.info("Attaching to SIP plugin...");
+			SipHandle sipHandle = session.attachSipPlugin().get();
+			logger.info("SIP handle attached with ID: {}", sipHandle.getHandleId());
+
+			// 5. Add a persistent listener for SIP events like incoming calls
+			sipHandle.addListener(new JanusSipEventListener() {
+				@Override
+				public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
+					logger.info("Incoming call from: {} (Call-ID: {})", event.displayName(), event.callId());
+					// Here you would typically handle the call, e.g., by answering it.
+					// sipHandle.answerCallAsync(event.jsep());
+				}
+
+				@Override
+				public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
+					logger.info("Call hung up: {} (Reason: {})", event.callId(), event.reason());
+				}
+
+				@Override
+				public void onEvent(JanusEvent event) {
+					// This is the generic event handler, still needs to be implemented.
+					// You can inspect the raw event data here if needed.
+					// logger.debug("Received generic SIP event: {}", event.eventData());
+				}
+			});
+
+			// 6. Register a SIP user (a one-time action)
+			logger.info("Registering SIP user...");
+			var registrationResult = sipHandle.registerAsync(
+					"your-sip-user",    // Replace with your SIP username
+					"your-sip-password",// Replace with your SIP password
+					"your-sip-server"   // Replace with your SIP server
+			).get();
+
+			if (registrationResult instanceof JanusSipEvents.SuccessfulRegistration success) {
+				logger.info("SIP registration successful for: {}", success.username());
+			} else if (registrationResult instanceof JanusSipEvents.ErrorRegistration error) {
+				logger.error("SIP registration failed: {} ({})", error.reason(), error.code());
+			}
 			
-			// Keep the program running to maintain the WebSocket connection
-			logger.info("Connection active. Press Ctrl+C to exit.");
-			Thread.currentThread().join(); // Blocks until interrupted
+			// 7. Keep the application running to listen for events
+			logger.info("Setup complete. Listening for SIP events. Press Ctrl+C to exit.");
+			Thread.currentThread().join(); // Block forever
 			
-		} catch (TimeoutException e) {
-			logger.error("Operation timed out: {}", e.getMessage(), e);
-		} catch (InterruptedException e) {
-			logger.info("Program interrupted, shutting down.");
-			Thread.currentThread().interrupt(); // Restore interrupted status
 		} catch (Exception e) {
-			logger.error("Failed to connect or retrieve server info: {}", e.getMessage(), e);
+			logger.error("An error occurred: {}", e.getMessage(), e);
 		} finally {
+			logger.info("Disconnecting client.");
 			client.disconnect();
-		}*/
+		}
 	}
 }
