@@ -81,6 +81,7 @@ For more detailed information and examples, please refer to the documentation in
 *   [Video Room Example](./docs/videoRoomExamples.md)
 *   [Audio Bridge Example](./docs/AudioBridgeExample.md)
 *   [SIP Example](./docs/SipExample.md)
+*   [Admin API Client](./docs/JanusAdmin.md)
 
 ## Contributing
 

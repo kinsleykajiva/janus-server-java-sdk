@@ -4,6 +4,9 @@ import io.github.kinsleykajiva.janus.JanusClient;
 import io.github.kinsleykajiva.janus.JanusConfiguration;
 import io.github.kinsleykajiva.janus.JanusSession;
 import io.github.kinsleykajiva.janus.ServerInfo;
+import io.github.kinsleykajiva.janus.admin.JanusAdminClient;
+import io.github.kinsleykajiva.janus.admin.JanusAdminConfiguration;
+import io.github.kinsleykajiva.janus.admin.messages.ListSessionsResponse;
 import io.github.kinsleykajiva.janus.handle.impl.VideoRoomHandle;
 import io.github.kinsleykajiva.janus.plugins.videoroom.events.*;
 import io.github.kinsleykajiva.janus.plugins.videoroom.listeners.JanusVideoRoomListener;
@@ -11,6 +14,7 @@ import io.github.kinsleykajiva.janus.plugins.videoroom.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
@@ -27,6 +31,11 @@ public class Main {
             "/janus",
             false,
             true
+        );
+
+        JanusAdminConfiguration adminConfig = new JanusAdminConfiguration(
+            URI.create("ws://localhost:7188/janus"),
+            "janusoverlord"
         );
 
         JanusClient client = new JanusClient(config);
@@ -52,7 +61,10 @@ public class Main {
             logger.info("Session created with ID: {}", session.getSessionId());
 
             // Run the VideoRoom example
-            runVideoRoomExample(session);
+            // runVideoRoomExample(session);
+
+            // Run the Admin Client Example
+            runAdminClientExample(adminConfig);
 
 
             // Keep the application running to listen for more events
@@ -182,5 +194,59 @@ public class Main {
         videoRoomHandle.destroyRoom(destroyRequest).get(); // An `onRoomDestroyed` event will fire for the handle
 
         System.out.println("\n--- VideoRoom Example Finished ---\n");
+    }
+
+    public static void runAdminClientExample(JanusAdminConfiguration adminConfig) throws Exception {
+        System.out.println("\n--- Running Admin Client Example ---\n");
+
+        JanusAdminClient adminClient = new JanusAdminClient(adminConfig);
+
+        adminClient.getAdminMonitor().addListener(event -> {
+            System.out.println(">>> ADMIN EVENT: " + event.toString(2));
+        });
+
+        System.out.println("Pinging admin endpoint...");
+        adminClient.ping().thenAccept(response -> {
+            System.out.println("Ping response: " + response.toString(2));
+        }).get();
+
+        System.out.println("Getting server info...");
+        adminClient.info().thenAccept(info -> {
+            System.out.println("Server info: " + info.versionString());
+        }).get();
+
+        System.out.println("Getting status...");
+        adminClient.getStatus().thenAccept(status -> {
+            System.out.println("Status: " + status.toString(2));
+        }).get();
+
+        System.out.println("Listing active sessions...");
+        ListSessionsResponse sessionsResponse = adminClient.listSessions().get();
+        System.out.println("Active sessions: " + sessionsResponse.getSessionIds());
+
+        if (!sessionsResponse.getSessionIds().isEmpty()) {
+            long firstSessionId = sessionsResponse.getSessionIds().get(0);
+            System.out.println("Listing handles for session: " + firstSessionId);
+            adminClient.listHandles(firstSessionId).thenAccept(handles -> {
+                System.out.println("Handles: " + handles.getHandleIds());
+            }).get();
+        }
+
+        System.out.println("Setting log level to 4...");
+        adminClient.setLogLevel(4).get();
+        System.out.println("Log level set.");
+
+        System.out.println("Getting status again...");
+        adminClient.getStatus().thenAccept(status -> {
+            System.out.println("Status: " + status.toString(2));
+        }).get();
+
+        System.out.println("Setting log level back to 3...");
+        adminClient.setLogLevel(3).get();
+        System.out.println("Log level set.");
+
+
+        adminClient.disconnect();
+        System.out.println("\n--- Admin Client Example Finished ---\n");
     }
 }
