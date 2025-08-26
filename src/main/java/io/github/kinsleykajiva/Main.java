@@ -205,20 +205,46 @@ public class Main {
             System.out.println(">>> ADMIN EVENT: " + event.toString(2));
         });
 
+        System.out.println("Pinging admin endpoint...");
+        adminClient.ping().thenAccept(response -> {
+            System.out.println("Ping response: " + response.toString(2));
+        }).get();
+
+        System.out.println("Getting server info...");
+        adminClient.info().thenAccept(info -> {
+            System.out.println("Server info: " + info.versionString());
+        }).get();
+
+        System.out.println("Getting status...");
+        adminClient.getStatus().thenAccept(status -> {
+            System.out.println("Status: " + status.toString(2));
+        }).get();
+
         System.out.println("Listing active sessions...");
         ListSessionsResponse sessionsResponse = adminClient.listSessions().get();
         System.out.println("Active sessions: " + sessionsResponse.getSessionIds());
 
         if (!sessionsResponse.getSessionIds().isEmpty()) {
             long firstSessionId = sessionsResponse.getSessionIds().get(0);
-            System.out.println("Getting handles for session: " + firstSessionId);
-            // This is a conceptual call. To get handles, you would need a 'list_handles' request.
-            // We will assume a handle ID for the handle_info call.
-            long handleId = 123456789; // Replace with a real handle ID
-            // adminClient.handleInfo(firstSessionId, handleId).thenAccept(handleInfo -> {
-            //     System.out.println("Handle info: " + handleInfo.getInfo().toString(2));
-            // });
+            System.out.println("Listing handles for session: " + firstSessionId);
+            adminClient.listHandles(firstSessionId).thenAccept(handles -> {
+                System.out.println("Handles: " + handles.getHandleIds());
+            }).get();
         }
+
+        System.out.println("Setting log level to 4...");
+        adminClient.setLogLevel(4).get();
+        System.out.println("Log level set.");
+
+        System.out.println("Getting status again...");
+        adminClient.getStatus().thenAccept(status -> {
+            System.out.println("Status: " + status.toString(2));
+        }).get();
+
+        System.out.println("Setting log level back to 3...");
+        adminClient.setLogLevel(3).get();
+        System.out.println("Log level set.");
+
 
         adminClient.disconnect();
         System.out.println("\n--- Admin Client Example Finished ---\n");
