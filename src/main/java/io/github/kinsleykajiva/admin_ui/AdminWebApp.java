@@ -36,9 +36,6 @@ public class AdminWebApp {
         // Create Javalin app
         this.app = Javalin.create(config -> {
             config.jsonMapper(gsonMapper);
-            config.jetty.modifyJettyWebSocketServletFactory(factory -> {
-                factory.setIdleTimeout(java.time.Duration.ofHours(1));
-            });
             config.staticFiles.add(staticFiles -> {
                 staticFiles.hostedPath = "/";
                 staticFiles.directory = "/admin_ui";
@@ -110,6 +107,7 @@ public class AdminWebApp {
                         return;
                     }
                 }
+                ctx.enableAutomaticPings();
                 wsClients.add(ctx);
             });
             ws.onClose(ctx -> {
