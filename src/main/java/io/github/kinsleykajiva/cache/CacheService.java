@@ -1,10 +1,11 @@
 package io.github.kinsleykajiva.cache;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 
 public class CacheService {
@@ -51,24 +52,24 @@ public class CacheService {
         }
     }
 
-    public String getEvents() {
+    public List<Map<String, Object>> getEvents() {
         String sql = "SELECT id, timestamp, event_data FROM admin_events ORDER BY timestamp DESC";
-        JsonArray eventsArray = new JsonArray();
+        List<Map<String, Object>> eventsList = new ArrayList<>();
         try (Connection conn = this.connect();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                JsonObject eventObject = new JsonObject();
-                eventObject.addProperty("id", rs.getInt("id"));
-                eventObject.addProperty("timestamp", rs.getString("timestamp"));
-                eventObject.add("event_data", gson.fromJson(rs.getString("event_data"), JsonObject.class));
-                eventsArray.add(eventObject);
+                Map<String, Object> eventObject = new java.util.HashMap<>();
+                eventObject.put("id", rs.getInt("id"));
+                eventObject.put("timestamp", rs.getString("timestamp"));
+                eventObject.put("event_data", gson.fromJson(rs.getString("event_data"), Map.class));
+                eventsList.add(eventObject);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return gson.toJson(eventsArray);
+        return eventsList;
     }
 
     public void clearCache() {

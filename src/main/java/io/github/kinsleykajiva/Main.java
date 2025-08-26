@@ -27,11 +27,17 @@ public class Main {
             // Using default constructor:
             // - Cache folder: 'cache/' in the application's root directory.
             // - Web UI port: A random available port.
+            // - Authentication: Disabled by default.
             logger.info("Initializing Janus Admin UI...");
-            final JanusAdminUI adminUI = new JanusAdminUI(adminConfig);
 
-            // You can also specify a custom cache path and port:
-            // final JanusAdminUI adminUI = new JanusAdminUI(adminConfig, "my_cache_folder", 8080);
+            // To enable authentication, provide a username and password
+            final String username = "admin";
+            final String password = "password";
+            logger.info("Admin UI credentials: username='{}', password='{}'", username, password);
+            final JanusAdminUI adminUI = new JanusAdminUI(adminConfig, "cache", 0, username, password);
+
+            // To run without authentication:
+            // final JanusAdminUI adminUI = new JanusAdminUI(adminConfig);
 
 
             // 3. Add a shutdown hook for graceful exit
