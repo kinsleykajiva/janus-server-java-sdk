@@ -1,18 +1,30 @@
 package io.github.kinsleykajiva.janus.admin;
 
 import io.github.kinsleykajiva.janus.ServerInfo;
+import io.github.kinsleykajiva.janus.admin.messages.AcceptNewSessions;
+import io.github.kinsleykajiva.janus.admin.messages.CustomEvent;
+import io.github.kinsleykajiva.janus.admin.messages.DestroySession;
+import io.github.kinsleykajiva.janus.admin.messages.DetachHandle;
+import io.github.kinsleykajiva.janus.admin.messages.GetStatus;
 import io.github.kinsleykajiva.janus.admin.messages.HandleInfo;
 import io.github.kinsleykajiva.janus.admin.messages.HandleInfoResponse;
+import io.github.kinsleykajiva.janus.admin.messages.HangupWebRTC;
 import io.github.kinsleykajiva.janus.admin.messages.Info;
-import io.github.kinsleykajiva.janus.admin.messages.DestroySession;
 import io.github.kinsleykajiva.janus.admin.messages.ListHandles;
 import io.github.kinsleykajiva.janus.admin.messages.ListHandlesResponse;
-import io.github.kinsleykajiva.janus.admin.messages.GetStatus;
-import io.github.kinsleykajiva.janus.admin.messages.MessagePlugin;
-import io.github.kinsleykajiva.janus.admin.messages.SetLogLevel;
 import io.github.kinsleykajiva.janus.admin.messages.ListSessions;
-import io.github.kinsleykajiva.janus.admin.messages.Ping;
 import io.github.kinsleykajiva.janus.admin.messages.ListSessionsResponse;
+import io.github.kinsleykajiva.janus.admin.messages.MessagePlugin;
+import io.github.kinsleykajiva.janus.admin.messages.Ping;
+import io.github.kinsleykajiva.janus.admin.messages.QueryEventHandler;
+import io.github.kinsleykajiva.janus.admin.messages.ResolveAddress;
+import io.github.kinsleykajiva.janus.admin.messages.SetLogLevel;
+import io.github.kinsleykajiva.janus.admin.messages.SetSessionTimeout;
+import io.github.kinsleykajiva.janus.admin.messages.StartPcap;
+import io.github.kinsleykajiva.janus.admin.messages.StartText2Pcap;
+import io.github.kinsleykajiva.janus.admin.messages.StopPcap;
+import io.github.kinsleykajiva.janus.admin.messages.StopText2Pcap;
+import io.github.kinsleykajiva.janus.admin.messages.TestStun;
 import io.github.kinsleykajiva.janus.exception.JanusException;
 import io.github.kinsleykajiva.janus.internal.TransactionManager;
 import org.json.JSONException;
@@ -310,6 +322,102 @@ public class JanusAdminClient implements WebSocket.Listener {
         String transactionId = transactionManager.createTransaction();
         var future = transactionManager.registerTransaction(transactionId);
         SetLogLevel request = new SetLogLevel(transactionId, level);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> resolveAddress(String address) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        ResolveAddress request = new ResolveAddress(transactionId, address);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> testStun() {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        TestStun request = new TestStun(transactionId);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> queryEventHandler(String handler, JSONObject query) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        QueryEventHandler request = new QueryEventHandler(transactionId, handler, query);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> customEvent(JSONObject event) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        CustomEvent request = new CustomEvent(transactionId, event);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> startPcap(long sessionId, long handleId, String folder, String filename) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        StartPcap request = new StartPcap(transactionId, sessionId, handleId, folder, filename);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> stopPcap(long sessionId, long handleId) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        StopPcap request = new StopPcap(transactionId, sessionId, handleId);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> startText2Pcap(long sessionId, long handleId, String folder, String filename) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        StartText2Pcap request = new StartText2Pcap(transactionId, sessionId, handleId, folder, filename);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> stopText2Pcap(long sessionId, long handleId) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        StopText2Pcap request = new StopText2Pcap(transactionId, sessionId, handleId);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> hangupWebRTC(long sessionId, long handleId) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        HangupWebRTC request = new HangupWebRTC(transactionId, sessionId, handleId);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> detachHandle(long sessionId, long handleId) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        DetachHandle request = new DetachHandle(transactionId, sessionId, handleId);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> setSessionTimeout(int timeout) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        SetSessionTimeout request = new SetSessionTimeout(transactionId, timeout);
+        sendMessage(request.toJson());
+        return future;
+    }
+
+    public CompletableFuture<JSONObject> acceptNewSessions(boolean accept) {
+        String transactionId = transactionManager.createTransaction();
+        var future = transactionManager.registerTransaction(transactionId);
+        AcceptNewSessions request = new AcceptNewSessions(transactionId, accept);
         sendMessage(request.toJson());
         return future;
     }
