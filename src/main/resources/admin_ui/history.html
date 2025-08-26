@@ -5,75 +5,77 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Janus Admin - History</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link type="text/css" href="/css/volt.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+    </style>
 </head>
 
 <body>
-    <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar>
-        <div class="sidebar-inner px-4 pt-3">
-            <ul class="nav flex-column pt-3 pt-md-0">
+
+    <nav class="sidebar col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+             <h4 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span><i class="fas fa-server"></i> Janus Admin</span>
+            </h4>
+            <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a href="/index.html" class="nav-link">
-                        <span class="sidebar-icon">
-                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                            </svg>
-                        </span>
-                        <span class="sidebar-text">Dashboard</span>
+                    <a class="nav-link" href="/index.html">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/history.html" class="nav-link">
-                        <span class="sidebar-icon">
-                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
-                        </span>
-                        <span class="sidebar-text">History</span>
+                    <a class="nav-link active" href="/history.html">
+                        <i class="fas fa-history"></i> History
                     </a>
                 </li>
-                 <li class="nav-item">
-                    <button id="logout-button" class="nav-link">
-                        <span class="sidebar-icon">
-                           <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path></svg>
-                        </span>
-                        <span class="sidebar-text">Sign Out</span>
-                    </button>
+                <li class="nav-item">
+                    <a class="nav-link" id="logout-button" href="#">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <main class="content">
-        <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
-             <div class="container-fluid px-0">
-                <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
-                    <div class="d-flex align-items-center">
-                        <h4>History & Analytics</h4>
-                    </div>
-                </div>
-            </div>
-        </nav>
+    <main class="main-content">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">History & Analytics</h1>
+        </div>
 
-        <div class="py-4">
-            <div class="row">
-                <div class="col-12 mb-4">
-                    <div class="card border-0 shadow">
-                        <div class="card-header">
-                            <h2 class="fs-5 fw-bold mb-0">Event Analytics</h2>
-                        </div>
-                        <div class="card-body">
-                           <p>Charts and filters for historical data will be here.</p>
-                           <canvas id="history-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i> Event Analytics
+            </div>
+            <div class="card-body">
+                <p>This section will contain charts and filters for analyzing historical event data.</p>
+                <canvas id="history-chart"></canvas>
             </div>
         </div>
     </main>
 
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/volt.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/history.js"></script>
 </body>

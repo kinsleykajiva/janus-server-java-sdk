@@ -5,7 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Janus Admin - Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link type="text/css" href="/css/volt.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f8fb;
+        }
+    </style>
 </head>
 
 <body>
@@ -15,25 +23,21 @@
                 <div class="row">
                     <div class="col-12 text-center d-flex align-items-center justify-content-center">
                         <div>
-                            <a href="#">
-                                <h2>Janus Admin UI</h2>
-                            </a>
+                           <h2><i class="fas fa-server"></i> Janus Admin UI</h2>
                         </div>
                     </div>
                 </div>
-                <div class="row justify-content-center form-bg-image">
+                <div class="row justify-content-center form-bg-image mt-4">
                     <div class="col-12 d-flex align-items-center justify-content-center">
-                        <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                        <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100" style="max-width: 500px;">
                             <div class="text-center text-md-center mb-4 mt-md-0">
-                                <h1 class="mb-0 h3">Sign in to our platform</h1>
+                                <h1 class="mb-0 h3">Sign in to the platform</h1>
                             </div>
                             <form id="login-form" class="mt-4">
                                 <div class="form-group mb-4">
                                     <label for="username">Your Username</label>
                                     <div class="input-group">
-                                        <span class="input-group-text" id="basic-addon1">
-                                            <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                                        </span>
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                                         <input type="text" class="form-control" placeholder="username" id="username" required>
                                     </div>
                                 </div>
@@ -41,16 +45,14 @@
                                     <div class="form-group mb-4">
                                         <label for="password">Your Password</label>
                                         <div class="input-group">
-                                            <span class="input-group-text" id="basic-addon2">
-                                                <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                                            </span>
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                             <input type="password" placeholder="Password" class="form-control" id="password" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div id="error-message" class="d-none alert alert-danger"></div>
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-gray-800">Sign in</button>
+                                    <button type="submit" class="btn btn-primary">Sign in</button>
                                 </div>
                             </form>
                         </div>
