@@ -15,14 +15,14 @@ The `JanusConfiguration` class offers several ways to configure the connection t
 This is the most straightforward way to configure the client.
 
 ```java
-import io.github.kinsleykajiva.janus.JanusConfiguration;
+import io.github.kinsleykajiva.janus.client.JanusConfiguration;
 
 JanusConfiguration config = new JanusConfiguration(
-    "your-janus-server-ip", // Replace with your Janus server IP
-    8188,                   // Default Janus port for WebSocket
-    "/janus",               // Default Janus API path
-    false,                  // Use secure WebSockets (wss://)
-    true                    // Enable logging
+		"your-janus-server-ip", // Replace with your Janus server IP
+		8188,                   // Default Janus port for WebSocket
+		"/janus",               // Default Janus API path
+		false,                  // Use secure WebSockets (wss://)
+		true                    // Enable logging
 );
 ```
 
@@ -50,7 +50,7 @@ This constructor is convenient for local development, using default settings.
 Once you have a configuration, create a `JanusClient`. The client automatically connects to the Janus server upon instantiation and retrieves server information.
 
 ```java
-import io.github.kinsleykajiva.janus.JanusClient;
+import io.github.kinsleykajiva.janus.client.JanusClient;
 
 // The client will attempt to connect and fetch server info when this line is executed.
 // If it fails, it will log an error. Check your console for messages.
@@ -62,18 +62,24 @@ JanusClient client = new JanusClient(config);
 A session is required to interact with Janus plugins. All handles are associated with a session.
 
 ```java
-import io.github.kinsleykajiva.janus.JanusSession;
+
+
 import java.util.concurrent.ExecutionException;
 
-try {
-    // .get() blocks the current thread until the session is created.
-    JanusSession session = client.createSession().get();
-    System.out.println("Session created with ID: " + session.getSessionId());
-} catch (InterruptedException | ExecutionException e) {
-    System.err.println("Failed to create a session: " + e.getMessage());
-    // Handle the exception, e.g., by shutting down the application
-    return;
-}
+try{
+// .get() blocks the current thread until the session is created.
+io.github.kinsleykajiva.janus.client.JanusSession session = client.createSession().get();
+    System.out.
+		
+		println("Session created with ID: "+session.getSessionId());
+		}catch(InterruptedException |
+		ExecutionException e){
+		System.err.
+		
+		println("Failed to create a session: "+e.getMessage());
+		// Handle the exception, e.g., by shutting down the application
+		return;
+		}
 ```
 
 ### 1.4. Attach to the SIP Plugin
@@ -81,18 +87,24 @@ try {
 Finally, attach to the SIP plugin to get a `SipHandle`. This handle is your primary tool for all SIP-related operations.
 
 ```java
-import io.github.kinsleykajiva.janus.handle.impl.SipHandle;
+import io.github.kinsleykajiva.janus.client.handle.impl.SipHandle;
+
 import java.util.concurrent.ExecutionException;
 
-try {
-    // .get() blocks the current thread until the handle is attached.
-    SipHandle sipHandle = session.attachSipPlugin().get();
-    System.out.println("SIP handle attached with ID: " + sipHandle.getHandleId());
-} catch (InterruptedException | ExecutionException e) {
-    System.err.println("Failed to attach to the SIP plugin: " + e.getMessage());
-    // Handle the exception
-    return;
-}
+try{
+// .get() blocks the current thread until the handle is attached.
+SipHandle sipHandle = session.attachSipPlugin().get();
+    System.out.
+		
+		println("SIP handle attached with ID: "+sipHandle.getHandleId());
+		}catch(InterruptedException |
+		ExecutionException e){
+		System.err.
+		
+		println("Failed to attach to the SIP plugin: "+e.getMessage());
+		// Handle the exception
+		return;
+		}
 ```
 
 ## 2. User Registration
@@ -104,7 +116,8 @@ To make and receive calls, you need to register a SIP user with a SIP server.
 The `registerAsync` method sends a registration request. It returns a `CompletableFuture` that resolves with a `RegistrationEvent` upon receiving a response from the Janus server.
 
 ```java
-import io.github.kinsleykajiva.janus.event.JanusSipEvents;
+import io.github.kinsleykajiva.janus.client.event.JanusSipEvents;
+
 import java.util.concurrent.CompletableFuture;
 
 String username = "your-sip-username";
@@ -112,20 +125,32 @@ String secret = "your-sip-password";
 String sipServer = "your-sip-server.com";
 
 CompletableFuture<JanusSipEvents.RegistrationEvent> registrationFuture =
-    sipHandle.registerAsync(username, secret, sipServer);
+		sipHandle.registerAsync(username, secret, sipServer);
 
 // Handle the result asynchronously
-registrationFuture.whenComplete((result, ex) -> {
-    if (ex != null) {
-        System.err.println("SIP registration request failed: " + ex.getMessage());
-    } else {
-        if (result instanceof JanusSipEvents.SuccessfulRegistration success) {
-            System.out.println("SIP registration successful for: " + success.username());
-        } else if (result instanceof JanusSipEvents.ErrorRegistration error) {
-            System.err.println("SIP registration failed with reason: " + error.reason() + " (" + error.code() + ")");
-        }
-    }
-});
+registrationFuture.
+
+whenComplete((result, ex) ->{
+		if(ex !=null){
+		System.err.
+
+println("SIP registration request failed: "+ex.getMessage());
+		}else{
+		if(result instanceof
+JanusSipEvents.SuccessfulRegistration success){
+		System.out.
+
+println("SIP registration successful for: "+success.username());
+		}else if(result instanceof
+JanusSipEvents.ErrorRegistration error){
+		System.err.
+
+println("SIP registration failed with reason: "+error.reason() +" ("+error.
+
+code() +")");
+		}
+		}
+		});
 ```
 **Note:** The `registerAsync` future completes when Janus acknowledges the request. The actual registration status (success or failure) arrives as an event. The best practice is to rely on the event listener for registration status.
 
@@ -134,19 +159,19 @@ registrationFuture.whenComplete((result, ex) -> {
 A persistent event listener is the most reliable way to track registration status.
 
 ```java
-import io.github.kinsleykajiva.janus.event.JanusSipEventListener;
-import io.github.kinsleykajiva.janus.event.JanusSipEvents;
+import io.github.kinsleykajiva.janus.client.event.JanusSipEventListener;
+import io.github.kinsleykajiva.janus.client.event.JanusSipEvents;
 
 sipHandle.addListener(new JanusSipEventListener() {
-    @Override
-    public void onRegisteredEvent(JanusSipEvents.SuccessfulRegistration event) {
-        System.out.println("Event listener: SIP registration successful for: " + event.username());
-    }
-
-    @Override
-    public void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
-        System.err.println("Event listener: SIP registration failed: " + event.reason() + " (" + event.code() + ")");
-    }
+	@Override
+	public void onRegisteredEvent (JanusSipEvents.SuccessfulRegistration event){
+		System.out.println("Event listener: SIP registration successful for: " + event.username());
+	}
+	
+	@Override
+	public void onFailedRegistrationEvent (JanusSipEvents.ErrorRegistration event){
+		System.err.println("Event listener: SIP registration failed: " + event.reason() + " (" + event.code() + ")");
+	}
 });
 ```
 
@@ -190,15 +215,16 @@ sipHandle.callAsync(phoneNumberToCall, offer)
 You can listen for incoming calls by implementing the `onIncomingCallEvent` method in your `JanusSipEventListener`.
 
 ```java
-import io.github.kinsleykajiva.janus.event.JanusSipEvents;
+import io.github.kinsleykajiva.janus.client.event.JanusSipEvents;
 
 // Inside your JanusSipEventListener implementation:
+
 @Override
 public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
-    System.out.println("Incoming call from: " + event.displayName() + " (Call-ID: " + event.callId() + ")");
-    // You can now choose to accept, decline, or ignore the call.
-    // For example, to accept the call, you would generate an SDP answer
-    // and call sipHandle.acceptInComingCall(jsepAnswer, null, null);
+	System.out.println("Incoming call from: " + event.displayName() + " (Call-ID: " + event.callId() + ")");
+	// You can now choose to accept, decline, or ignore the call.
+	// For example, to accept the call, you would generate an SDP answer
+	// and call sipHandle.acceptInComingCall(jsepAnswer, null, null);
 }
 ```
 
@@ -256,23 +282,41 @@ Once a call is active, you can perform various operations.
 You can put a call on hold and resume it.
 
 ```java
-import io.github.kinsleykajiva.janus.JanusUtils;
+import io.github.kinsleykajiva.janus.utils.JanusUtils;
 
 // Put the call on hold
-sipHandle.hold(JanusUtils.SipHoldDirection.SENDONLY)
-    .thenAccept(response -> System.out.println("Call is on hold."))
-    .exceptionally(ex -> {
-        System.err.println("Failed to hold call: " + ex.getMessage());
-        return null;
-    });
+sipHandle.hold(io.github.kinsleykajiva.janus.utils.JanusUtils.SipHoldDirection.SENDONLY)
+    .
+
+thenAccept(response ->System.out.
+
+println("Call is on hold."))
+		.
+
+exceptionally(ex ->{
+		System.err.
+
+println("Failed to hold call: "+ex.getMessage());
+		return null;
+		});
 
 // Resume the call
-sipHandle.unhold()
-    .thenAccept(response -> System.out.println("Call is resumed."))
-    .exceptionally(ex -> {
-        System.err.println("Failed to resume call: " + ex.getMessage());
-        return null;
-    });
+		sipHandle.
+
+unhold()
+    .
+
+thenAccept(response ->System.out.
+
+println("Call is resumed."))
+		.
+
+exceptionally(ex ->{
+		System.err.
+
+println("Failed to resume call: "+ex.getMessage());
+		return null;
+		});
 ```
 
 ### 4.2. Sending DTMF Tones
@@ -311,72 +355,73 @@ The `JanusSipEventListener` provides a wide range of event callbacks that you ca
 Here is a comprehensive example of a listener that overrides all available methods:
 
 ```java
-import io.github.kinsleykajiva.janus.event.JanusSipEventListener;
-import io.github.kinsleykajiva.janus.event.JanusSipEvents;
-import org.json.JSONObject;
+import io.github.kinsleykajiva.janus.client.event.JanusSipEventListener;
+import io.github.kinsleykajiva.janus.client.event.JanusSipEvents;
 
 public class MySipListener implements JanusSipEventListener {
-
-    @Override
-    public void onRegisteredEvent(JanusSipEvents.SuccessfulRegistration event) {
-        System.out.println("Successfully registered as: " + event.username());
-    }
-
-    @Override
-    public void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
-        System.err.println("Registration failed: " + event.reason() + " (" + event.code() + ")");
-    }
-
-    @Override
-    public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
-        System.out.println("Incoming call from: " + event.displayName());
-        // Handle incoming call...
-    }
-
-    @Override
-    public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
-        System.out.println("Call hung up: " + event.reason());
-    }
-
-    @Override
-    public void onMissedCallEvent(JanusSipEvents.MissedCallEvent event) {
-        System.out.println("Missed call from: " + event.caller());
-    }
-
-    @Override
-    public void onMessageEvent(JanusSipEvents.MessageEvent event) {
-        System.out.println("Received message from " + event.sender() + ": " + event.content());
-    }
-
-    @Override
-    public void onInfoEvent(JanusSipEvents.InfoEvent event) {
-        System.out.println("Received INFO from " + event.sender() + " with type " + event.type());
-    }
-
-    @Override
-    public void onNotifyEvent(JanusSipEvents.NotifyEvent event) {
-        System.out.println("Received NOTIFY: " + event.notify());
-    }
-
-    @Override
-    public void onTransferEvent(JanusSipEvents.TransferEvent event) {
-        System.out.println("Call transfer requested to: " + event.referTo());
-    }
-
-    @Override
-    public void onMessageDeliveryEvent(JanusSipEvents.MessageDeliveryEvent event) {
-        System.out.println("Message delivery status: " + event.code() + " " + event.reason());
-    }
-
-    @Override
-    public void onEvent(JanusEvent event) {
-        // Generic event handler for any other events
-        System.out.println("Received a generic event: " + event.eventData());
-    }
+	
+	@Override
+	public void onRegisteredEvent(JanusSipEvents.SuccessfulRegistration event) {
+		System.out.println("Successfully registered as: " + event.username());
+	}
+	
+	@Override
+	public void onFailedRegistrationEvent(JanusSipEvents.ErrorRegistration event) {
+		System.err.println("Registration failed: " + event.reason() + " (" + event.code() + ")");
+	}
+	
+	@Override
+	public void onIncomingCallEvent(JanusSipEvents.InComingCallEvent event) {
+		System.out.println("Incoming call from: " + event.displayName());
+		// Handle incoming call...
+	}
+	
+	@Override
+	public void onHangupCallEvent(JanusSipEvents.HangupEvent event) {
+		System.out.println("Call hung up: " + event.reason());
+	}
+	
+	@Override
+	public void onMissedCallEvent(JanusSipEvents.MissedCallEvent event) {
+		System.out.println("Missed call from: " + event.caller());
+	}
+	
+	@Override
+	public void onMessageEvent(JanusSipEvents.MessageEvent event) {
+		System.out.println("Received message from " + event.sender() + ": " + event.content());
+	}
+	
+	@Override
+	public void onInfoEvent(JanusSipEvents.InfoEvent event) {
+		System.out.println("Received INFO from " + event.sender() + " with type " + event.type());
+	}
+	
+	@Override
+	public void onNotifyEvent(JanusSipEvents.NotifyEvent event) {
+		System.out.println("Received NOTIFY: " + event.notify());
+	}
+	
+	@Override
+	public void onTransferEvent(JanusSipEvents.TransferEvent event) {
+		System.out.println("Call transfer requested to: " + event.referTo());
+	}
+	
+	@Override
+	public void onMessageDeliveryEvent(JanusSipEvents.MessageDeliveryEvent event) {
+		System.out.println("Message delivery status: " + event.code() + " " + event.reason());
+	}
+	
+	@Override
+	public void onEvent(JanusEvent event) {
+		// Generic event handler for any other events
+		System.out.println("Received a generic event: " + event.eventData());
+	}
 }
 
 // Add the listener to your SipHandle
-sipHandle.addListener(new MySipListener());
+sipHandle.
+
+addListener(new MySipListener());
 ```
 
 ## 6. Advanced Features

@@ -1,6 +1,7 @@
 package io.github.kinsleykajiva.janus.admin;
 
-import io.github.kinsleykajiva.janus.ServerInfo;
+import io.github.kinsleykajiva.janus.utils.JanusUtils;
+import io.github.kinsleykajiva.janus.utils.ServerInfo;
 import io.github.kinsleykajiva.janus.admin.messages.AcceptNewSessions;
 import io.github.kinsleykajiva.janus.admin.messages.CustomEvent;
 import io.github.kinsleykajiva.janus.admin.messages.DestroySession;
@@ -35,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.util.concurrent.*;
+
+import static io.github.kinsleykajiva.janus.utils.JanusUtils.convertToServerInfo;
 
 public class JanusAdminClient implements WebSocket.Listener {
     private static final Logger logger = LoggerFactory.getLogger(JanusAdminClient.class);
@@ -188,95 +191,10 @@ public class JanusAdminClient implements WebSocket.Listener {
         var future = transactionManager.registerTransaction(transactionId);
         Info request = new Info(transactionId);
         sendMessage(request.toJson());
-        return future.thenApply(this::convertToServerInfo);
+        return future.thenApply(JanusUtils::convertToServerInfo);
     }
 
-    private ServerInfo convertToServerInfo(JSONObject response) {
-        try {
-            JSONObject dependenciesJson = response.optJSONObject("dependencies", new JSONObject());
-            java.util.Map<String, ServerInfo.Dependency> dependencies = dependenciesJson.keySet().stream()
-                    .collect(java.util.stream.Collectors.toMap(
-                            key -> key,
-                            key -> new ServerInfo.Dependency(dependenciesJson.getString(key))
-                    ));
-
-            JSONObject transportsJson = response.optJSONObject("transports", new JSONObject());
-            java.util.Map<String, ServerInfo.Transport> transports = transportsJson.keySet().stream()
-                    .collect(java.util.stream.Collectors.toMap(
-                            key -> key,
-                            key -> {
-                                JSONObject t = transportsJson.getJSONObject(key);
-                                return new ServerInfo.Transport(
-                                        t.getString("name"),
-                                        t.getString("author"),
-                                        t.getString("description"),
-                                        t.getString("version_string"),
-                                        t.getInt("version")
-                                );
-                            }
-                    ));
-
-            JSONObject pluginsJson = response.optJSONObject("plugins", new JSONObject());
-            java.util.Map<String, ServerInfo.Plugin> plugins = pluginsJson.keySet().stream()
-                    .collect(java.util.stream.Collectors.toMap(
-                            key -> key,
-                            key -> {
-                                JSONObject p = pluginsJson.getJSONObject(key);
-                                return new ServerInfo.Plugin(
-                                        p.getString("name"),
-                                        p.getString("author"),
-                                        p.getString("description"),
-                                        p.getString("version_string"),
-                                        p.getInt("version")
-                                );
-                            }
-                    ));
-
-            return new ServerInfo(
-                    response.getString("janus"),
-                    response.getString("name"),
-                    response.getInt("version"),
-                    response.getString("version_string"),
-                    response.getString("author"),
-                    response.optString("commit-hash", ""),
-                    response.optString("compile-time", ""),
-                    response.getBoolean("log-to-stdout"),
-                    response.getBoolean("log-to-file"),
-                    response.getBoolean("data_channels"),
-                    response.getBoolean("accepting-new-sessions"),
-                    response.getInt("session-timeout"),
-                    response.getInt("reclaim-session-timeout"),
-                    response.getInt("candidates-timeout"),
-                    response.optString("server-name", ""),
-                    response.optString("local-ip", ""),
-                    response.optString("public-ip", ""),
-                    response.getBoolean("ipv6"),
-                    response.getBoolean("ice-lite"),
-                    response.getBoolean("ice-tcp"),
-                    response.optString("ice-nomination", ""),
-                    response.getBoolean("ice-consent-freshness"),
-                    response.getBoolean("ice-keepalive-conncheck"),
-                    response.getBoolean("hangup-on-failed"),
-                    response.getBoolean("full-trickle"),
-                    response.getBoolean("mdns-enabled"),
-                    response.getInt("min-nack-queue"),
-                    response.getBoolean("nack-optimizations"),
-                    response.getInt("twcc-period"),
-                    response.getInt("dtls-mtu"),
-                    response.getInt("static-event-loops"),
-                    response.getBoolean("api_secret"),
-                    response.getBoolean("auth_token"),
-                    response.getBoolean("event_handlers"),
-                    response.getBoolean("opaqueid_in_api"),
-                    dependencies,
-                    transports,
-                    plugins
-            );
-        } catch (JSONException e) {
-            logger.error("Failed to parse server info response: {}", e.getMessage(), e);
-            throw new JanusException("Invalid server info response format", e);
-        }
-    }
+   
 
     public CompletableFuture<JSONObject> ping() {
         String transactionId = transactionManager.createTransaction();

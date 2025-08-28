@@ -1,21 +1,19 @@
 package io.github.kinsleykajiva;
 
-import io.github.kinsleykajiva.janus.JanusClient;
-import io.github.kinsleykajiva.janus.JanusConfiguration;
-import io.github.kinsleykajiva.janus.JanusSession;
-import io.github.kinsleykajiva.janus.ServerInfo;
+import io.github.kinsleykajiva.janus.client.JanusClient;
+import io.github.kinsleykajiva.janus.client.JanusConfiguration;
+import io.github.kinsleykajiva.janus.client.JanusSession;
 import io.github.kinsleykajiva.janus.admin.JanusAdminClient;
 import io.github.kinsleykajiva.janus.admin.JanusAdminConfiguration;
 import io.github.kinsleykajiva.janus.admin.messages.ListSessionsResponse;
-import io.github.kinsleykajiva.janus.handle.impl.VideoRoomHandle;
-import io.github.kinsleykajiva.janus.plugins.videoroom.events.*;
-import io.github.kinsleykajiva.janus.plugins.videoroom.listeners.JanusVideoRoomListener;
-import io.github.kinsleykajiva.janus.plugins.videoroom.models.*;
+import io.github.kinsleykajiva.janus.client.handle.impl.VideoRoomHandle;
+import io.github.kinsleykajiva.janus.client.plugins.videoroom.events.*;
+import io.github.kinsleykajiva.janus.client.plugins.videoroom.listeners.JanusVideoRoomListener;
+import io.github.kinsleykajiva.janus.client.plugins.videoroom.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);

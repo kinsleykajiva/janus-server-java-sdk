@@ -13,38 +13,38 @@ Events from the plugin, such as a user joining or leaving a room, are delivered 
 Before you can interact with the AudioBridge plugin, you need a Janus session and a handle attached to that session. The following example demonstrates how to create a `JanusClient`, establish a session, and then create an `AudioBridgeHandle`.
 
 ```java
-import io.github.kinsleykajiva.janus.JanusClient;
-import io.github.kinsleykajiva.janus.JanusSession;
-import io.github.kinsleykajiva.janus.handle.impl.AudioBridgeHandle;
+import io.github.kinsleykajiva.janus.client.JanusClient;
+import io.github.kinsleykajiva.janus.client.JanusSession;
+import io.github.kinsleykajiva.janus.client.handle.impl.AudioBridgeHandle;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 public class AudioBridgeExample {
-
-    public static void main(String[] args) throws Exception {
-        // 1. Create a JanusClient
-        // Replace with your Janus server's WebSocket URI
-        URI serverUri = new URI("ws://your-janus-server:8188/");
-        JanusClient janusClient = new JanusClient(serverUri);
-        janusClient.connect();
-
-        // 2. Create a JanusSession
-        CompletableFuture<JanusSession> sessionFuture = janusClient.createSession();
-        JanusSession session = sessionFuture.get();
-
-        // 3. Create an AudioBridgeHandle
-        CompletableFuture<AudioBridgeHandle> handleFuture = session.attachToAudioBridge();
-        AudioBridgeHandle audioBridgeHandle = handleFuture.get();
-
-        System.out.println("AudioBridgeHandle created with ID: " + audioBridgeHandle.getHandleId());
-
-        // You can now use the audioBridgeHandle to interact with the plugin
-        // ...
-
-        // Clean up when done
-        janusClient.disconnect();
-    }
+	
+	public static void main(String[] args) throws Exception {
+		// 1. Create a JanusClient
+		// Replace with your Janus server's WebSocket URI
+		URI serverUri = new URI("ws://your-janus-server:8188/");
+		JanusClient janusClient = new JanusClient(serverUri);
+		janusClient.connect();
+		
+		// 2. Create a JanusSession
+		CompletableFuture<JanusSession> sessionFuture = janusClient.createSession();
+		JanusSession session = sessionFuture.get();
+		
+		// 3. Create an AudioBridgeHandle
+		CompletableFuture<AudioBridgeHandle> handleFuture = session.attachToAudioBridge();
+		AudioBridgeHandle audioBridgeHandle = handleFuture.get();
+		
+		System.out.println("AudioBridgeHandle created with ID: " + audioBridgeHandle.getHandleId());
+		
+		// You can now use the audioBridgeHandle to interact with the plugin
+		// ...
+		
+		// Clean up when done
+		janusClient.disconnect();
+	}
 }
 ```
 
@@ -516,58 +516,58 @@ A generic, catch-all callback for any event from the plugin. This is useful for 
 ### Example Listener Implementation
 
 ```java
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.*;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.listeners.JanusAudioBridgeListener;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.events.*;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.listeners.JanusAudioBridgeListener;
 import org.json.JSONObject;
 
 public class MyAudioBridgeListener implements JanusAudioBridgeListener {
-
-    @Override
-    public void onJoined(JoinedEvent event) {
-        System.out.println("Successfully joined room: " + event.getRoomId());
-        System.out.println("Room description: " + event.getDescription());
-        event.getParticipants().forEach(p -> {
-            System.out.println("- Existing participant: " + p.getDisplayName());
-        });
-    }
-
-    @Override
-    public void onParticipantJoined(ParticipantJoinedEvent event) {
-        System.out.println(
-            "Participant joined: " + event.getParticipant().getDisplayName() +
-            " (ID: " + event.getParticipant().getId() + ")"
-        );
-    }
-
-    @Override
-    public void onParticipantLeft(ParticipantLeftEvent event) {
-        System.out.println("Participant left: " + event.getLeavingParticipantId());
-    }
-
-    @Override
-    public void onParticipantUpdated(ParticipantUpdatedEvent event) {
-        System.out.println(
-            "Participant updated: " + event.getParticipant().getDisplayName() +
-            " | Muted: " + event.getParticipant().isMuted()
-        );
-    }
-
-    @Override
-    public void onRoomDestroyed(RoomDestroyedEvent event) {
-        System.out.println("The room has been destroyed: " + event.getRoomId());
-    }
-
-    @Override
-    public void onEvent(JSONObject event) {
-        // Optional: Log all raw events for debugging
-        // System.out.println("Received raw event: " + event.toString(2));
-    }
+	
+	@Override
+	public void onJoined(JoinedEvent event) {
+		System.out.println("Successfully joined room: " + event.getRoomId());
+		System.out.println("Room description: " + event.getDescription());
+		event.getParticipants().forEach(p -> {
+			System.out.println("- Existing participant: " + p.getDisplayName());
+		});
+	}
+	
+	@Override
+	public void onParticipantJoined(ParticipantJoinedEvent event) {
+		System.out.println(
+				"Participant joined: " + event.getParticipant().getDisplayName() +
+						" (ID: " + event.getParticipant().getId() + ")"
+		);
+	}
+	
+	@Override
+	public void onParticipantLeft(ParticipantLeftEvent event) {
+		System.out.println("Participant left: " + event.getLeavingParticipantId());
+	}
+	
+	@Override
+	public void onParticipantUpdated(ParticipantUpdatedEvent event) {
+		System.out.println(
+				"Participant updated: " + event.getParticipant().getDisplayName() +
+						" | Muted: " + event.getParticipant().isMuted()
+		);
+	}
+	
+	@Override
+	public void onRoomDestroyed(RoomDestroyedEvent event) {
+		System.out.println("The room has been destroyed: " + event.getRoomId());
+	}
+	
+	@Override
+	public void onEvent(JSONObject event) {
+		// Optional: Log all raw events for debugging
+		// System.out.println("Received raw event: " + event.toString(2));
+	}
 }
 ```
 
 ## Data Models
 
-The SDK uses a variety of model classes to represent requests and responses for the AudioBridge plugin. These classes, found in the `io.github.kinsleykajiva.janus.plugins.audiobridge.models` package, provide a type-safe way to construct requests and parse responses.
+The SDK uses a variety of model classes to represent requests and responses for the AudioBridge plugin. These classes, found in the `io.github.kinsleykajiva.janus.client.plugins.audiobridge.models` package, provide a type-safe way to construct requests and parse responses.
 
 Below is a brief overview of some of the key model classes.
 
@@ -596,123 +596,123 @@ By using these models, you can avoid constructing JSON objects manually and bene
 This example demonstrates a simple "bot" that connects to Janus, creates a room, joins it, waits for a short period, and then leaves and destroys the room. It showcases how to use the `AudioBridgeHandle` and `JanusAudioBridgeListener` together.
 
 ```java
-import io.github.kinsleykajiva.janus.JanusClient;
-import io.github.kinsleykajiva.janus.JanusSession;
-import io.github.kinsleykajiva.janus.handle.impl.AudioBridgeHandle;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.events.*;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.listeners.JanusAudioBridgeListener;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.models.CreateRoomRequest;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.models.DestroyRoomRequest;
-import io.github.kinsleykajiva.janus.plugins.audiobridge.models.JoinRoomRequest;
+import io.github.kinsleykajiva.janus.client.JanusClient;
+import io.github.kinsleykajiva.janus.client.JanusSession;
+io.github.kinsleykajiva.janus.client.handle.impl.AudioBridgeHandle;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.events.*;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.listeners.JanusAudioBridgeListener;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.models.CreateRoomRequest;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.models.DestroyRoomRequest;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.models.JoinRoomRequest;
 import org.json.JSONObject;
 
 import java.net.URI;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class ConferenceBotExample {
-
-    // Use a latch to keep the application running until the bot is done
-    private static CountDownLatch latch = new CountDownLatch(1);
-    private static long myRoomId;
-
-    public static void main(String[] args) throws Exception {
-        URI serverUri = new URI("ws://your-janus-server:8188/");
-        JanusClient janusClient = new JanusClient(serverUri);
-        janusClient.connect();
-
-        JanusSession session = janusClient.createSession().get();
-        AudioBridgeHandle audioBridgeHandle = session.attachToAudioBridge().get();
-
-        // Add a listener to react to events
-        audioBridgeHandle.addAudioBridgeListener(new ConferenceListener());
-
-        // --- Workflow ---
-
-        // 1. Create a room
-        CreateRoomRequest createRequest = new CreateRoomRequest("Bot's Conference Room");
-        audioBridgeHandle.createRoom(createRequest)
-            .thenCompose(room -> {
-                myRoomId = room.getRoomId();
-                System.out.println("Room created: " + myRoomId);
-
-                // 2. Join the room
-                JoinRoomRequest joinRequest = new JoinRoomRequest(myRoomId);
-                joinRequest.setDisplayName("ConferenceBot");
-                return audioBridgeHandle.joinRoom(joinRequest);
-            })
-            .thenRun(() -> {
-                System.out.println("Join request sent. The bot will leave in 15 seconds.");
-            })
-            .exceptionally(ex -> {
-                System.err.println("Error in setup: " + ex.getMessage());
-                latch.countDown(); // Release latch on error
-                return null;
-            });
-
-        // Keep the main thread alive
-        latch.await(30, TimeUnit.SECONDS);
-
-        // --- Cleanup ---
-        System.out.println("Cleaning up...");
-
-        // 4. Leave the room (optional, as destroying the room kicks everyone out)
-        audioBridgeHandle.leave().get();
-
-        // 5. Destroy the room
-        DestroyRoomRequest destroyRequest = new DestroyRoomRequest(myRoomId);
-        audioBridgeHandle.destroyRoom(destroyRequest).get();
-        System.out.println("Room destroyed.");
-
-        janusClient.disconnect();
-        System.out.println("Disconnected.");
-    }
-
-    // A simple listener implementation for our bot
-    static class ConferenceListener implements JanusAudioBridgeListener {
-        @Override
-        public void onJoined(JoinedEvent event) {
-            System.out.println("Bot successfully joined room " + event.getRoomId());
-
-            // After joining, let's wait for a bit before leaving
-            new Thread(() -> {
-                try {
-                    Thread.sleep(15000); // Wait for 15 seconds
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                latch.countDown(); // Signal the main thread to proceed with cleanup
-            }).start();
-        }
-
-        @Override
-        public void onParticipantJoined(ParticipantJoinedEvent event) {
-            System.out.println(
-                "Someone joined the conference: " + event.getParticipant().getDisplayName()
-            );
-        }
-
-        @Override
-        public void onParticipantLeft(ParticipantLeftEvent event) {
-            System.out.println(
-                "Someone left the conference: participant ID " + event.getLeavingParticipantId()
-            );
-        }
-
-        @Override
-        public void onParticipantUpdated(ParticipantUpdatedEvent event) {
-            // Not used in this simple example
-        }
-
-        @Override
-        public void onRoomDestroyed(RoomDestroyedEvent event) {
-            System.out.println("Room was destroyed remotely.");
-            latch.countDown(); // Release latch if room is destroyed
-        }
-
-        @Override
-        public void onEvent(JSONObject event) {}
-    }
+	
+	// Use a latch to keep the application running until the bot is done
+	private static CountDownLatch latch = new CountDownLatch(1);
+	private static long myRoomId;
+	
+	public static void main(String[] args) throws Exception {
+		URI serverUri = new URI("ws://your-janus-server:8188/");
+		io.github.kinsleykajiva.janus.client.JanusClient janusClient = new JanusClient(serverUri);
+		janusClient.connect();
+		
+		JanusSession session = janusClient.createSession().get();
+		AudioBridgeHandle audioBridgeHandle = session.attachToAudioBridge().get();
+		
+		// Add a listener to react to events
+		audioBridgeHandle.addAudioBridgeListener(new ConferenceListener());
+		
+		// --- Workflow ---
+		
+		// 1. Create a room
+		CreateRoomRequest createRequest = new CreateRoomRequest("Bot's Conference Room");
+		audioBridgeHandle.createRoom(createRequest)
+				.thenCompose(room -> {
+					myRoomId = room.getRoomId();
+					System.out.println("Room created: " + myRoomId);
+					
+					// 2. Join the room
+					JoinRoomRequest joinRequest = new JoinRoomRequest(myRoomId);
+					joinRequest.setDisplayName("ConferenceBot");
+					return audioBridgeHandle.joinRoom(joinRequest);
+				})
+				.thenRun(() -> {
+					System.out.println("Join request sent. The bot will leave in 15 seconds.");
+				})
+				.exceptionally(ex -> {
+					System.err.println("Error in setup: " + ex.getMessage());
+					latch.countDown(); // Release latch on error
+					return null;
+				});
+		
+		// Keep the main thread alive
+		latch.await(30, TimeUnit.SECONDS);
+		
+		// --- Cleanup ---
+		System.out.println("Cleaning up...");
+		
+		// 4. Leave the room (optional, as destroying the room kicks everyone out)
+		audioBridgeHandle.leave().get();
+		
+		// 5. Destroy the room
+		DestroyRoomRequest destroyRequest = new DestroyRoomRequest(myRoomId);
+		audioBridgeHandle.destroyRoom(destroyRequest).get();
+		System.out.println("Room destroyed.");
+		
+		janusClient.disconnect();
+		System.out.println("Disconnected.");
+	}
+	
+	// A simple listener implementation for our bot
+	static class ConferenceListener implements JanusAudioBridgeListener {
+		@Override
+		public void onJoined(JoinedEvent event) {
+			System.out.println("Bot successfully joined room " + event.getRoomId());
+			
+			// After joining, let's wait for a bit before leaving
+			new Thread(() -> {
+				try {
+					Thread.sleep(15000); // Wait for 15 seconds
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+				latch.countDown(); // Signal the main thread to proceed with cleanup
+			}).start();
+		}
+		
+		@Override
+		public void onParticipantJoined(ParticipantJoinedEvent event) {
+			System.out.println(
+					"Someone joined the conference: " + event.getParticipant().getDisplayName()
+			);
+		}
+		
+		@Override
+		public void onParticipantLeft(ParticipantLeftEvent event) {
+			System.out.println(
+					"Someone left the conference: participant ID " + event.getLeavingParticipantId()
+			);
+		}
+		
+		@Override
+		public void onParticipantUpdated(ParticipantUpdatedEvent event) {
+			// Not used in this simple example
+		}
+		
+		@Override
+		public void onRoomDestroyed(RoomDestroyedEvent event) {
+			System.out.println("Room was destroyed remotely.");
+			latch.countDown(); // Release latch if room is destroyed
+		}
+		
+		@Override
+		public void onEvent(JSONObject event) {
+		}
+	}
 }
 ```
