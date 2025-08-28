@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * A request to subscribe to one or more streams from publishers in a room.
- * This corresponds to a 'join' request with ptype 'subscriber'.
+ * This corresponds to a 'join' request with pType 'subscriber'.
  */
 public class SubscribeRequest {
     private final JSONObject json;
