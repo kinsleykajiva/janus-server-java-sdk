@@ -26,7 +26,7 @@ public class Main {
 
         // Configure the Janus client
         JanusConfiguration config = new JanusConfiguration(
-		        "154.92.25.80", // Replace with your Janus server IP
+		        "", // Replace with your Janus server IP
             8188,
             "/janus",
             false,
@@ -34,7 +34,7 @@ public class Main {
         );
 
         JanusAdminConfiguration adminConfig = new JanusAdminConfiguration(
-            URI.create("ws://154.92.25.80:7188/janus"),
+            URI.create("ws://localhost:7188/janus"),
             "janusoverlord"
         );
 
