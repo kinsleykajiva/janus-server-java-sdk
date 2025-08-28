@@ -30,6 +30,7 @@ import io.github.kinsleykajiva.janus.internal.TransactionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import io.github.kinsleykajiva.cache.CacheService;
 import org.slf4j.LoggerFactory;
 
 import java.net.http.HttpClient;
@@ -47,13 +48,19 @@ public class JanusAdminClient implements WebSocket.Listener {
     private final TransactionManager transactionManager;
     private final StringBuilder messageBuffer = new StringBuilder();
     private final JanusAdminMonitor adminMonitor;
+    private final CacheService cacheService;
 
     public JanusAdminClient(JanusAdminConfiguration config) {
+        this(config, null);
+    }
+
+    public JanusAdminClient(JanusAdminConfiguration config, CacheService cacheService) {
         this.config = config;
         this.transactionManager = new TransactionManager();
         this.executor = Executors.newVirtualThreadPerTaskExecutor();
         this.httpClient = HttpClient.newBuilder().executor(this.executor).build();
         this.adminMonitor = new JanusAdminMonitor();
+        this.cacheService = cacheService;
 
         try {
             logger.info("Starting admin connection attempt...");
@@ -126,6 +133,9 @@ public class JanusAdminClient implements WebSocket.Listener {
             if (transactionId != null && !transactionId.isEmpty()) {
                 transactionManager.completeTransaction(transactionId, json);
             } else {
+                if (cacheService != null) {
+                    cacheService.addEvent(json);
+                }
                 adminMonitor.dispatchEvent(json);
             }
         } catch (JSONException e) {
