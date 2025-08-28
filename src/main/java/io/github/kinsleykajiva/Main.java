@@ -26,7 +26,7 @@ public class Main {
 
         // Configure the Janus client
         JanusConfiguration config = new JanusConfiguration(
-		        "localhost", // Replace with your Janus server IP
+		        "154.92.25.80", // Replace with your Janus server IP
             8188,
             "/janus",
             false,
@@ -34,7 +34,7 @@ public class Main {
         );
 
         JanusAdminConfiguration adminConfig = new JanusAdminConfiguration(
-            URI.create("ws://localhost:7188/janus"),
+            URI.create("ws://154.92.25.80:7188/janus"),
             "janusoverlord"
         );
 
@@ -48,7 +48,7 @@ public class Main {
 
         try {
             // 1. Connect to Janus
-            logger.info("Connecting to Janus server at {}...", config.getUri());
+           /* logger.info("Connecting to Janus server at {}...", config.getUri());
             client.connect().get(10, TimeUnit.SECONDS);
 
             // 2. Get Server Info
@@ -58,7 +58,7 @@ public class Main {
             // 3. Create a Session
             logger.info("Creating Janus session...");
             JanusSession session = client.createSession().get();
-            logger.info("Session created with ID: {}", session.getSessionId());
+            logger.info("Session created with ID: {}", session.getSessionId());*/
 
             // Run the VideoRoom example
             // runVideoRoomExample(session);
@@ -68,8 +68,8 @@ public class Main {
 
 
             // Keep the application running to listen for more events
-            logger.info("Example finished. Application will exit in 10 seconds.");
-            Thread.sleep(10000);
+           /* logger.info("Example finished. Application will exit in 10 seconds.");
+            Thread.sleep(10000*52662);*/
 
         } catch (Exception e) {
             logger.error("An error occurred: {}", e.getMessage(), e);
@@ -205,15 +205,15 @@ public class Main {
             System.out.println(">>> ADMIN EVENT: " + event.toString(2));
         });
 
-        System.out.println("Pinging admin endpoint...");
+       /* System.out.println("Pinging admin endpoint...");
         adminClient.ping().thenAccept(response -> {
             System.out.println("Ping response: " + response.toString(2));
-        }).get();
+        }).get();*/
 
-        System.out.println("Getting server info...");
+        /*System.out.println("Getting server info...");
         adminClient.info().thenAccept(info -> {
             System.out.println("Server info: " + info.versionString());
-        }).get();
+        }).get();*/
 
         System.out.println("Getting status...");
         adminClient.getStatus().thenAccept(status -> {
@@ -232,7 +232,7 @@ public class Main {
             }).get();
         }
 
-        System.out.println("Setting log level to 4...");
+       /* System.out.println("Setting log level to 4...");
         adminClient.setLogLevel(4).get();
         System.out.println("Log level set.");
 
@@ -243,10 +243,10 @@ public class Main {
 
         System.out.println("Setting log level back to 3...");
         adminClient.setLogLevel(3).get();
-        System.out.println("Log level set.");
-
-
-        adminClient.disconnect();
+        System.out.println("Log level set.");*/
+	    
+	    System.in.read();
+       // adminClient.disconnect();
         System.out.println("\n--- Admin Client Example Finished ---\n");
     }
 }

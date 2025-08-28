@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public class JoinRoomRequest {
     private final JSONObject json;
 
+    @SuppressWarnings("D")
     private JoinRoomRequest(Builder builder) {
         this.json = new JSONObject();
         json.put("request", "join");

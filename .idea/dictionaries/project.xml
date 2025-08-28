@@ -4,9 +4,14 @@
       <w>eventhandler</w>
       <w>jsep</w>
       <w>kajiva</w>
+      <w>listannouncements</w>
+      <w>listforwarders</w>
       <w>marvinpinto</w>
       <w>messagedelivery</w>
       <w>ossrh</w>
+      <w>plugindata</w>
+      <w>resetdecoder</w>
+      <w>videoroom</w>
     </words>
   </dictionary>
 </component>
