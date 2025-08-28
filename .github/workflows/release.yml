@@ -2,7 +2,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "re-write" ]
+    branches: [ "master" ]
 
 jobs:
   build:
