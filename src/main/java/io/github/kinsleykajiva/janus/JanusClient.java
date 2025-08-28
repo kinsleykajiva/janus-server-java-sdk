@@ -15,39 +15,41 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class JanusClient implements WebSocket.Listener {
-	private static final Logger logger = LoggerFactory.getLogger(JanusClient.class);
-	private static final long DEFAULT_CONNECTION_TIMEOUT_MS = 10_000; // 10 seconds
-	private static final long SERVER_INFO_TIMEOUT_MS = 20_000; // 20 seconds for server info
-	private static final long KEEP_ALIVE_INTERVAL_SECONDS = 45; // 45 seconds for keep-alive
+	private static final Logger logger                           = LoggerFactory.getLogger(JanusClient.class);
+	private static final long DEFAULT_CONNECTION_TIMEOUT_MS      = 10_000;                                                                  // 10 seconds
+	private static final long SERVER_INFO_TIMEOUT_MS             = 20_000;                                                                  // 20 seconds for server info
+	private static final long KEEP_ALIVE_INTERVAL_SECONDS        = 45;                                                                      // 45 seconds for keep-alive
+	private final Map<Long , JanusSession> sessions              = new ConcurrentHashMap<>();
+	private final Map<Long , ScheduledFuture<?>> keepAliveTasks  = new ConcurrentHashMap<>();
+	private final StringBuilder messageBuffer                    = new StringBuilder();
 	private final JanusConfiguration config;
 	private final HttpClient httpClient;
 	private WebSocket webSocket;
 	private final ExecutorService executor;
-	private final Map<Long, JanusSession> sessions = new ConcurrentHashMap<>();
 	
 	private final ScheduledExecutorService keepAliveScheduler;
-	private final Map<Long, ScheduledFuture<?>> keepAliveTasks = new ConcurrentHashMap<>();
+	
 	private final TransactionManager transactionManager;
-	private final StringBuilder messageBuffer = new StringBuilder();
+	
 	
 	public JanusClient(JanusConfiguration config) {
-		this.config = config;
+		this.config             = config;
 		this.transactionManager = new TransactionManager();
-		this.executor = Executors.newVirtualThreadPerTaskExecutor();
-		this.httpClient = HttpClient.newBuilder().executor(this.executor).build();
+		this.executor           = Executors.newVirtualThreadPerTaskExecutor();
+		this.httpClient         = HttpClient.newBuilder().executor(this.executor).build();
 		this.keepAliveScheduler = Executors.newScheduledThreadPool(1);
 		
-		try{
+		try {
 			logger.info("Starting connection attempt...");
 			connect().get();
 			logger.info("Connection established, retrieving server info...");
-			
-			// Get server info
 			ServerInfo serverInfo = getServerInfo().get();
-			logger.info("Server Info:\n Janus={}, \nVersion={}, \nPlugins={}",
-					serverInfo.janus(),
-					serverInfo.versionString(),
-					serverInfo.plugins().keySet());
+			if (config.isLogEnabled()) {
+				logger.info("Server Info:\n Janus={}, \nVersion={}, \nPlugins={}",
+						serverInfo.janus(),
+						serverInfo.versionString(),
+						serverInfo.plugins().keySet());
+			}
 			
 		} catch (InterruptedException e) {
 			logger.info("Program interrupted, shutting down.");
@@ -70,6 +72,7 @@ public class JanusClient implements WebSocket.Listener {
 					       throw new JanusException("Connection failed", throwable);
 				       });
 	}
+	
 	private void scheduleKeepAlive(long sessionId) {
 		ScheduledFuture<?> keepAliveTask = keepAliveScheduler.scheduleAtFixedRate(() -> {
 			try {
@@ -78,7 +81,9 @@ public class JanusClient implements WebSocket.Listener {
 				keepAlive.put("session_id", sessionId);
 				keepAlive.put("transaction", transactionManager.createTransaction());
 				sendMessage(keepAlive);
-				logger.info("Sent keep-alive for session {}", sessionId);
+				if (config.isLogEnabled()) {
+					logger.info("Sent keep-alive for session {}", sessionId);
+				}
 			} catch (Exception e) {
 				logger.error("Failed to send keep-alive for session {}: {}", sessionId, e.getMessage(), e);
 			}
@@ -86,13 +91,14 @@ public class JanusClient implements WebSocket.Listener {
 		keepAliveTasks.put(sessionId, keepAliveTask);
 		logger.debug("Scheduled keep-alive task for session {}", sessionId);
 	}
+	
 	public void disconnect() {
 		// 1. Stop keep-alive tasks and shut down the scheduler
-		logger.debug("Shutting down keep-alive scheduler...");
+		logger.info("Shutting down keep-alive scheduler...");
 		keepAliveTasks.values().forEach(task -> task.cancel(false));
 		keepAliveTasks.clear();
 		keepAliveScheduler.shutdown();
-
+		
 		// 2. Close WebSocket connection
 		if (webSocket != null && !webSocket.isOutputClosed()) {
 			try {
@@ -102,11 +108,12 @@ public class JanusClient implements WebSocket.Listener {
 				logger.warn("Error during graceful WebSocket disconnect: {}", e.getMessage());
 			}
 		}
-
-		// 3. Shut down the main executor
-		logger.debug("Shutting down main executor...");
+		if (config.isLogEnabled()) {
+			// 3. Shut down the main executor
+			logger.info("Shutting down main executor...");
+		}
 		executor.shutdown();
-
+		
 		// 4. Await termination of both schedulers
 		try {
 			if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -130,12 +137,14 @@ public class JanusClient implements WebSocket.Listener {
 	
 	@Override
 	public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-		logger.debug("Received WebSocket message fragment: length={}, last={}", data.length(), last);
+		if (config.isLogEnabled()) {
+			logger.info("Received WebSocket message fragment: length={}, last={}", data.length(), last);
+		}
 		messageBuffer.append(data);
 		
 		if (last) {
 			String completeMessage = messageBuffer.toString();
-			if(config.isLogEnabled()){
+			if (config.isLogEnabled()) {
 				logger.debug("Message From Janus: {}", completeMessage);
 			}
 			executor.submit(() -> processMessage(completeMessage));
@@ -160,7 +169,7 @@ public class JanusClient implements WebSocket.Listener {
 			}
 			
 			JSONObject json = new JSONObject(message);
-		//	logger.info("Processing JSON: {}", json.toString(2));
+			//	logger.info("Processing JSON: {}", json.toString(2));
 			
 			String transactionId = json.optString("transaction", null);
 			if (transactionId != null && !transactionId.isEmpty()) {
@@ -212,7 +221,9 @@ public class JanusClient implements WebSocket.Listener {
 			long sessionId = response.getJSONObject("data").getLong("id");
 			JanusSession session = new JanusSession(this, sessionId);
 			sessions.put(sessionId, session);
-			logger.info("Session created, session ID={}", sessionId);
+			if (config.isLogEnabled()) {
+				logger.info("Session created, session ID={}", sessionId);
+			}
 			scheduleKeepAlive(sessionId);
 			return session;
 		});
@@ -225,9 +236,9 @@ public class JanusClient implements WebSocket.Listener {
 		JSONObject request = new JSONObject();
 		request.put("janus", "info");
 		request.put("transaction", transactionId);
-		
-		logger.debug("Sending server info request: {}", request.toString());
-		
+		if(config.isLogEnabled()) {
+			logger.info("Sending server info request: {}", request.toString());
+		}
 		sendMessage(request);
 		return future.orTimeout(SERVER_INFO_TIMEOUT_MS, TimeUnit.MILLISECONDS)
 				       .thenApply(this::convertToServerInfo)
@@ -334,7 +345,9 @@ public class JanusClient implements WebSocket.Listener {
 			throw new IllegalStateException("WebSocket is not connected.");
 		}
 		String msgStr = message.toString();
-		logger.debug("Sending message: {}", msgStr);
+		if(config.isLogEnabled()) {
+			logger.info("Sending message: {}", msgStr);
+		}
 		webSocket.sendText(msgStr, true);
 	}
 	
