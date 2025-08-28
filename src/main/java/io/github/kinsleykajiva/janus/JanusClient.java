@@ -135,8 +135,9 @@ public class JanusClient implements WebSocket.Listener {
 		
 		if (last) {
 			String completeMessage = messageBuffer.toString();
-			//logger.debug("Processing complete message: {}", completeMessage);
-			System.out.println("message- " + completeMessage);
+			if(config.isLogEnabled()){
+				logger.debug("Message From Janus: {}", completeMessage);
+			}
 			executor.submit(() -> processMessage(completeMessage));
 			messageBuffer.setLength(0); // Clear buffer after processing
 		} else {
