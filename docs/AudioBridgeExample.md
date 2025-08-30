@@ -71,20 +71,21 @@ Creates a new audio conference room.
 -   **Returns:** `CompletableFuture<AudioBridgeRoom>` - A future that completes with an `AudioBridgeRoom` object, representing the newly created room.
 -   **Example:**
     ```java
-    CreateRoomRequest createRequest = new CreateRoomRequest(
-        "My new conference room", // description
-        false,                    // is_private
-        "1234"                    // pin
-    );
+import io.github.kinsleykajiva.janus.client.handle.impl.AudioBridgeHandle;
+import io.github.kinsleykajiva.janus.client.plugins.audiobridge.models.CreateRoomRequest;
+......
 
-    audioBridgeHandle.createRoom(createRequest)
-        .thenAccept(room -> {
-            System.out.println("Room created with ID: " + room.getRoomId());
-        })
-        .exceptionally(ex -> {
-            System.err.println("Failed to create room: " + ex.getMessage());
-            return null;
-        });
+    CreateRoomRequest.Builder builder =new CreateRoomRequest.Builder().
+					                                   
+					                                   setRoom(System.currentTimeMillis())
+					                                   .setIsPrivate(false).setPermanent(false)
+					                                   .setPin("1234")
+					                                   .setDescription("Random Room")
+					;
+			CreateRoomRequest createRoomRequest = builder.build();
+			
+			var room=audioBridgeHandle.createRoom(createRoomRequest).get();
+			logger.info("Created roomId with ID: {}", room.room());
     ```
 
 #### `destroyRoom(DestroyRoomRequest request)`
