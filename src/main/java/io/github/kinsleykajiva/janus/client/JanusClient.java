@@ -177,7 +177,7 @@ public class JanusClient implements WebSocket.Listener {
 			if (transactionId != null && !transactionId.isEmpty()) {
 				logger.info("Found transaction ID: {}", transactionId);
 				transactionManager.completeTransaction(transactionId, json);
-				return;
+				
 			}
 			
 			long sessionId = json.optLong("session_id", -1);
