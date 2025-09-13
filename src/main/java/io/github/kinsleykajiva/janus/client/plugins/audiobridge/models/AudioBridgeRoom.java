@@ -47,4 +47,19 @@ public record AudioBridgeRoom(
             json.optBoolean("permanent")
         );
     }
+
+public JSONObject toJsonObject() {
+		return new JSONObject()
+			.put("room", room)
+			.put("description", description)
+			.put("is_private", isPrivate)
+			.put("pin_required", pinRequired)
+			.put("sampling_rate", samplingRate)
+			.put("spatial_audio", spatialAudio)
+			.put("record", record)
+			.put("num_participants", numParticipants)
+			.put("permanent", permanent)
+			;
+		
+	}
 }
