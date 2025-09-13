@@ -1,5 +1,6 @@
 package io.github.kinsleykajiva.janus.client.plugins.audiobridge.listeners;
 
+import io.github.kinsleykajiva.janus.client.event.JanusJsep;
 import io.github.kinsleykajiva.janus.client.plugins.audiobridge.events.*;
 import org.json.JSONObject;
 
@@ -10,21 +11,22 @@ import org.json.JSONObject;
 public interface JanusAudioBridgeListener {
 
     /**
-     * Called when the local user has successfully joined a room.
+     * Called when the local user has successfully joined a roomId.
      *
-     * @param event The {@link JoinedEvent} containing details about the room and other participants.
+     * @param event The {@link JoinedEvent} containing details about the roomId and other participants.
      */
     void onJoined(JoinedEvent event);
+    void onJsepData(JanusJsep event);
 
     /**
-     * Called when a new participant joins the room.
+     * Called when a new participant joins the roomId.
      *
      * @param event The {@link ParticipantJoinedEvent} containing the details of the new participant.
      */
     void onParticipantJoined(ParticipantJoinedEvent event);
 
     /**
-     * Called when a participant leaves the room.
+     * Called when a participant leaves the roomId.
      *
      * @param event The {@link ParticipantLeftEvent} containing the ID of the participant who left.
      */
@@ -38,14 +40,14 @@ public interface JanusAudioBridgeListener {
     void onParticipantUpdated(ParticipantUpdatedEvent event);
 
     /**
-     * Called when a room is destroyed.
+     * Called when a roomId is destroyed.
      *
-     * @param event The {@link RoomDestroyedEvent} containing the ID of the destroyed room.
+     * @param event The {@link RoomDestroyedEvent} containing the ID of the destroyed roomId.
      */
     void onRoomDestroyed(RoomDestroyedEvent event);
 
     /**
-     * Called when an announcement has started in a room.
+     * Called when an announcement has started in a roomId.
      *
      * @param event The {@link AnnouncementStartedEvent} containing the details of the announcement.
      */
@@ -54,7 +56,7 @@ public interface JanusAudioBridgeListener {
     }
 
     /**
-     * Called when an announcement has stopped in a room.
+     * Called when an announcement has stopped in a roomId.
      *
      * @param event The {@link AnnouncementStoppedEvent} containing the details of the announcement.
      */
@@ -65,7 +67,7 @@ public interface JanusAudioBridgeListener {
     /**
      * Called when the local user has successfully changed rooms.
      *
-     * @param event The {@link RoomChangedEvent} containing the details of the new room.
+     * @param event The {@link RoomChangedEvent} containing the details of the new roomId.
      */
     default void onRoomChanged(RoomChangedEvent event) {
         // Default implementation does nothing.
