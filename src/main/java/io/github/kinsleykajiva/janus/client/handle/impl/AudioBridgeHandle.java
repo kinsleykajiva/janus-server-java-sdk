@@ -1,10 +1,12 @@
 package io.github.kinsleykajiva.janus.client.handle.impl;
 
 import io.github.kinsleykajiva.janus.client.JanusSession;
+import io.github.kinsleykajiva.janus.client.event.JanusJsep;
 import io.github.kinsleykajiva.janus.client.handle.HandleType;
 import io.github.kinsleykajiva.janus.client.handle.JanusHandle;
 import io.github.kinsleykajiva.janus.client.plugins.audiobridge.events.*;
 import io.github.kinsleykajiva.janus.client.plugins.audiobridge.listeners.JanusAudioBridgeListener;
+import dev.onvoid.webrtc.RTCSessionDescription;
 import io.github.kinsleykajiva.janus.client.plugins.audiobridge.models.*;
 import org.json.JSONObject;
 
@@ -60,14 +62,15 @@ public class AudioBridgeHandle extends JanusHandle {
         }
         final var data = event.getJSONObject("plugindata").getJSONObject("data");
         final String eventType = data.optString("audiobridge");
-
+	   
         // Always forward the raw event for debugging or custom handling
         audioBridgeListeners.forEach(listener -> listener.onEvent(data));
 
         switch (eventType) {
             case "joined":
-                // This event is for the local user successfully joining the room.
+                // This event is for the local user successfully joining the roomId.
                 final var joinedEvent = JoinedEvent.fromJson(data);
+	            
                 audioBridgeListeners.forEach(listener -> listener.onJoined(joinedEvent));
                 break;
             case "destroyed":
@@ -75,9 +78,13 @@ public class AudioBridgeHandle extends JanusHandle {
                 audioBridgeListeners.forEach(listener -> listener.onRoomDestroyed(destroyedEvent));
                 break;
             case "event":
+				if(event.has("jsep")){
+
+					audioBridgeListeners.forEach(listener -> listener.onJsepData(new JanusJsep(event.getJSONObject("jsep").getString("type"),  event.getJSONObject("jsep").getString("sdp"))));
+				}
                 // This is a generic event that can signify multiple things.
                 if (data.has("leaving")) {
-                    // A participant has left the room.
+                    // A participant has left the roomId.
                     final var leftEvent = ParticipantLeftEvent.fromJson(data);
                     audioBridgeListeners.forEach(listener -> listener.onParticipantLeft(leftEvent));
                 } else if (data.has("participants")) {
@@ -114,11 +121,11 @@ public class AudioBridgeHandle extends JanusHandle {
     }
 
     /**
-     * Sends a request to create a new AudioBridge room with the specified configuration.
+     * Sends a request to create a new AudioBridge roomId with the specified configuration.
      *
-     * @param request A {@link CreateRoomRequest} object containing the desired room settings.
+     * @param request A {@link CreateRoomRequest} object containing the desired roomId settings.
      * @return A {@link CompletableFuture} that will be completed with an {@link AudioBridgeRoom} object
-     *         representing the newly created room.
+     *         representing the newly created roomId.
      */
     public CompletableFuture<AudioBridgeRoom> createRoom(CreateRoomRequest request) {
         return sendMessage(request.toJson()).thenApply(response -> {
@@ -126,21 +133,43 @@ public class AudioBridgeHandle extends JanusHandle {
             if ("created".equals(pluginData.optString("audiobridge"))) {
                 return AudioBridgeRoom.fromJson(pluginData);
             } else {
-                throw new RuntimeException("Failed to create room: " + response.toString());
+                throw new RuntimeException("Failed to create roomId: " + response.toString());
             }
         });
     }
 
+    public CompletableFuture<Void> configure(boolean muted, RTCSessionDescription jsep) {
+        JSONObject body = new JSONObject();
+        body.put("request", "configure");
+        body.put("muted", muted);
+
+        JSONObject jsepJson = null;
+        if (jsep != null) {
+            jsepJson = new JSONObject();
+            jsepJson.put("type", jsep.sdpType.toString().toLowerCase());
+            jsepJson.put("sdp", jsep.sdp);
+        }
+
+        return sendMessage(body, jsepJson).thenAccept(response -> {
+            if ("error".equals(response.optString("janus"))) {
+                throw new RuntimeException("Janus returned an error on configure request: " + response.toString());
+            }
+        });
+    }
+	
+	
+
+
     /**
-     * Destroys an existing AudioBridge room.
+     * Destroys an existing AudioBridge roomId.
      *
-     * @return A {@link CompletableFuture} that completes when the room has been successfully destroyed.
+     * @return A {@link CompletableFuture} that completes when the roomId has been successfully destroyed.
      */
     public CompletableFuture<Void> destroyRoom(DestroyRoomRequest request) {
         return sendMessage(request.toJson()).thenAccept(response -> {
             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
             if (!"destroyed".equals(pluginData.optString("audiobridge"))) {
-                throw new RuntimeException("Failed to destroy room: " + response.toString());
+                throw new RuntimeException("Failed to destroy roomId: " + response.toString());
             }
         });
     }
@@ -163,10 +192,10 @@ public class AudioBridgeHandle extends JanusHandle {
     }
 
     /**
-     * Sends a request for the local user to join a room. This is an asynchronous operation.
+     * Sends a request for the local user to join a roomId. This is an asynchronous operation.
      * A successful join will be indicated by an {@code onJoined} event on registered listeners.
      *
-     * @param request A {@link JoinRoomRequest} with the details for joining the room.
+     * @param request A {@link JoinRoomRequest} with the details for joining the roomId.
      * @return A {@link CompletableFuture} that completes when the join request has been acknowledged by the server.
      */
     public CompletableFuture<Void> joinRoom(JoinRoomRequest request) {
@@ -178,11 +207,12 @@ public class AudioBridgeHandle extends JanusHandle {
             if ("error".equals(response.optString("janus"))) {
                 throw new RuntimeException("Janus returned an error on join request: " + response.toString());
             }
+	        
         });
     }
 
     /**
-     * Configures the local user's participation in the room (e.g., muting or changing display name).
+     * Configures the local user's participation in the roomId (e.g., muting or changing display name).
      *
      * @param request A {@link ConfigureRequest} object with the desired configuration changes.
      * @return A {@link CompletableFuture} that completes when the configure request is acknowledged.
@@ -197,7 +227,7 @@ public class AudioBridgeHandle extends JanusHandle {
     }
 
     /**
-     * Sends a request for the local user to leave the current room. A successful departure will
+     * Sends a request for the local user to leave the current roomId. A successful departure will
      * be indicated by a `left` event from the server.
      *
      * @return A {@link CompletableFuture} that completes when the leave request is acknowledged.
@@ -213,9 +243,9 @@ public class AudioBridgeHandle extends JanusHandle {
     }
 
     /**
-     * Retrieves the list of participants currently in a specific room.
+     * Retrieves the list of participants currently in a specific roomId.
      *
-     * @param roomId The unique ID of the room.
+     * @param roomId The unique ID of the roomId.
      * @return A {@link CompletableFuture} that completes with a list of {@link AudioBridgeParticipant} objects.
      */
     public CompletableFuture<List<AudioBridgeParticipant>> listParticipants(long roomId) {
@@ -237,7 +267,7 @@ public class AudioBridgeHandle extends JanusHandle {
         return sendMessage(request.toJson()).thenAccept(response -> {
             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
             if (!"edited".equals(pluginData.optString("audiobridge"))) {
-                throw new RuntimeException("Failed to edit room: " + response.toString());
+                throw new RuntimeException("Failed to edit roomId: " + response.toString());
             }
         });
     }
@@ -246,7 +276,7 @@ public class AudioBridgeHandle extends JanusHandle {
         return sendMessage(request.toJson()).thenApply(response -> {
             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
             if (!"success".equals(pluginData.optString("audiobridge"))) {
-                throw new RuntimeException("Failed to check if room exists: " + response.toString());
+                throw new RuntimeException("Failed to check if roomId exists: " + response.toString());
             }
             return ExistsResponse.fromJson(pluginData);
         });
@@ -320,7 +350,7 @@ public class AudioBridgeHandle extends JanusHandle {
         return sendMessage(request.toJson()).thenAccept(response -> {
             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
             if (!"success".equals(pluginData.optString("audiobridge"))) {
-                throw new RuntimeException("Failed to mute room: " + response.toString());
+                throw new RuntimeException("Failed to mute roomId: " + response.toString());
             }
         });
     }
@@ -329,7 +359,7 @@ public class AudioBridgeHandle extends JanusHandle {
         return sendMessage(request.toJson()).thenAccept(response -> {
             final var pluginData = response.getJSONObject("plugindata").getJSONObject("data");
             if (!"success".equals(pluginData.optString("audiobridge"))) {
-                throw new RuntimeException("Failed to unmute room: " + response.toString());
+                throw new RuntimeException("Failed to unmute roomId: " + response.toString());
             }
         });
     }
@@ -425,7 +455,7 @@ public class AudioBridgeHandle extends JanusHandle {
     public CompletableFuture<Void> changeRoom(ChangeRoomRequest request) {
         return sendMessage(request.toJson()).thenAccept(response -> {
             if ("error".equals(response.optString("janus"))) {
-                throw new RuntimeException("Janus returned an error on change room request: " + response.toString());
+                throw new RuntimeException("Janus returned an error on change roomId request: " + response.toString());
             }
         });
     }
