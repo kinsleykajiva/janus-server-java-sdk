@@ -43,6 +43,39 @@ public abstract class JanusHandle {
 	
 	public abstract void fireEvent(JSONObject event);
 	
+	public CompletableFuture<JSONObject> sendMessageIce(String sdpMid,  int sdpLineNumber , String candidate) {
+		if(sdpMid== null && candidate == null ){
+			// end of candidates or tell janus its complete
+			JSONObject message = new JSONObject();
+			message.put("janus", "trickle");
+			message.put("candidate", new JSONObject().put("completed", true));
+			message.put("session_id", session.getSessionId());
+			message.put("handle_id", handleId);
+			String transactionId = session.getClient().getTransactionManager().createTransaction();
+			message.put("transaction", transactionId);
+			var future = session.getClient().getTransactionManager().registerTransaction(transactionId);
+			session.getClient().sendMessage(message);
+			return future;
+		}else {
+			JSONObject candidateJson = new JSONObject();
+			candidateJson.put("candidate", candidate);
+			candidateJson.put("sdpMid", sdpMid);
+			candidateJson.put("sdpMLineIndex", sdpLineNumber);
+			
+			JSONObject message = new JSONObject();
+			message.put("janus", "trickle");
+			message.put("candidate", candidateJson);
+			message.put("session_id", session.getSessionId());
+			message.put("handle_id", handleId);
+			String transactionId = session.getClient().getTransactionManager().createTransaction();
+			message.put("transaction", transactionId);
+			
+			var future = session.getClient().getTransactionManager().registerTransaction(transactionId);
+			session.getClient().sendMessage(message);
+			return future;
+		}
+	
+	}
 	public CompletableFuture<JSONObject> sendMessage(JSONObject body, JSONObject jsep) {
 		String transactionId = session.getClient().getTransactionManager().createTransaction();
 		var future = session.getClient().getTransactionManager().registerTransaction(transactionId);
