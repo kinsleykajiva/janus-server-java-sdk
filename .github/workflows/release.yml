@@ -22,8 +22,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_PASSWORD
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_PASSWORD }}
 
       - name: Set up GPG
         uses: crazy-max/ghaction-import-gpg@v5
