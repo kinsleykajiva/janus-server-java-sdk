@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/***
+/****
  * A handle to interact with the Janus AudioBridge plugin. This class is the primary entry point for managing
  * audio conferences. It provides methods to send requests to the plugin (e.g., creating rooms, joining, muting)
  * and manages listeners for asynchronous events, abstracting the underlying JSON-based communication...
