@@ -42,7 +42,7 @@ public class JanusClient implements WebSocket.Listener {
 		this.keepAliveScheduler = Executors.newScheduledThreadPool(1);
 		
 		try {
-			logger.info("Starting connection attempt...");
+			logger.info("Starting connection attempt....");
 			connect().get();
 			logger.info("Connection established, retrieving server info...");
 			ServerInfo serverInfo = getServerInfo().get();
