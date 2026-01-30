@@ -13,15 +13,15 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          server-username: GPG_USERNAME
+          server-password: GPG_PASSWORD
+          gpg-private-key: ${{ secrets.SETTINGS_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
       - name: Set version
         run: mvn versions:set -DnewVersion=${{ github.event.release.tag_name }}
       - name: Publish package
         run: mvn -P release --batch-mode deploy -DskipTests
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_USERNAME: ${{ secrets.GPG_USERNAME }}
+          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

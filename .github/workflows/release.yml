@@ -2,7 +2,7 @@ name: Release and Deploy to Maven Central
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build-and-deploy:
@@ -18,8 +18,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
           cache: maven
 
       - name: Set up GPG
@@ -43,10 +43,15 @@ jobs:
                 <username>${{ secrets.GPG_USERNAME }}</username>
                 <password>${{ secrets.GPG_PASSWORD }}</password>
               </server>
+              <server>
+                <id>central</id>
+                <username>${{ secrets.GPG_USERNAME }}</username>
+                <password>${{ secrets.GPG_PASSWORD }}</password>
+              </server>
             </servers>
             <profiles>
               <profile>
-                <id>ossrh</id>
+                <id>gpg-signing</id>
                 <activation>
                   <activeByDefault>true</activeByDefault>
                 </activation>
