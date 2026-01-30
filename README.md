@@ -1,6 +1,6 @@
 # Janus Server Java SDK
 
-![version](https://img.shields.io/badge/version-0.11.2-blue)
+![version](https://img.shields.io/badge/version-0.11.3-blue)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.kinsleykajiva/janus-server-java-sdk.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.kinsleykajiva/janus-server-java-sdk)
 
@@ -28,7 +28,7 @@ To use this SDK in your Maven project, add the following dependency to your `pom
 <dependency>
     <groupId>io.github.kinsleykajiva</groupId>
     <artifactId>janus-server-java-sdk</artifactId>
-    <version>0.11.2</version>
+    <version>0.11.3</version>
 </dependency>
 ```
 
