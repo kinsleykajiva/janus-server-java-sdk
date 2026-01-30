@@ -2,6 +2,7 @@
 
 ![version](https://img.shields.io/badge/version-0.11.2-blue)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.kinsleykajiva/janus-server-java-sdk.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.kinsleykajiva/janus-server-java-sdk)
 
 A Java SDK for interacting with the Janus WebRTC Server. This SDK is designed for Java applications (Desktop & Web-Backend) and provides a high-level API to communicate with the Janus server.
 
@@ -23,8 +24,6 @@ A Java SDK for interacting with the Janus WebRTC Server. This SDK is designed fo
 ## Installation
 
 To use this SDK in your Maven project, add the following dependency to your `pom.xml`:
-
-[pending maven  central, in the mean time use releases -https://github.com/kinsleykajiva/janus-server-java-sdk/releases/tag/latest]
 ```xml
 <dependency>
     <groupId>io.github.kinsleykajiva</groupId>
